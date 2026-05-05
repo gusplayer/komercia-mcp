@@ -1,0 +1,37 @@
+{
+  "name": "@komercia-mcp/web",
+  "version": "0.1.0",
+  "description": "Astro web app — magic link issuer and merchant-facing UI",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "astro build",
+    "dev": "astro dev --port 4321",
+    "preview": "astro preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "lint": "eslint src",
+    "typecheck": "astro check && tsc --noEmit",
+    "clean": "rm -rf dist .astro tsconfig.tsbuildinfo"
+  },
+  "dependencies": {
+    "@komercia-mcp/shared": "workspace:*",
+    "@astrojs/node": "^9.0.0",
+    "@astrojs/tailwind": "^5.1.0",
+    "astro": "^5.0.0",
+    "postgres": "^3.4.0",
+    "resend": "^4.0.0",
+    "tailwindcss": "^3.4.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@komercia-mcp/eslint-config": "workspace:*",
+    "@playwright/test": "^1.48.0",
+    "@types/node": "^20.0.0",
+    "@vitest/coverage-v8": "^2.1.0",
+    "eslint": "^9.14.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.1.0"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".astro/**"]
+    },
+    "dev": {
+      "dependsOn": ["^build"],
+      "persistent": true,
+      "cache": false
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "env": [
+        "NODE_ENV",
+        "JWT_SECRET",
+        "DATABASE_URL",
+        "RESEND_API_KEY",
+        "KOMERCIA_API_URL",
+        "KOMERCIA_STORES_URL",
+        "KOMERCIA_CATALOG_URL"
+      ]
+    },
+    "test:watch": {
+      "persistent": true,
+      "cache": false
+    },
+    "lint": {
+      "outputs": []
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "clean": {
+      "cache": false
+    }
+  }
+}

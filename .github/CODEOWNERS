@@ -1,0 +1,8 @@
+# Global owner — review required on all PRs
+* @gustavomoreno
+
+# Security-sensitive paths require explicit review
+.github/workflows/ @gustavomoreno
+packages/shared/src/jwt* @gustavomoreno
+apps/mcp-server/src/auth/ @gustavomoreno
+apps/web/src/pages/api/ @gustavomoreno

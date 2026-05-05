@@ -1,0 +1,34 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: America/Bogota
+    groups:
+      dev-tooling:
+        patterns:
+          - "turbo"
+          - "typescript"
+          - "prettier"
+          - "eslint*"
+          - "@typescript-eslint*"
+          - "vitest"
+          - "@vitest*"
+          - "playwright"
+          - "@playwright*"
+      nestjs:
+        patterns:
+          - "@nestjs/*"
+          - "nest*"
+      astro:
+        patterns:
+          - "astro"
+          - "@astrojs/*"
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly

@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "preserve",
+    "jsxImportSource": "astro",
+    "allowImportingTsExtensions": true,
+    "noEmit": true
+  },
+  "references": [{ "path": "../../packages/shared" }],
+  "include": ["src/**/*", "astro.config.*", "env.d.ts"],
+  "exclude": ["node_modules", "dist", "playwright-report", "test-results"]
+}

@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "composite": true
+  },
+  "references": [
+    { "path": "../../packages/shared" },
+    { "path": "../../packages/komercia-client" }
+  ],
+  "include": ["src/**/*"],
+  "exclude": ["**/*.spec.ts", "**/*.test.ts", "node_modules", "dist"]
+}

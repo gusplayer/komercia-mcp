@@ -1,0 +1,32 @@
+{
+  "name": "komercia-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Public MCP server that lets Komercia merchants export and migrate their store data using Claude.ai",
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,yaml,yml}\" --ignore-path .gitignore",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,yaml,yml}\" --ignore-path .gitignore",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "discover": "pnpm --filter @komercia-mcp/discovery run discover",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo run build && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.0",
+    "prettier": "^3.3.0",
+    "turbo": "^2.3.0",
+    "typescript": "^5.5.0"
+  }
+}
