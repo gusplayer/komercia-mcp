@@ -1,0 +1,139 @@
+---
+import { generateCsrfToken } from '../lib/csrf.js';
+import { getConfig } from '../lib/env.js';
+
+const config = getConfig();
+const isProduction = config.NODE_ENV === 'production';
+
+// Generate and set CSRF token cookie
+const csrfToken = generateCsrfToken();
+Astro.response.headers.append(
+  'Set-Cookie',
+  `csrf_token=${csrfToken}; Path=/; SameSite=Strict; HttpOnly=false${isProduction ? '; Secure' : ''}`,
+);
+---
+
+<form
+  id="request-link-form"
+  class="space-y-4"
+  novalidate
+>
+  <input type="hidden" name="csrf_token" id="csrf-token-input" value={csrfToken} />
+
+  <div>
+    <label for="email" class="block text-sm font-medium text-slate-700 mb-1.5">
+      Store email address
+    </label>
+    <input
+      type="email"
+      id="email"
+      name="email"
+      required
+      autocomplete="email"
+      placeholder="you@example.com"
+      class="input-field"
+      aria-describedby="email-hint"
+    />
+    <p id="email-hint" class="mt-1.5 text-xs text-slate-500">
+      The email address associated with your Komercia account.
+    </p>
+  </div>
+
+  <div id="form-error" class="hidden rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700" role="alert">
+  </div>
+
+  <button
+    type="submit"
+    id="submit-btn"
+    class="btn-primary w-full"
+  >
+    <span id="btn-text">Send me the export link</span>
+    <span id="btn-loading" class="hidden items-center gap-2">
+      <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+      </svg>
+      Sending…
+    </span>
+  </button>
+</form>
+
+<script>
+  const form = document.getElementById('request-link-form') as HTMLFormElement;
+  const emailInput = document.getElementById('email') as HTMLInputElement;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+  const btnText = document.getElementById('btn-text') as HTMLSpanElement;
+  const btnLoading = document.getElementById('btn-loading') as HTMLSpanElement;
+  const formError = document.getElementById('form-error') as HTMLDivElement;
+  const csrfInput = document.getElementById('csrf-token-input') as HTMLInputElement;
+
+  function showError(msg: string) {
+    formError.textContent = msg;
+    formError.classList.remove('hidden');
+  }
+
+  function hideError() {
+    formError.classList.add('hidden');
+    formError.textContent = '';
+  }
+
+  function setLoading(loading: boolean) {
+    submitBtn.disabled = loading;
+    btnText.classList.toggle('hidden', loading);
+    btnLoading.classList.toggle('hidden', !loading);
+    btnLoading.classList.toggle('inline-flex', loading);
+  }
+
+  function isValidEmail(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    hideError();
+
+    const email = emailInput.value.trim();
+
+    if (!email) {
+      showError('Please enter your email address.');
+      emailInput.focus();
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      showError('Please enter a valid email address.');
+      emailInput.focus();
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/request-link', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfInput.value,
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (res.ok) {
+        window.location.href = `/sent?email=${encodeURIComponent(email)}`;
+        return;
+      }
+
+      if (res.status === 429) {
+        showError('Too many requests. Please wait a while before trying again.');
+      } else if (res.status === 403) {
+        showError('Request validation failed. Please refresh the page and try again.');
+      } else {
+        showError('Something went wrong. Please try again in a moment.');
+      }
+    } catch {
+      showError('Network error. Please check your connection and try again.');
+    } finally {
+      setLoading(false);
+    }
+  });
+</script>

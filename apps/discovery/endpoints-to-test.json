@@ -1,0 +1,20 @@
+{
+  "_instructions": "Add endpoints to test here. The discovery CLI will probe them.",
+  "backends": {
+    "backend1": {
+      "baseUrl": "${KOMERCIA_BACKEND_1_URL}",
+      "auth": { "type": "bearer", "loginEndpoint": null },
+      "endpoints": []
+    },
+    "backend2": {
+      "baseUrl": "${KOMERCIA_BACKEND_2_URL}",
+      "auth": { "type": "bearer", "loginEndpoint": null },
+      "endpoints": []
+    },
+    "backend3": {
+      "baseUrl": "${KOMERCIA_BACKEND_3_URL}",
+      "auth": { "type": "bearer", "loginEndpoint": null },
+      "endpoints": []
+    }
+  }
+}

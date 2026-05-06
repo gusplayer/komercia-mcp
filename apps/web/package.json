@@ -16,9 +16,9 @@
     "clean": "rm -rf dist .astro tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "@komercia-mcp/shared": "workspace:*",
     "@astrojs/node": "^9.0.0",
     "@astrojs/tailwind": "^5.1.0",
+    "@komercia-mcp/shared": "workspace:*",
     "astro": "^5.0.0",
     "postgres": "^3.4.0",
     "resend": "^4.0.0",
@@ -26,6 +26,7 @@
     "zod": "^3.23.0"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.9",
     "@komercia-mcp/eslint-config": "workspace:*",
     "@playwright/test": "^1.48.0",
     "@types/node": "^20.0.0",

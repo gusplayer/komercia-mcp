@@ -1,0 +1,109 @@
+---
+import Base from '../layouts/Base.astro';
+
+const tools = [
+  {
+    plain: 'Show my store info',
+    tool: 'get_store_info',
+    description: 'Retrieve your store name, domain, plan, and account details.',
+  },
+  {
+    plain: 'Export all my products',
+    tool: 'export_products',
+    description: 'Download your full product catalog in CSV, JSON, Shopify, or WooCommerce format.',
+  },
+  {
+    plain: 'Download my order history',
+    tool: 'export_orders',
+    description: 'Export all orders with line items, totals, and status — filterable by date range.',
+  },
+  {
+    plain: 'Export my customer list',
+    tool: 'export_customers',
+    description: 'Download all customer records including contact info and shipping addresses.',
+  },
+  {
+    plain: 'Show my product categories',
+    tool: 'export_categories',
+    description: 'Export your category tree, including nested subcategories.',
+  },
+  {
+    plain: 'Check my inventory',
+    tool: 'get_inventory',
+    description: 'View current stock levels for all products.',
+  },
+  {
+    plain: 'Show inventory movements',
+    tool: 'export_inventory_movements',
+    description: 'Export the history of stock changes — restocks, sales, and adjustments.',
+  },
+  {
+    plain: 'Export orders by date',
+    tool: 'export_orders_by_date',
+    description: 'Filter and export orders placed within a specific date range.',
+  },
+  {
+    plain: 'Export products in Shopify format',
+    tool: 'export_products_shopify',
+    description: 'Download a Shopify-compatible CSV ready to import directly into your new store.',
+  },
+  {
+    plain: 'Export products in WooCommerce format',
+    tool: 'export_products_woocommerce',
+    description: 'Download a WooCommerce-compatible CSV for easy migration.',
+  },
+  {
+    plain: 'Export customers with addresses',
+    tool: 'export_customers_with_addresses',
+    description: 'Download customers with their full shipping and billing address history.',
+  },
+];
+---
+
+<Base
+  title="Available export tools — Komercia Export"
+  description="See all the data you can export from your Komercia store using Claude.ai."
+>
+  <main class="max-w-2xl mx-auto px-4 py-16 sm:px-6">
+    <!-- Header -->
+    <div class="mb-10">
+      <a href="/" class="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-600 transition-colors mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+        Back
+      </a>
+      <h1 class="text-2xl font-bold text-slate-900 mb-2">Available export tools</h1>
+      <p class="text-slate-500 text-sm">
+        These are the data exports you can request from Claude.ai once your MCP token is set up.
+        Just describe what you need in plain English.
+      </p>
+    </div>
+
+    <!-- Tools grid -->
+    <div class="space-y-3">
+      {tools.map((tool) => (
+        <div class="card flex items-start gap-4">
+          <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" x2="12" y1="15" y2="3"/>
+            </svg>
+          </div>
+          <div class="min-w-0">
+            <p class="font-medium text-slate-800 text-sm mb-0.5">{tool.plain}</p>
+            <p class="text-xs text-slate-500 mb-1.5">{tool.description}</p>
+            <code class="text-xs text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded font-mono">{tool.tool}</code>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <p class="mt-10 text-center text-xs text-slate-400">
+      <a href="/" class="underline hover:text-slate-600 transition-colors">Get your export token</a>
+      &middot;
+      <a href="/faq" class="underline hover:text-slate-600 transition-colors">FAQ</a>
+    </p>
+  </main>
+</Base>
