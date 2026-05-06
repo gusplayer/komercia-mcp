@@ -1,71 +1,55 @@
 ---
 import Base from '../layouts/Base.astro';
-import RequestLinkForm from '../components/RequestLinkForm.astro';
+import LoginForm from '../components/LoginForm.astro';
+import { generateCsrfToken } from '../lib/csrf.js';
+
+// Issue a CSRF token and set it as an HttpOnly-like cookie for the double-submit pattern.
+// We use SameSite=Strict to mitigate CSRF; the cookie is readable by JS so the form can
+// read it and send it back as a header.
+const csrfToken = generateCsrfToken();
+Astro.cookies.set('csrf_token', csrfToken, {
+  path: '/',
+  sameSite: 'strict',
+  httpOnly: false, // must be JS-readable for the double-submit pattern
+  secure: import.meta.env.PROD,
+  maxAge: 3600,
+});
 ---
 
 <Base
   title="Export your Komercia store"
-  description="Komercia is closing. Get your products, orders, and customer data before it's gone."
+  description="Sign in with your Komercia store credentials to generate your export token."
 >
   <main class="page-container">
     <!-- Header -->
-    <div class="mb-10">
+    <div class="mb-8">
       <div class="inline-flex items-center gap-2 text-xs font-medium text-slate-400 mb-6 px-3 py-1.5 rounded-full border border-slate-200 bg-slate-50">
         <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
         Unofficial community migration tool
       </div>
 
       <h1 class="text-3xl font-bold text-slate-900 mb-3 leading-tight">
-        Export your Komercia store
+        Export your Komercia store data
       </h1>
       <p class="text-base text-slate-500 leading-relaxed">
-        Komercia is closing. Get your products, orders, and customer data
-        before it&rsquo;s gone — through a conversation with Claude.ai.
+        Sign in with your Komercia store credentials to generate your personal export token.
+        Then use it to connect Claude.ai to your store and export everything.
       </p>
     </div>
 
-    <!-- How it works -->
-    <div class="mb-10 space-y-3">
-      <div class="flex items-start gap-4">
-        <div class="flex-shrink-0 w-7 h-7 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center text-xs font-semibold text-accent">
-          1
-        </div>
-        <div>
-          <p class="text-sm font-medium text-slate-800">Get your export token</p>
-          <p class="text-sm text-slate-500">Enter your store email below. We'll send a one-time login link.</p>
-        </div>
-      </div>
-
-      <div class="flex items-start gap-4">
-        <div class="flex-shrink-0 w-7 h-7 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center text-xs font-semibold text-accent">
-          2
-        </div>
-        <div>
-          <p class="text-sm font-medium text-slate-800">Connect Claude.ai</p>
-          <p class="text-sm text-slate-500">Add the Komercia MCP server to Claude.ai using your token as the auth credential.</p>
-        </div>
-      </div>
-
-      <div class="flex items-start gap-4">
-        <div class="flex-shrink-0 w-7 h-7 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center text-xs font-semibold text-accent">
-          3
-        </div>
-        <div>
-          <p class="text-sm font-medium text-slate-800">Ask Claude to export your data</p>
-          <p class="text-sm text-slate-500">Say "Export all my products as CSV" or "Download my order history" — Claude handles the rest.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Form card -->
+    <!-- Login card -->
     <div class="card">
-      <h2 class="text-sm font-semibold text-slate-700 mb-4">Request your export link</h2>
-      <RequestLinkForm />
+      <h2 class="text-sm font-semibold text-slate-700 mb-5">Sign in to get your export token</h2>
+      <LoginForm />
     </div>
 
-    <!-- Footer note -->
-    <p class="mt-8 text-center text-xs text-slate-400">
-      Token valid for 6 months &middot;
+    <!-- Privacy note -->
+    <p class="mt-5 text-xs text-slate-400 text-center leading-relaxed">
+      Your credentials are used only to verify your identity and are not stored in plain text.
+    </p>
+
+    <!-- Footer links -->
+    <p class="mt-4 text-center text-xs text-slate-400">
       <a href="/tools" class="underline hover:text-slate-600 transition-colors">Available data</a>
       &middot;
       <a href="/faq" class="underline hover:text-slate-600 transition-colors">FAQ</a>

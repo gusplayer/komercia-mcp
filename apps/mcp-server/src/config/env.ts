@@ -33,6 +33,8 @@ const envSchema = z.object({
     .enum(['development', 'production', 'test'])
     .optional()
     .transform((val) => val ?? 'development'),
+  DATABASE_URL: z.string().min(1, 'DATABASE_URL is required').optional().default(''),
+  KOMERCIA_SESSION_ENCRYPTION_KEY: z.string().min(64).optional(),
   KOMERCIA_NODE_URL: z.string().default('https://api.komercia.app'),
   KOMERCIA_LARAVEL_URL: z.string().default('https://api2.komercia.co'),
   KOMERCIA_EDITOR_URL: z.string().default('https://editor.komercia.app'),
@@ -51,6 +53,8 @@ export const config = {
   rateLimitMax: parsed.RATE_LIMIT_MAX,
   rateLimitWindowMs: parsed.RATE_LIMIT_WINDOW_MS,
   nodeEnv: parsed.NODE_ENV,
+  databaseUrl: parsed.DATABASE_URL,
+  komerciaSessionEncryptionKey: parsed.KOMERCIA_SESSION_ENCRYPTION_KEY,
   nodeUrl: parsed.KOMERCIA_NODE_URL,
   laravelUrl: parsed.KOMERCIA_LARAVEL_URL,
   editorUrl: parsed.KOMERCIA_EDITOR_URL,

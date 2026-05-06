@@ -9,7 +9,10 @@
     "allowImportingTsExtensions": true,
     "noEmit": true
   },
-  "references": [{ "path": "../../packages/shared" }],
+  "references": [
+    { "path": "../../packages/shared" },
+    { "path": "../../packages/komercia-client" }
+  ],
   "include": ["src/**/*", "astro.config.*", "env.d.ts"],
   "exclude": ["node_modules", "dist", "playwright-report", "test-results"]
 }

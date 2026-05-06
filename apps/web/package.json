@@ -18,7 +18,9 @@
   "dependencies": {
     "@astrojs/node": "^9.0.0",
     "@astrojs/tailwind": "^5.1.0",
+    "@komercia-mcp/komercia-client": "workspace:*",
     "@komercia-mcp/shared": "workspace:*",
+    "jose": "^5.9.0",
     "astro": "^5.0.0",
     "postgres": "^3.4.0",
     "resend": "^4.0.0",

@@ -8,11 +8,11 @@ const faqs = [
   },
   {
     q: 'Is my store data safe?',
-    a: 'Your data is read directly from Komercia\'s API and passed through Claude.ai, which has its own privacy policy. This tool never stores your product, order, or customer data — it only issues a short-lived auth token. The MCP server is read-only and cannot modify your store.',
+    a: 'Your credentials are used only to verify your identity and generate a secure session token. They are never stored in plain text — Komercia tokens are encrypted at rest in our database using AES-256-GCM. Your product, order, and customer data is read directly from Komercia\'s API and is never stored by this tool. The MCP server is read-only and cannot modify your store.',
   },
   {
     q: 'How long is my token valid?',
-    a: 'Tokens are valid for 6 months from the date of issue. After they expire, you can request a new one from the home page.',
+    a: '6 months from when you log in. After that, just log in again from the home page to get a fresh token.',
   },
   {
     q: 'What data can I export?',
@@ -23,12 +23,12 @@ const faqs = [
     a: 'The exported files are compatible with Shopify, WooCommerce, Tiendanube, and any other platform that accepts standard CSV imports. Claude can help you format the data for whichever platform you\'re moving to.',
   },
   {
-    q: 'My link expired — what do I do?',
-    a: 'Magic links expire after 15 minutes. If yours expired, just go back to the home page and request a new one. You can request up to 3 links per hour per email address.',
+    q: 'My token stopped working — what do I do?',
+    a: 'Tokens are valid for 6 months. If yours has expired, simply log in again from the home page to get a new one.',
   },
   {
     q: 'Can I use this token more than once?',
-    a: 'Yes. The JWT token you receive is valid for 6 months and can be used for multiple conversations with Claude.ai. Only the magic link (the one sent to your email) is single-use.',
+    a: 'Yes. The JWT token you receive is valid for 6 months and can be used for multiple conversations with Claude.ai.',
   },
   {
     q: 'How do I add the token to Claude.ai?',

@@ -2,11 +2,14 @@ import { z } from 'zod';
 
 const envSchema = z.object({
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
-  RESEND_API_KEY: z.string().min(1, 'RESEND_API_KEY is required'),
   JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
   WEB_BASE_URL: z.string().url('WEB_BASE_URL must be a valid URL'),
-  FROM_EMAIL: z.string().email('FROM_EMAIL must be a valid email').default('noreply@komercia-export.com'),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  KOMERCIA_NODE_URL: z.string().url().default('https://api.komercia.app'),
+  KOMERCIA_LARAVEL_URL: z.string().url().default('https://api2.komercia.co'),
+  KOMERCIA_LARAVEL_CLIENT_ID: z.string().default('2'),
+  KOMERCIA_LARAVEL_CLIENT_SECRET: z.string().default(''),
+  KOMERCIA_SESSION_ENCRYPTION_KEY: z.string().min(64).optional(),
 });
 
 function loadEnv() {
@@ -30,7 +33,21 @@ export function getConfig() {
   if (!_config) {
     _config = loadEnv();
   }
-  return _config;
+  const raw = _config;
+  return {
+    // Raw env keys (backward compat)
+    DATABASE_URL: raw.DATABASE_URL,
+    JWT_SECRET: raw.JWT_SECRET,
+    WEB_BASE_URL: raw.WEB_BASE_URL,
+    NODE_ENV: raw.NODE_ENV,
+    // Camel-case convenience accessors
+    jwtSecret: raw.JWT_SECRET,
+    komerciaNodeUrl: raw.KOMERCIA_NODE_URL,
+    komerciaLaravelUrl: raw.KOMERCIA_LARAVEL_URL,
+    komerciaLaravelClientId: raw.KOMERCIA_LARAVEL_CLIENT_ID,
+    komerciaLaravelClientSecret: raw.KOMERCIA_LARAVEL_CLIENT_SECRET,
+    komerciaSessionEncryptionKey: raw.KOMERCIA_SESSION_ENCRYPTION_KEY,
+  };
 }
 
-export type Config = ReturnType<typeof loadEnv>;
+export type Config = ReturnType<typeof getConfig>;
