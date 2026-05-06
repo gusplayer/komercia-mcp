@@ -1,33 +1,62 @@
-import type { Category, PaginationParams } from '@komercia-mcp/shared';
 import type { HttpClient } from '../http.js';
-import type { ListResponse } from '../types.js';
 
-export class CategoriesResource {
-  constructor(private readonly http: HttpClient) {}
-
-  /**
-   * List categories for a store.
-   * Uses Backend 1. GET /stores/{storeId}/categories
-   * NOTE: actual endpoints TBD pending discovery — using these URLs as placeholders.
-   */
-  async list(storeId: string, params?: PaginationParams): Promise<ListResponse<Category>> {
-    const query = buildQuery(params);
-    return this.http.get<ListResponse<Category>>(`/stores/${storeId}/categories${query}`);
-  }
-
-  /**
-   * Retrieve a single category by ID.
-   * Uses Backend 1. GET /stores/{storeId}/categories/{categoryId}
-   */
-  async get(storeId: string, categoryId: string): Promise<Category> {
-    return this.http.get<Category>(`/stores/${storeId}/categories/${categoryId}`);
-  }
+// TODO: verify response shape after discovery
+export interface KomerciaCategory {
+  id: number | string;
+  nombre?: string;
+  slug?: string;
+  padre_id?: number | string | null;
+  activo?: boolean;
+  subcategorias?: KomerciaCategory[];
+  [key: string]: unknown;
 }
 
-function buildQuery(params?: PaginationParams): string {
-  if (params === undefined) return '';
-  const parts: string[] = [];
-  if (params.page !== undefined) parts.push(`page=${params.page}`);
-  if (params.per_page !== undefined) parts.push(`per_page=${params.per_page}`);
-  return parts.length > 0 ? `?${parts.join('&')}` : '';
+export class CategoriesResource {
+  constructor(
+    private readonly nodeHttp: HttpClient,
+    private readonly laravelHttp: HttpClient,
+    private readonly nodeToken: string,
+    private readonly laravelToken: string,
+    private readonly storeId: string,
+  ) {}
+
+  /**
+   * List categories and subcategories for a store.
+   * Primary: NodeJS backend. GET /api/v1/panel/get-categorias-subcategories/{storeId}
+   * Fallback: Laravel backend. GET /api/admin/categorias
+   * TODO: verify response shape after discovery
+   */
+  async list(): Promise<KomerciaCategory[]> {
+    try {
+      // TODO: verify response shape after discovery
+      const response = await this.nodeHttp.get<{ data: KomerciaCategory[] } | KomerciaCategory[]>(
+        `/api/v1/panel/get-categorias-subcategories/${this.storeId}`,
+        { auth: `Bearer ${this.nodeToken}` },
+      );
+
+      // Handle both array and wrapped responses
+      if (Array.isArray(response)) {
+        return response;
+      }
+      if ('data' in response && Array.isArray(response.data)) {
+        return response.data;
+      }
+      return [];
+    } catch {
+      // Fallback to Laravel backend
+      // TODO: verify response shape after discovery
+      const response = await this.laravelHttp.get<{ data: KomerciaCategory[] } | KomerciaCategory[]>(
+        '/api/admin/categorias',
+        { auth: `Bearer ${this.laravelToken}` },
+      );
+
+      if (Array.isArray(response)) {
+        return response;
+      }
+      if ('data' in response && Array.isArray(response.data)) {
+        return response.data;
+      }
+      return [];
+    }
+  }
 }

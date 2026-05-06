@@ -33,6 +33,12 @@ const envSchema = z.object({
     .enum(['development', 'production', 'test'])
     .optional()
     .transform((val) => val ?? 'development'),
+  KOMERCIA_NODE_URL: z.string().default('https://api.komercia.app'),
+  KOMERCIA_LARAVEL_URL: z.string().default('https://api2.komercia.co'),
+  KOMERCIA_EDITOR_URL: z.string().default('https://editor.komercia.app'),
+  KOMERCIA_NODE_PUBLIC_KEY: z.string().default('komercia-public-key'),
+  KOMERCIA_LARAVEL_CLIENT_ID: z.string().default('2'),
+  KOMERCIA_LARAVEL_CLIENT_SECRET: z.string().default(''),
 });
 
 const parsed = envSchema.parse(process.env);
@@ -45,6 +51,12 @@ export const config = {
   rateLimitMax: parsed.RATE_LIMIT_MAX,
   rateLimitWindowMs: parsed.RATE_LIMIT_WINDOW_MS,
   nodeEnv: parsed.NODE_ENV,
+  nodeUrl: parsed.KOMERCIA_NODE_URL,
+  laravelUrl: parsed.KOMERCIA_LARAVEL_URL,
+  editorUrl: parsed.KOMERCIA_EDITOR_URL,
+  nodePublicKey: parsed.KOMERCIA_NODE_PUBLIC_KEY,
+  laravelClientId: parsed.KOMERCIA_LARAVEL_CLIENT_ID,
+  laravelClientSecret: parsed.KOMERCIA_LARAVEL_CLIENT_SECRET,
 } as const;
 
 export type Config = typeof config;

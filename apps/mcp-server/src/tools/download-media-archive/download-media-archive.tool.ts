@@ -34,7 +34,12 @@ export class DownloadMediaArchiveTool implements ITool, OnModuleInit {
     _merchantContext: MerchantContext,
   ): Promise<CallToolResult> {
     return {
-      content: [{ type: 'text', text: 'TODO: not yet implemented' }],
+      content: [
+        {
+          type: 'text',
+          text: 'Media archive download is not yet available. This feature requires integrating with Cloudinary to generate a ZIP of your store images. Coming soon.',
+        },
+      ],
     };
   }
 }

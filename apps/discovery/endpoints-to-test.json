@@ -1,19 +1,325 @@
 {
-  "_instructions": "Add endpoints to test here. The discovery CLI will probe them.",
+  "_instructions": "Populate KOMERCIA_TEST_* env vars to run discovery. The CLI will authenticate and test each endpoint.",
   "backends": {
-    "backend1": {
-      "baseUrl": "${KOMERCIA_BACKEND_1_URL}",
-      "auth": { "type": "bearer", "loginEndpoint": null },
+    "nodejs": {
+      "name": "NodeJS (api.komercia.app)",
+      "baseUrl": "${KOMERCIA_NODE_URL}",
+      "auth": {
+        "type": "bearer",
+        "loginEndpoint": "/api/v1/auth/stores/login",
+        "loginMethod": "POST",
+        "loginBody": {
+          "email": "${KOMERCIA_TEST_MERCHANT_EMAIL}",
+          "password": "${KOMERCIA_TEST_MERCHANT_PASSWORD}"
+        },
+        "tokenPath": "data.token"
+      },
+      "pathParams": {
+        "storeId": "${KOMERCIA_TEST_STORE_ID}"
+      },
+      "endpoints": [
+        {
+          "path": "/api/v1/stores/info/${storeId}",
+          "method": "GET",
+          "description": "Get store info by ID (public)",
+          "auth": "none"
+        },
+        {
+          "path": "/api/v1/stores/payment-methods/private/${storeId}",
+          "method": "GET",
+          "description": "Get payment methods with credentials (panel)",
+          "auth": "bearer"
+        },
+        {
+          "path": "/api/v1/stores/products-categories/${storeId}",
+          "method": "GET",
+          "description": "Get store product categories (public)",
+          "auth": "none"
+        },
+        {
+          "path": "/api/v1/stores/products-subcategories/${storeId}",
+          "method": "GET",
+          "description": "Get store product subcategories (public)",
+          "auth": "none"
+        },
+        {
+          "path": "/api/v1/panel/filter-products/${storeId}",
+          "method": "GET",
+          "description": "Get paginated products (panel)",
+          "auth": "bearer",
+          "queryParams": {
+            "page": "1",
+            "limit": "10"
+          }
+        },
+        {
+          "path": "/api/v1/panel/get-categorias-subcategories/${storeId}",
+          "method": "GET",
+          "description": "Get all categories and subcategories (panel)",
+          "auth": "bearer"
+        },
+        {
+          "path": "/api/v1/panel/export-clients/${storeId}",
+          "method": "GET",
+          "description": "Export clients as CSV",
+          "auth": "bearer",
+          "queryParams": {
+            "currency": "COP"
+          }
+        },
+        {
+          "path": "/api/v1/panel/export-sales/${storeId}",
+          "method": "GET",
+          "description": "Export sales as CSV",
+          "auth": "bearer",
+          "queryParams": {
+            "currency": "COP"
+          }
+        },
+        {
+          "path": "/api/v1/panel/get-discounts/${storeId}",
+          "method": "GET",
+          "description": "Get discounts list (panel)",
+          "auth": "bearer"
+        },
+        {
+          "path": "/api/v1/panel/get-coupons/${storeId}",
+          "method": "GET",
+          "description": "Get coupons list (panel)",
+          "auth": "bearer"
+        },
+        {
+          "path": "/api/v1/panel/get-blogs/${storeId}",
+          "method": "GET",
+          "description": "Get blogs (panel)",
+          "auth": "bearer",
+          "queryParams": {
+            "page": "1",
+            "limit": "10"
+          }
+        },
+        {
+          "path": "/api/v1/templates/store-template-settings",
+          "method": "GET",
+          "description": "Get store template settings",
+          "auth": "apikey",
+          "queryParams": {
+            "template": "9",
+            "storeId": "${KOMERCIA_TEST_STORE_ID}"
+          }
+        },
+        {
+          "path": "/api/v1/templates/websites",
+          "method": "GET",
+          "description": "Get store websites/themes (panel)",
+          "auth": "bearer"
+        },
+        {
+          "path": "/api/v1/panel/get-geolocations/${storeId}",
+          "method": "GET",
+          "description": "Get store physical locations (panel)",
+          "auth": "bearer"
+        },
+        {
+          "path": "/api/v1/panel/get-policies/${storeId}",
+          "method": "GET",
+          "description": "Get store policies (panel)",
+          "auth": "bearer"
+        },
+        {
+          "path": "/api/v1/panel/get-networks/${storeId}",
+          "method": "GET",
+          "description": "Get social networks (panel)",
+          "auth": "bearer"
+        },
+        {
+          "path": "/api/v1/panel/get-shipping-means/${storeId}",
+          "method": "GET",
+          "description": "Get shipping methods (panel)",
+          "auth": "bearer"
+        },
+        {
+          "path": "/api/v1/panel/get-subscriptions/${storeId}",
+          "method": "GET",
+          "description": "Get newsletter subscribers",
+          "auth": "bearer",
+          "queryParams": {
+            "page": "1",
+            "limit": "10"
+          }
+        },
+        {
+          "path": "/api/v1/panel/contact-messages/${storeId}",
+          "method": "GET",
+          "description": "Get contact messages",
+          "auth": "bearer",
+          "queryParams": {
+            "page": "1",
+            "limit": "10"
+          }
+        }
+      ]
+    },
+    "laravel": {
+      "name": "Laravel v2 (api2.komercia.co)",
+      "baseUrl": "${KOMERCIA_LARAVEL_URL}",
+      "auth": {
+        "type": "oauth2_password",
+        "loginEndpoint": "/oauth/token",
+        "loginMethod": "POST",
+        "loginBody": {
+          "grant_type": "password",
+          "client_id": "${KOMERCIA_LARAVEL_CLIENT_ID}",
+          "client_secret": "${KOMERCIA_LARAVEL_CLIENT_SECRET}",
+          "username": "${KOMERCIA_TEST_MERCHANT_EMAIL}",
+          "password": "${KOMERCIA_TEST_MERCHANT_PASSWORD}"
+        },
+        "tokenPath": "access_token"
+      },
+      "endpoints": [
+        {
+          "path": "/api/admin/tienda",
+          "method": "GET",
+          "description": "Get authenticated store info",
+          "auth": "bearer"
+        },
+        {
+          "path": "/api/admin/productos/paginados",
+          "method": "GET",
+          "description": "Get paginated products",
+          "auth": "bearer",
+          "queryParams": {
+            "page": "1",
+            "per_page": "10"
+          }
+        },
+        {
+          "path": "/api/admin/productos/exportar",
+          "method": "GET",
+          "description": "Export products (Excel/CSV)",
+          "auth": "bearer"
+        },
+        {
+          "path": "/api/admin/ventas/ordenes/paginacion",
+          "method": "GET",
+          "description": "Get paginated orders",
+          "auth": "bearer",
+          "queryParams": {
+            "page": "1",
+            "per_page": "10"
+          }
+        },
+        {
+          "path": "/api/admin/ventas/exportar/${storeId}",
+          "method": "GET",
+          "description": "Export sales/orders (Excel)",
+          "auth": "bearer",
+          "pathParams": {
+            "storeId": "${KOMERCIA_TEST_STORE_ID}"
+          }
+        },
+        {
+          "path": "/api/admin/ventas/ordenes/filters",
+          "method": "GET",
+          "description": "Filter orders by date range",
+          "auth": "bearer",
+          "queryParams": {
+            "type": "date",
+            "start": "2024-01-01",
+            "end": "2024-12-31",
+            "page": "1"
+          }
+        },
+        {
+          "path": "/api/admin/clientes/listado",
+          "method": "GET",
+          "description": "Get full client list",
+          "auth": "bearer"
+        },
+        {
+          "path": "/api/admin/clientes/export",
+          "method": "GET",
+          "description": "Export clients (CSV/Excel)",
+          "auth": "bearer"
+        },
+        {
+          "path": "/api/admin/categorias",
+          "method": "GET",
+          "description": "Get all categories and subcategories",
+          "auth": "bearer"
+        },
+        {
+          "path": "/api/admin/medios-pago",
+          "method": "GET",
+          "description": "Get store payment methods",
+          "auth": "bearer"
+        },
+        {
+          "path": "/api/admin/envios",
+          "method": "GET",
+          "description": "Get shipping methods",
+          "auth": "bearer"
+        },
+        {
+          "path": "/api/admin/politicas",
+          "method": "GET",
+          "description": "Get store policies",
+          "auth": "bearer"
+        },
+        {
+          "path": "/api/admin/sedes",
+          "method": "GET",
+          "description": "Get store physical locations (sedes)",
+          "auth": "bearer"
+        },
+        {
+          "path": "/api/admin/promociones",
+          "method": "GET",
+          "description": "Get promotions list",
+          "auth": "bearer"
+        },
+        {
+          "path": "/api/admin/proveedores",
+          "method": "GET",
+          "description": "Get suppliers list",
+          "auth": "bearer"
+        },
+        {
+          "path": "/api/admin/tienda/suscriptores",
+          "method": "GET",
+          "description": "Get newsletter subscribers",
+          "auth": "bearer"
+        },
+        {
+          "path": "/api/admin/tienda/mensajes/contacto",
+          "method": "GET",
+          "description": "Get contact messages",
+          "auth": "bearer"
+        },
+        {
+          "path": "/api/admin/apis-externas",
+          "method": "GET",
+          "description": "Get external API integrations",
+          "auth": "bearer"
+        }
+      ]
+    },
+    "editor": {
+      "name": "Editor (editor.komercia.app)",
+      "baseUrl": "${KOMERCIA_EDITOR_URL}",
+      "auth": {
+        "type": "bearer",
+        "loginEndpoint": null
+      },
       "endpoints": []
     },
-    "backend2": {
-      "baseUrl": "${KOMERCIA_BACKEND_2_URL}",
-      "auth": { "type": "bearer", "loginEndpoint": null },
-      "endpoints": []
-    },
-    "backend3": {
-      "baseUrl": "${KOMERCIA_BACKEND_3_URL}",
-      "auth": { "type": "bearer", "loginEndpoint": null },
+    "laravel_v3": {
+      "name": "Laravel v3 (api3.komercia.co)",
+      "baseUrl": "${KOMERCIA_LARAVEL_V3_URL}",
+      "auth": {
+        "type": "bearer",
+        "loginEndpoint": null
+      },
       "endpoints": []
     }
   }

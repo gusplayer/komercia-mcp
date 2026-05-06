@@ -1,9 +1,11 @@
 import { Injectable, OnModuleInit, Optional } from '@nestjs/common';
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { KomerciaClient } from '@komercia-mcp/komercia-client';
 import type { Store } from '@komercia-mcp/shared';
 import type { ITool, CallToolResult } from '../../mcp/tool.interface.js';
 import { ToolRegistry } from '../../mcp/tool.registry.js';
 import type { MerchantContext } from '../../auth/merchant-context.js';
+import { KomerciaSessionService } from '../../auth/komercia-session.service.js';
 
 export interface KomerciaStoresClient {
   get(storeId: string): Promise<Store>;
@@ -35,7 +37,9 @@ export class GetStoreInfoTool implements ITool, OnModuleInit {
   constructor(
     private readonly toolRegistry: ToolRegistry,
     @Optional()
-    private readonly komerciaClient: KomerciaClientInterface | null,
+    private readonly injectedClient: KomerciaClientInterface | null,
+    @Optional()
+    private readonly sessionService: KomerciaSessionService | null = null,
   ) {}
 
   onModuleInit(): void {
@@ -47,8 +51,14 @@ export class GetStoreInfoTool implements ITool, OnModuleInit {
     merchantContext: MerchantContext,
   ): Promise<CallToolResult> {
     try {
-      if (this.komerciaClient === null) {
-        // Client not available — return placeholder for testing
+      // If an injected test client is provided, use it directly (test mode / DI override)
+      if (this.injectedClient !== null) {
+        const store = await this.injectedClient.stores.get(merchantContext.storeId);
+        return { content: [{ type: 'text', text: formatStore(store) }] };
+      }
+
+      // Session-based flow (production) — requires sessionService to be wired up
+      if (this.sessionService === null) {
         return {
           content: [
             {
@@ -71,7 +81,34 @@ export class GetStoreInfoTool implements ITool, OnModuleInit {
         };
       }
 
-      const store = await this.komerciaClient.stores.get(merchantContext.storeId);
+      const session = await this.sessionService.getSession(merchantContext.jti);
+
+      if (session === null) {
+        return {
+          content: [
+            {
+              type: 'text',
+              text: 'Authentication required: your Komercia session has expired or was not found. Please request a new magic link at web.komercia-exit.com.',
+            },
+          ],
+        };
+      }
+
+      // Import config lazily so tests that don't reach this branch
+      // don't require JWT_SECRET to be present in the environment.
+      const { config } = await import('../../config/env.js');
+
+      const client = new KomerciaClient({
+        nodeUrl: config.nodeUrl,
+        laravelUrl: config.laravelUrl,
+        editorUrl: config.editorUrl,
+        nodePublicKey: config.nodePublicKey,
+        nodeToken: session.nodeToken,
+        laravelToken: session.laravelToken,
+        storeId: merchantContext.storeId,
+      });
+
+      const store = await client.stores.get(merchantContext.storeId);
 
       return {
         content: [

@@ -13,28 +13,40 @@ const EndpointConfigSchema = z.object({
   path: z.string(),
   method: z.enum(['GET', 'POST']),
   description: z.string().optional(),
+  auth: z.string().optional(),
   pathParams: z.record(z.string(), z.string()).optional(),
   queryParams: z.record(z.string(), z.string()).optional(),
   body: z.unknown().optional(),
 });
 
+const AuthConfigSchema = z.object({
+  type: z.string(),
+  loginEndpoint: z.string().nullable(),
+  loginMethod: z.string().optional(),
+  loginBody: z.record(z.string(), z.string()).optional(),
+  tokenPath: z.string().optional(),
+});
+
 const BackendSeedSchema = z.object({
+  name: z.string().optional(),
   baseUrl: z.string(),
-  auth: z.object({
-    type: z.string(),
-    loginEndpoint: z.string().nullable(),
-  }),
+  auth: AuthConfigSchema,
+  pathParams: z.record(z.string(), z.string()).optional(),
   endpoints: z.array(EndpointConfigSchema),
 });
 
 const EndpointsFileSchema = z.object({
   _instructions: z.string().optional(),
-  backends: z.object({
-    backend1: BackendSeedSchema,
-    backend2: BackendSeedSchema,
-    backend3: BackendSeedSchema,
-  }),
+  backends: z.record(z.string(), BackendSeedSchema),
 });
+
+export interface AuthConfig {
+  type: string;
+  loginEndpoint: string | null;
+  loginMethod?: string;
+  loginBody?: Record<string, string>;
+  tokenPath?: string;
+}
 
 export interface BackendConfig {
   name: string;
@@ -42,24 +54,32 @@ export interface BackendConfig {
   endpoints: EndpointConfig[];
   authType: string;
   loginEndpoint: string | null;
+  authConfig: AuthConfig;
+  pathParams?: Record<string, string>;
 }
 
 export interface DiscoveryConfig {
-  backends: [BackendConfig, BackendConfig, BackendConfig];
+  backends: BackendConfig[];
 }
 
 /**
  * Resolves an env-var placeholder like ${KOMERCIA_BACKEND_1_URL} from process.env.
  * If the placeholder is a literal URL (starts with http), returns it as-is.
+ * Also resolves placeholders embedded within a larger string (e.g. path segments).
  */
 function resolveEnvPlaceholder(value: string): string {
-  const match = /^\$\{(\w+)\}$/.exec(value);
-  if (match !== null) {
-    const varName = match[1];
-    if (varName === undefined) return value;
-    return process.env[varName] ?? value;
-  }
-  return value;
+  return value.replace(/\$\{(\w+)\}/g, (_, varName: string) => {
+    return process.env[varName] ?? `\${${varName}}`;
+  });
+}
+
+function resolveEnvRecord(
+  record?: Record<string, string>,
+): Record<string, string> | undefined {
+  if (record === undefined) return undefined;
+  return Object.fromEntries(
+    Object.entries(record).map(([k, v]) => [k, resolveEnvPlaceholder(v)]),
+  );
 }
 
 export function loadConfig(): DiscoveryConfig {
@@ -68,28 +88,40 @@ export function loadConfig(): DiscoveryConfig {
   const parsed = EndpointsFileSchema.parse(JSON.parse(raw));
 
   const makeBackend = (
-    name: string,
+    key: string,
     seed: z.infer<typeof BackendSeedSchema>,
-  ): BackendConfig => ({
-    name,
-    baseUrl: resolveEnvPlaceholder(seed.baseUrl),
-    endpoints: seed.endpoints.map((ep) => {
-      const entry: EndpointConfig = { path: ep.path, method: ep.method };
-      if (ep.description !== undefined) entry.description = ep.description;
-      if (ep.pathParams !== undefined) entry.pathParams = ep.pathParams;
-      if (ep.queryParams !== undefined) entry.queryParams = ep.queryParams;
-      if (ep.body !== undefined) entry.body = ep.body;
-      return entry;
-    }),
-    authType: seed.auth.type,
-    loginEndpoint: seed.auth.loginEndpoint,
-  });
+  ): BackendConfig => {
+    const authConfig: AuthConfig = {
+      type: seed.auth.type,
+      loginEndpoint: seed.auth.loginEndpoint,
+      loginMethod: seed.auth.loginMethod,
+      loginBody: resolveEnvRecord(seed.auth.loginBody),
+      tokenPath: seed.auth.tokenPath,
+    };
 
-  return {
-    backends: [
-      makeBackend('backend1', parsed.backends.backend1),
-      makeBackend('backend2', parsed.backends.backend2),
-      makeBackend('backend3', parsed.backends.backend3),
-    ],
+    return {
+      name: seed.name ?? key,
+      baseUrl: resolveEnvPlaceholder(seed.baseUrl),
+      endpoints: seed.endpoints.map((ep) => {
+        const entry: EndpointConfig = { path: ep.path, method: ep.method };
+        if (ep.description !== undefined) entry.description = ep.description;
+        if (ep.pathParams !== undefined)
+          entry.pathParams = resolveEnvRecord(ep.pathParams);
+        if (ep.queryParams !== undefined)
+          entry.queryParams = resolveEnvRecord(ep.queryParams);
+        if (ep.body !== undefined) entry.body = ep.body;
+        return entry;
+      }),
+      authType: seed.auth.type,
+      loginEndpoint: seed.auth.loginEndpoint,
+      authConfig,
+      pathParams: resolveEnvRecord(seed.pathParams),
+    };
   };
+
+  const backends = Object.entries(parsed.backends).map(([key, seed]) =>
+    makeBackend(key, seed),
+  );
+
+  return { backends };
 }

@@ -43,10 +43,7 @@ async function main(): Promise<void> {
     console.log(`\n[discovery] Testing ${backend.name} at ${backend.baseUrl}`);
 
     // Attempt to obtain auth token if loginEndpoint is configured
-    const token = await authManager.getToken(backend.baseUrl, {
-      type: backend.authType,
-      loginEndpoint: backend.loginEndpoint,
-    });
+    const token = await authManager.getToken(backend.baseUrl, backend.authConfig);
 
     if (token !== undefined) {
       console.log(`  [auth] Obtained token for ${backend.name}`);

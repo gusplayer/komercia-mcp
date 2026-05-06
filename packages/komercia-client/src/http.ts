@@ -15,6 +15,8 @@ export type FetchFn = (input: string, init?: RequestInit) => Promise<Response>;
 
 interface RequestOptions {
   auth?: string;
+  /** Optional API key sent as KOMERCIA_PUBLIC_ROUTES_KEY header */
+  apiKeyHeader?: string;
 }
 
 interface HttpClientConfig {
@@ -44,6 +46,151 @@ export class HttpClient {
     return this.request<T>('POST', path, body, options);
   }
 
+  /**
+   * POST with URL-encoded form data — used for OAuth2 token endpoints (Laravel).
+   */
+  async postForm<T>(path: string, formData: URLSearchParams): Promise<T> {
+    const url = `${this.baseUrl}${path}`;
+
+    const attempt = async (): Promise<T> => {
+      const signal = AbortSignal.timeout(this.config.timeoutMs);
+
+      let response: Response;
+      try {
+        response = await this.fetcher(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Accept: 'application/json',
+          },
+          body: formData.toString(),
+          signal,
+        });
+      } catch (err) {
+        if (err instanceof Error && err.name === 'TimeoutError') {
+          throw new AbortError(new KomerciaTimeoutError(path));
+        }
+        throw err;
+      }
+
+      await this.throwOnError(response, path);
+
+      return response.json() as Promise<T>;
+    };
+
+    return pRetry(attempt, {
+      retries: this.config.maxRetries,
+      factor: 2,
+      minTimeout: 100,
+      randomize: true,
+      shouldRetry: (err) => {
+        if (err instanceof KomerciaTimeoutError) return false;
+        if (err instanceof KomerciaApiError && err.status >= 400 && err.status < 500) {
+          return false;
+        }
+        return true;
+      },
+    });
+  }
+
+  /**
+   * GET returning raw ArrayBuffer — used for binary export endpoints (Excel).
+   */
+  async getRaw(path: string, options?: RequestOptions): Promise<ArrayBuffer> {
+    const url = `${this.baseUrl}${path}`;
+
+    const attempt = async (): Promise<ArrayBuffer> => {
+      const signal = AbortSignal.timeout(this.config.timeoutMs);
+
+      let response: Response;
+      try {
+        const headers: Record<string, string> = {
+          Accept: '*/*',
+        };
+        if (options?.auth !== undefined) {
+          headers['Authorization'] = `Bearer ${options.auth}`;
+        }
+        if (options?.apiKeyHeader !== undefined) {
+          headers['KOMERCIA_PUBLIC_ROUTES_KEY'] = options.apiKeyHeader;
+        }
+
+        response = await this.fetcher(url, { method: 'GET', headers, signal });
+      } catch (err) {
+        if (err instanceof Error && err.name === 'TimeoutError') {
+          throw new AbortError(new KomerciaTimeoutError(path));
+        }
+        throw err;
+      }
+
+      await this.throwOnError(response, path);
+
+      return response.arrayBuffer();
+    };
+
+    return pRetry(attempt, {
+      retries: this.config.maxRetries,
+      factor: 2,
+      minTimeout: 100,
+      randomize: true,
+      shouldRetry: (err) => {
+        if (err instanceof KomerciaTimeoutError) return false;
+        if (err instanceof KomerciaApiError && err.status >= 400 && err.status < 500) {
+          return false;
+        }
+        return true;
+      },
+    });
+  }
+
+  /**
+   * GET returning raw text — used for CSV export endpoints.
+   */
+  async getText(path: string, options?: RequestOptions): Promise<string> {
+    const url = `${this.baseUrl}${path}`;
+
+    const attempt = async (): Promise<string> => {
+      const signal = AbortSignal.timeout(this.config.timeoutMs);
+
+      let response: Response;
+      try {
+        const headers: Record<string, string> = {
+          Accept: 'text/csv,text/plain,*/*',
+        };
+        if (options?.auth !== undefined) {
+          headers['Authorization'] = `Bearer ${options.auth}`;
+        }
+        if (options?.apiKeyHeader !== undefined) {
+          headers['KOMERCIA_PUBLIC_ROUTES_KEY'] = options.apiKeyHeader;
+        }
+
+        response = await this.fetcher(url, { method: 'GET', headers, signal });
+      } catch (err) {
+        if (err instanceof Error && err.name === 'TimeoutError') {
+          throw new AbortError(new KomerciaTimeoutError(path));
+        }
+        throw err;
+      }
+
+      await this.throwOnError(response, path);
+
+      return response.text();
+    };
+
+    return pRetry(attempt, {
+      retries: this.config.maxRetries,
+      factor: 2,
+      minTimeout: 100,
+      randomize: true,
+      shouldRetry: (err) => {
+        if (err instanceof KomerciaTimeoutError) return false;
+        if (err instanceof KomerciaApiError && err.status >= 400 && err.status < 500) {
+          return false;
+        }
+        return true;
+      },
+    });
+  }
+
   private async request<T>(
     method: string,
     path: string,
@@ -63,6 +210,9 @@ export class HttpClient {
         };
         if (options?.auth !== undefined) {
           headers['Authorization'] = options.auth;
+        }
+        if (options?.apiKeyHeader !== undefined) {
+          headers['KOMERCIA_PUBLIC_ROUTES_KEY'] = options.apiKeyHeader;
         }
 
         const fetchInit: RequestInit = { method, headers, signal };

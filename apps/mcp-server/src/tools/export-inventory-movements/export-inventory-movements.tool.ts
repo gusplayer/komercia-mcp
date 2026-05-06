@@ -55,7 +55,12 @@ export class ExportInventoryMovementsTool implements ITool, OnModuleInit {
     _merchantContext: MerchantContext,
   ): Promise<CallToolResult> {
     return {
-      content: [{ type: 'text', text: 'TODO: not yet implemented' }],
+      content: [
+        {
+          type: 'text',
+          text: "Komercia's API does not expose an inventory movements log. However, I can show you current stock levels for all products. Would you like me to run `export_products` in JSON format? Each product includes its current stock quantity.",
+        },
+      ],
     };
   }
 }

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { McpController } from './mcp.controller.js';
 import { McpService } from './mcp.service.js';
 import { ToolRegistry } from './tool.registry.js';
+import { KomerciaSessionService } from '../auth/komercia-session.service.js';
 import { GetStoreInfoTool } from '../tools/get-store-info/get-store-info.tool.js';
 import { ValidateKomerciaApisTool } from '../tools/validate-komercia-apis/validate-komercia-apis.tool.js';
 import { ExportProductsTool } from '../tools/export-products/export-products.tool.js';
@@ -17,6 +18,7 @@ import { SuggestAlternativePlatformsTool } from '../tools/suggest-alternative-pl
 @Module({
   controllers: [McpController],
   providers: [
+    KomerciaSessionService,
     ToolRegistry,
     McpService,
     GetStoreInfoTool,
@@ -31,6 +33,6 @@ import { SuggestAlternativePlatformsTool } from '../tools/suggest-alternative-pl
     DownloadMediaArchiveTool,
     SuggestAlternativePlatformsTool,
   ],
-  exports: [McpService, ToolRegistry],
+  exports: [McpService, ToolRegistry, KomerciaSessionService],
 })
 export class McpModule {}

@@ -3,6 +3,8 @@ import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import type { ITool, CallToolResult } from '../../mcp/tool.interface.js';
 import { ToolRegistry } from '../../mcp/tool.registry.js';
 import type { MerchantContext } from '../../auth/merchant-context.js';
+import { KomerciaSessionService } from '../../auth/komercia-session.service.js';
+import { config } from '../../config/env.js';
 
 @Injectable()
 export class ExportThemeConfigTool implements ITool, OnModuleInit {
@@ -22,7 +24,10 @@ export class ExportThemeConfigTool implements ITool, OnModuleInit {
     },
   };
 
-  constructor(private readonly toolRegistry: ToolRegistry) {}
+  constructor(
+    private readonly toolRegistry: ToolRegistry,
+    private readonly sessionService: KomerciaSessionService,
+  ) {}
 
   onModuleInit(): void {
     this.toolRegistry.register(this);
@@ -30,10 +35,70 @@ export class ExportThemeConfigTool implements ITool, OnModuleInit {
 
   async execute(
     _args: unknown,
-    _merchantContext: MerchantContext,
+    merchantContext: MerchantContext,
   ): Promise<CallToolResult> {
-    return {
-      content: [{ type: 'text', text: 'TODO: not yet implemented' }],
-    };
+    const session = await this.sessionService.getSession(merchantContext.jti);
+
+    if (session === null) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: 'Authentication required: your Komercia session has expired or was not found. Please request a new magic link at web.komercia-exit.com.',
+          },
+        ],
+      };
+    }
+
+    try {
+      const signal = AbortSignal.timeout(10_000);
+      const response = await fetch(`${config.nodeUrl}/api/v1/templates/websites`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${session.nodeToken}`,
+          'KOMERCIA_PUBLIC_ROUTES_KEY': config.nodePublicKey,
+        },
+        signal,
+      });
+
+      if (!response.ok) {
+        return {
+          content: [
+            {
+              type: 'text',
+              text: 'Unable to retrieve theme configuration at this time. Please try again later.',
+            },
+          ],
+        };
+      }
+
+      const data: unknown = await response.json();
+
+      const formatted = JSON.stringify(data, null, 2);
+
+      const output = [
+        '**Theme Configuration Export**',
+        '',
+        'This JSON contains your active storefront theme settings including colors, fonts, layout configuration, and any design customizations.',
+        '',
+        '```json',
+        formatted,
+        '```',
+        '',
+        '_To restore these settings on a new platform, use your target platform\'s theme import feature or apply them manually._',
+      ].join('\n');
+
+      return { content: [{ type: 'text', text: output }] };
+    } catch {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: 'Unable to retrieve theme configuration at this time. Please try again later.',
+          },
+        ],
+      };
+    }
   }
 }
