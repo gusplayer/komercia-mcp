@@ -11,11 +11,24 @@ const LARAVEL_TOKEN = 'laravel-access-token';
 const NODE_PUBLIC_KEY = 'test-public-key';
 const STORE_ID = 'store-123';
 
-// TODO: verify response shape after discovery
+// Real Komercia NodeJS shape (validated 2026-05): GET /api/v1/stores/info/{storeId}
+// returns { success, message, data: { id, nombre, subdominio, estado, fechaExpiracion, tiendasInfo } }
 const MOCK_STORE = {
-  id: STORE_ID,
-  name: 'Test Store',
-  domain: 'test-store.komercia.co',
+  success: true,
+  message: 'Store info fetched successfully',
+  data: {
+    id: STORE_ID,
+    nombre: 'Test Store',
+    subdominio: 'test-store',
+    estado: 1,
+    fechaExpiracion: '2026-12-31',
+    tiendasInfo: {
+      dominio: null,
+      emailTienda: 'owner@test-store.com',
+      moneda: 'COP',
+      telefono: null,
+    },
+  },
 };
 
 // Real Komercia NodeJS shape (validated 2026-05): GET /api/v1/panel/filter-products/{storeId}

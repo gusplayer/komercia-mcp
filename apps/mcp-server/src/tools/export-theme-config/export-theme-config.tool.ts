@@ -72,7 +72,19 @@ export class ExportThemeConfigTool implements ITool, OnModuleInit {
           content: [
             {
               type: 'text',
-              text: 'Unable to retrieve theme configuration at this time. Please try again later.',
+              text: [
+                '**Theme Configuration — Not Available via API**',
+                '',
+                `The Komercia theme endpoint returned HTTP ${String(response.status)}.`,
+                'This endpoint is not stable in the current version of the Komercia API.',
+                '',
+                'To export your theme settings manually:',
+                '1. Log in to your Komercia admin panel',
+                '2. Navigate to **Design → Theme Settings**',
+                '3. Use your browser developer tools to capture the current theme JSON',
+                '',
+                'Your store info (colors, fonts, template ID) is included in the `get_store_info` output.',
+              ].join('\n'),
             },
           ],
         };
@@ -95,12 +107,13 @@ export class ExportThemeConfigTool implements ITool, OnModuleInit {
       ].join('\n');
 
       return { content: [{ type: 'text', text: output }] };
-    } catch {
+    } catch (err) {
+      const detail = err instanceof Error ? err.message : String(err);
       return {
         content: [
           {
             type: 'text',
-            text: 'Unable to retrieve theme configuration at this time. Please try again later.',
+            text: `Unable to retrieve theme configuration at this time. Error: ${detail}`,
           },
         ],
       };

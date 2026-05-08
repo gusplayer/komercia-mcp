@@ -13,6 +13,9 @@ import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 const DISPLAY_LIMIT = 50;
 const JSON_TRUNCATE_LIMIT = 100;
+// Komercia returns 500 when limit > total products in the store.
+// Using a small page size avoids this for stores with few products.
+const PAGE_SIZE = 5;
 
 interface ExportProductsArgs {
   format: 'csv' | 'json' | 'shopify' | 'woocommerce';
@@ -178,7 +181,7 @@ export class ExportProductsTool implements ITool, OnModuleInit {
       // Paginate through all products
       const allProducts: Product[] = [];
       let page = 1;
-      const perPage = 50;
+      const perPage = PAGE_SIZE;
 
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- pagination loop, exits via break
       while (true) {
@@ -235,12 +238,13 @@ export class ExportProductsTool implements ITool, OnModuleInit {
       }
 
       return { content: [{ type: 'text', text: output }] };
-    } catch {
+    } catch (err) {
+      const detail = err instanceof Error ? err.message : String(err);
       return {
         content: [
           {
             type: 'text',
-            text: 'Unable to export products at this time. Please try again later.',
+            text: `Unable to export products at this time. Error: ${detail}`,
           },
         ],
       };

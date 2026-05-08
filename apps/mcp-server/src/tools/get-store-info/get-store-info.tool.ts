@@ -1,5 +1,5 @@
 import { KomerciaClient } from '@komercia-mcp/komercia-client';
-import { Injectable, OnModuleInit, Optional } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit, Optional } from '@nestjs/common';
 
 import { KomerciaSessionService } from '../../auth/komercia-session.service.js';
 import { NodeTokenRefresher } from '../../auth/node-token-refresher.service.js';
@@ -41,9 +41,9 @@ export class GetStoreInfoTool implements ITool, OnModuleInit {
     private readonly toolRegistry: ToolRegistry,
     @Optional()
     private readonly injectedClient: KomerciaClientInterface | null,
-    @Optional()
+    @Optional() @Inject(KomerciaSessionService)
     private readonly sessionService: KomerciaSessionService | null = null,
-    @Optional()
+    @Optional() @Inject(NodeTokenRefresher)
     private readonly nodeTokenRefresher: NodeTokenRefresher | null = null,
   ) {}
 
@@ -57,7 +57,7 @@ export class GetStoreInfoTool implements ITool, OnModuleInit {
   ): Promise<CallToolResult> {
     try {
       // If an injected test client is provided, use it directly (test mode / DI override)
-      if (this.injectedClient !== null) {
+      if (this.injectedClient != null) {
         const store = await this.injectedClient.stores.get(merchantContext.storeId);
         return { content: [{ type: 'text', text: formatStore(store) }] };
       }
@@ -151,8 +151,7 @@ function formatStore(store: Store): string {
     `**Store ID:** ${store.id}`,
     `**Domain:** ${store.domain}`,
     `**Plan:** ${store.plan}`,
-    `**Email:** ${store.email}`,
-    `**Created:** ${store.created_at}`,
+    `**Email:** ${store.email !== '' ? store.email : 'N/A'}`,
     `**Status:** ${store.active ? 'Active' : 'Inactive'}`,
   ];
 

@@ -1,4 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+vi.mock('../../config/env.js', () => ({
+  config: {
+    nodeUrl: 'https://node.test',
+    laravelUrl: 'https://laravel.test',
+    editorUrl: 'https://editor.test',
+    nodePublicKey: 'test-public-key',
+    laravelClientId: '2',
+    laravelClientSecret: 'test-secret',
+    jwtSecret: 'test-jwt-secret-at-least-32-chars-long',
+    komerciaSessionEncryptionKey: 'a'.repeat(64),
+    databaseUrl: 'postgresql://test:test@localhost/test',
+  },
+}));
+
 import { GetStoreInfoTool } from './get-store-info.tool.js';
 import type { KomerciaClientInterface } from './get-store-info.tool.js';
 import type { ToolRegistry } from '../../mcp/tool.registry.js';

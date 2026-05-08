@@ -61,3 +61,4 @@ docs/api-discovery-report.md
 .changeset/*.md
 !.changeset/config.json
 !.changeset/README.md
+.vercel
