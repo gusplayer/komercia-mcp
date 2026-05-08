@@ -178,31 +178,14 @@ export class ExportProductsTool implements ITool, OnModuleInit {
         storeId: merchantContext.storeId,
       });
 
-      // Paginate through all products
-      const allProducts: Product[] = [];
-      let page = 1;
-      const perPage = PAGE_SIZE;
-
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- pagination loop, exits via break
-      while (true) {
-        const response = await client.products.list({
-          page,
-          limit: perPage,
-        });
-
-        const items = response.products.map(toProduct);
-        const filtered =
-          args.category_id !== undefined
-            ? items.filter((p) => p.category_id === args.category_id)
-            : items;
-
-        allProducts.push(...filtered);
-
-        // Stop if this page had fewer items than requested (last page)
-        if (items.length < perPage) break;
-
-        page++;
-      }
+      // exportPaged stops when allProducts.length >= response.total (avoids
+      // the Komercia 500 that occurs when requesting a page beyond total).
+      const rawProducts = await client.products.exportPaged({ limit: PAGE_SIZE });
+      const allProducts: Product[] = rawProducts
+        .map(toProduct)
+        .filter((p) =>
+          args.category_id !== undefined ? p.category_id === args.category_id : true,
+        );
 
       const total = allProducts.length;
       const displayProducts = allProducts.slice(0, DISPLAY_LIMIT);

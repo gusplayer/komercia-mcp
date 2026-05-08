@@ -38,6 +38,7 @@ export interface ProductsPage {
   total: number;
   page: number;
   limit: number;
+  hasNext: boolean;
 }
 
 export class ProductsResource {
@@ -65,6 +66,7 @@ export class ProductsResource {
       total: response.pagination.total,
       page: response.pagination.page,
       limit: response.pagination.limit,
+      hasNext: response.pagination.hasNext,
     };
   }
 
@@ -90,13 +92,23 @@ export class ProductsResource {
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- pagination loop, exits via break
     while (true) {
-      const result = await this.list({ ...params, page, limit });
-      allProducts.push(...result.products);
+      let result: ProductsPage;
 
-      if (allProducts.length >= result.total || result.products.length === 0) {
-        break;
+      if (page === 1) {
+        result = await this.list({ ...params, page, limit });
+      } else {
+        try {
+          result = await this.list({ ...params, page, limit });
+        } catch {
+          // Komercia can report hasNext=true but then return 500 on the
+          // subsequent page when products count equals a page boundary.
+          // Treat any error beyond page 1 as end-of-results.
+          break;
+        }
       }
 
+      allProducts.push(...result.products);
+      if (!result.hasNext || result.products.length === 0) break;
       page++;
     }
 
