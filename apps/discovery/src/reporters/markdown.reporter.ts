@@ -37,15 +37,17 @@ function renderBackend(backend: BackendReport): string[] {
 }
 
 function renderEndpoint(endpoint: EndpointResult): string[] {
-  const statusLabel = endpoint.ok ? `${endpoint.statusCode} OK` : `${endpoint.statusCode}`;
+  const statusLabel = endpoint.ok
+    ? `${String(endpoint.statusCode)} OK`
+    : String(endpoint.statusCode);
   const lines: string[] = [
     `### ${endpoint.method} ${endpoint.path}`,
     `- Status: ${statusLabel}`,
-    `- Response time: ${endpoint.responseTimeMs}ms`,
+    `- Response time: ${String(endpoint.responseTimeMs)}ms`,
   ];
 
   if (endpoint.sampleResponseSize !== undefined) {
-    lines.push(`- Response size: ${endpoint.sampleResponseSize} bytes`);
+    lines.push(`- Response size: ${String(endpoint.sampleResponseSize)} bytes`);
   }
 
   if (!endpoint.ok && endpoint.error !== undefined) {

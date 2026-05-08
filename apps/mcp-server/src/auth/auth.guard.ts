@@ -1,19 +1,22 @@
 import {
-  type CanActivate,
-  type ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
-import type { IncomingMessage } from 'node:http';
-import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
-import {
   TokenExpiredError,
   TokenInvalidError,
   TokenMalformedError,
   verifyMerchantToken,
 } from '@komercia-mcp/shared';
+import {
+  
+  
+  Injectable,
+  UnauthorizedException
+} from '@nestjs/common';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
+
 import { config } from '../config/env.js';
+
 import type { MerchantContext } from './merchant-context.js';
+import type {CanActivate, ExecutionContext} from '@nestjs/common';
+import type { IncomingMessage } from 'node:http';
 
 type RequestWithMerchantContext = IncomingMessage & {
   merchantContext: MerchantContext;
@@ -31,7 +34,7 @@ export class AuthGuard implements CanActivate {
       .switchToHttp()
       .getRequest<RequestWithMerchantContext>();
 
-    const authHeader = request.headers['authorization'];
+    const authHeader = request.headers.authorization;
 
     if (typeof authHeader !== 'string' || !authHeader.startsWith('Bearer ')) {
       throw new UnauthorizedException('missing bearer token');
@@ -42,6 +45,9 @@ export class AuthGuard implements CanActivate {
     try {
       const payload = await verifyMerchantToken(token, config.jwtSecret);
 
+      // Defensive runtime check for forward compatibility — when SCOPES grows
+      // beyond 'read', this guard becomes meaningful again.
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (payload.scope !== 'read') {
         throw new UnauthorizedException('insufficient token scope');
       }

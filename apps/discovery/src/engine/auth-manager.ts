@@ -100,7 +100,7 @@ export class AuthManager {
 
       if (!response.ok) {
         console.warn(
-          `[auth-manager] Login to ${url} failed with status ${response.status}`,
+          `[auth-manager] Login to ${url} failed with status ${String(response.status)}`,
         );
         return undefined;
       }

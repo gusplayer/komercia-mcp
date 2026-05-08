@@ -20,12 +20,16 @@ export default tseslint.config({
     "@typescript-eslint/no-unsafe-call": "error",
     "@typescript-eslint/no-unsafe-return": "error",
 
-    // Code style
+    // Code style: prefer top-level `import type { X }` for type-only imports.
+    // This avoids the ambiguity with `import { type X }` which leaves a
+    // side-effect import in CJS output. (`consistent-type-specifier-style`
+    // and `no-import-type-side-effects` are otherwise contradictory.)
     "@typescript-eslint/consistent-type-imports": [
       "error",
-      { prefer: "type-imports", fixStyle: "inline-type-imports" },
+      { prefer: "type-imports", fixStyle: "separate-type-imports" },
     ],
     "@typescript-eslint/no-import-type-side-effects": "error",
+    "import-x/consistent-type-specifier-style": ["error", "prefer-top-level"],
 
     // Naming — enforce consistent casing in imports
     "@typescript-eslint/naming-convention": [

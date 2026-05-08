@@ -117,11 +117,11 @@ export class InventoryResource {
 function buildProductQuery(params?: ProductFilterParams): string {
   if (params === undefined) return '';
   const parts: string[] = [];
-  if (params.page !== undefined) parts.push(`page=${params.page}`);
-  if (params.limit !== undefined) parts.push(`limit=${params.limit}`);
+  if (params.page !== undefined) parts.push(`page=${String(params.page)}`);
+  if (params.limit !== undefined) parts.push(`limit=${String(params.limit)}`);
   if (params.name !== undefined) parts.push(`name=${encodeURIComponent(params.name)}`);
   if (params.categoryID !== undefined) parts.push(`categoryID=${encodeURIComponent(params.categoryID)}`);
-  if (params.freeShipping !== undefined) parts.push(`freeShipping=${params.freeShipping}`);
-  if (params.withVariants !== undefined) parts.push(`withVariants=${params.withVariants}`);
+  if (params.freeShipping !== undefined) parts.push(`freeShipping=${String(params.freeShipping)}`);
+  if (params.withVariants !== undefined) parts.push(`withVariants=${String(params.withVariants)}`);
   return parts.length > 0 ? `?${parts.join('&')}` : '';
 }

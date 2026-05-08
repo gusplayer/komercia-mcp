@@ -1,12 +1,15 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { KomerciaClient, toProduct } from '@komercia-mcp/komercia-client';
-import type { Product } from '@komercia-mcp/shared';
-import type { ITool, CallToolResult } from '../../mcp/tool.interface.js';
-import { ToolRegistry } from '../../mcp/tool.registry.js';
-import type { MerchantContext } from '../../auth/merchant-context.js';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+
 import { KomerciaSessionService } from '../../auth/komercia-session.service.js';
+import { NodeTokenRefresher } from '../../auth/node-token-refresher.service.js';
 import { config } from '../../config/env.js';
+import { ToolRegistry } from '../../mcp/tool.registry.js';
+
+import type { MerchantContext } from '../../auth/merchant-context.js';
+import type { ITool, CallToolResult } from '../../mcp/tool.interface.js';
+import type { Product } from '@komercia-mcp/shared';
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 const DISPLAY_LIMIT = 50;
 const JSON_TRUNCATE_LIMIT = 100;
@@ -33,7 +36,7 @@ function escapeCsvField(value: string | number | boolean | null | undefined): st
   return str;
 }
 
-function toCsvRow(fields: Array<string | number | boolean | null | undefined>): string {
+function toCsvRow(fields: (string | number | boolean | null | undefined)[]): string {
   return fields.map(escapeCsvField).join(',');
 }
 
@@ -41,7 +44,7 @@ function productsToJson(products: Product[], total: number): string {
   const truncated = products.slice(0, JSON_TRUNCATE_LIMIT);
   const note =
     total > JSON_TRUNCATE_LIMIT
-      ? `\n\n// Note: Showing ${JSON_TRUNCATE_LIMIT} of ${total} products. Use category_id to filter.`
+      ? `\n\n// Note: Showing ${String(JSON_TRUNCATE_LIMIT)} of ${String(total)} products. Use category_id to filter.`
       : '';
   return JSON.stringify(truncated, null, 2) + note;
 }
@@ -130,6 +133,7 @@ export class ExportProductsTool implements ITool, OnModuleInit {
   constructor(
     private readonly toolRegistry: ToolRegistry,
     private readonly sessionService: KomerciaSessionService,
+    private readonly nodeTokenRefresher: NodeTokenRefresher,
   ) {}
 
   onModuleInit(): void {
@@ -153,13 +157,14 @@ export class ExportProductsTool implements ITool, OnModuleInit {
         content: [
           {
             type: 'text',
-            text: 'Authentication required: your Komercia session has expired or was not found. Please request a new magic link at web.komercia-exit.com.',
+            text: 'Authentication required: your Komercia session has expired or was not found. Please log in again at mcp.komercia.co.',
           },
         ],
       };
     }
 
     try {
+      await this.nodeTokenRefresher.ensureFresh(session);
       const client = new KomerciaClient({
         nodeUrl: config.nodeUrl,
         laravelUrl: config.laravelUrl,
@@ -175,6 +180,7 @@ export class ExportProductsTool implements ITool, OnModuleInit {
       let page = 1;
       const perPage = 50;
 
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- pagination loop, exits via break
       while (true) {
         const response = await client.products.list({
           page,
@@ -199,7 +205,7 @@ export class ExportProductsTool implements ITool, OnModuleInit {
       const displayProducts = allProducts.slice(0, DISPLAY_LIMIT);
       const truncationNote =
         total > DISPLAY_LIMIT
-          ? `\n\n_Showing ${DISPLAY_LIMIT} of ${total} products. Use category_id to filter or ask for a specific page._`
+          ? `\n\n_Showing ${String(DISPLAY_LIMIT)} of ${String(total)} products. Use category_id to filter or ask for a specific page._`
           : '';
 
       let output: string;
@@ -208,23 +214,23 @@ export class ExportProductsTool implements ITool, OnModuleInit {
       switch (args.format) {
         case 'json':
           output = productsToJson(displayProducts, total);
-          prefix = `**Products Export (JSON) — ${total} total**\n\n\`\`\`json\n`;
+          prefix = `**Products Export (JSON) — ${String(total)} total**\n\n\`\`\`json\n`;
           output = prefix + output + '\n```' + truncationNote;
           break;
 
         case 'csv':
           output = productsToCsv(displayProducts);
-          output = `**Products Export (CSV) — ${total} total**\n\n\`\`\`csv\n${output}\n\`\`\`` + truncationNote;
+          output = `**Products Export (CSV) — ${String(total)} total**\n\n\`\`\`csv\n${output}\n\`\`\`` + truncationNote;
           break;
 
         case 'shopify':
           output = productsToShopifyCsv(displayProducts);
-          output = `**Products Export (Shopify CSV) — ${total} total**\n\nImport this file at: Shopify Admin → Products → Import\n\n\`\`\`csv\n${output}\n\`\`\`` + truncationNote;
+          output = `**Products Export (Shopify CSV) — ${String(total)} total**\n\nImport this file at: Shopify Admin → Products → Import\n\n\`\`\`csv\n${output}\n\`\`\`` + truncationNote;
           break;
 
         case 'woocommerce':
           output = productsToWooCommerceCsv(displayProducts);
-          output = `**Products Export (WooCommerce CSV) — ${total} total**\n\nImport via: WooCommerce → Products → Import\n\n\`\`\`csv\n${output}\n\`\`\`` + truncationNote;
+          output = `**Products Export (WooCommerce CSV) — ${String(total)} total**\n\nImport via: WooCommerce → Products → Import\n\n\`\`\`csv\n${output}\n\`\`\`` + truncationNote;
           break;
       }
 

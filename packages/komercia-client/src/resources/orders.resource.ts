@@ -69,7 +69,7 @@ export class OrdersResource {
    */
   async filterByDate(params: OrderDateFilterParams): Promise<OrdersPage> {
     const parts: string[] = [`type=date`, `start=${encodeURIComponent(params.start)}`, `end=${encodeURIComponent(params.end)}`];
-    if (params.page !== undefined) parts.push(`page=${params.page}`);
+    if (params.page !== undefined) parts.push(`page=${String(params.page)}`);
     const query = `?${parts.join('&')}`;
 
     // TODO: verify response shape after discovery
@@ -113,7 +113,7 @@ export class OrdersResource {
 function buildPaginationQuery(params?: OrderPaginationParams): string {
   if (params === undefined) return '';
   const parts: string[] = [];
-  if (params.page !== undefined) parts.push(`page=${params.page}`);
-  if (params.per_page !== undefined) parts.push(`per_page=${params.per_page}`);
+  if (params.page !== undefined) parts.push(`page=${String(params.page)}`);
+  if (params.per_page !== undefined) parts.push(`per_page=${String(params.per_page)}`);
   return parts.length > 0 ? `?${parts.join('&')}` : '';
 }

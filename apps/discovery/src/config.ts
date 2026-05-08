@@ -1,7 +1,9 @@
 import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { z } from 'zod';
+
 import type { EndpointConfig } from './types.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -73,6 +75,9 @@ function resolveEnvPlaceholder(value: string): string {
   });
 }
 
+function resolveEnvRecord(record: Record<string, string>): Record<string, string>;
+function resolveEnvRecord(record: undefined): undefined;
+function resolveEnvRecord(record?: Record<string, string>): Record<string, string> | undefined;
 function resolveEnvRecord(
   record?: Record<string, string>,
 ): Record<string, string> | undefined {
@@ -91,15 +96,15 @@ export function loadConfig(): DiscoveryConfig {
     key: string,
     seed: z.infer<typeof BackendSeedSchema>,
   ): BackendConfig => {
-    const authConfig: AuthConfig = {
-      type: seed.auth.type,
-      loginEndpoint: seed.auth.loginEndpoint,
-      loginMethod: seed.auth.loginMethod,
-      loginBody: resolveEnvRecord(seed.auth.loginBody),
-      tokenPath: seed.auth.tokenPath,
-    };
+    const authConfig: AuthConfig = { type: seed.auth.type, loginEndpoint: seed.auth.loginEndpoint };
+    if (seed.auth.loginMethod !== undefined) authConfig.loginMethod = seed.auth.loginMethod;
+    const resolvedLoginBody = resolveEnvRecord(seed.auth.loginBody);
+    if (resolvedLoginBody !== undefined) authConfig.loginBody = resolvedLoginBody;
+    if (seed.auth.tokenPath !== undefined) authConfig.tokenPath = seed.auth.tokenPath;
 
-    return {
+    const resolvedPathParams = resolveEnvRecord(seed.pathParams);
+
+    const backend: BackendConfig = {
       name: seed.name ?? key,
       baseUrl: resolveEnvPlaceholder(seed.baseUrl),
       endpoints: seed.endpoints.map((ep) => {
@@ -115,8 +120,9 @@ export function loadConfig(): DiscoveryConfig {
       authType: seed.auth.type,
       loginEndpoint: seed.auth.loginEndpoint,
       authConfig,
-      pathParams: resolveEnvRecord(seed.pathParams),
     };
+    if (resolvedPathParams !== undefined) backend.pathParams = resolvedPathParams;
+    return backend;
   };
 
   const backends = Object.entries(parsed.backends).map(([key, seed]) =>

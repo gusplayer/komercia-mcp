@@ -1,8 +1,10 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import type { Tool } from '@modelcontextprotocol/sdk/types.js';
-import type { ITool, CallToolResult } from '../../mcp/tool.interface.js';
+
 import { ToolRegistry } from '../../mcp/tool.registry.js';
+
 import type { MerchantContext } from '../../auth/merchant-context.js';
+import type { ITool, CallToolResult } from '../../mcp/tool.interface.js';
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 const RECOMMENDATION_TEXT = `# Alternative E-Commerce Platforms
 
@@ -72,10 +74,12 @@ export class SuggestAlternativePlatformsTool implements ITool, OnModuleInit {
     this.toolRegistry.register(this);
   }
 
-  async execute(
+  execute(
     _args: unknown,
     _merchantContext: MerchantContext,
   ): Promise<CallToolResult> {
-    return { content: [{ type: 'text', text: RECOMMENDATION_TEXT }] };
+    void _args;
+    void _merchantContext;
+    return Promise.resolve({ content: [{ type: 'text', text: RECOMMENDATION_TEXT }] });
   }
 }

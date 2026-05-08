@@ -1,13 +1,14 @@
 import { HttpClient } from './http.js';
-import { StoresResource } from './resources/stores.resource.js';
-import { ProductsResource } from './resources/products.resource.js';
-import { OrdersResource } from './resources/orders.resource.js';
-import { CustomersResource } from './resources/customers.resource.js';
-import { CategoriesResource } from './resources/categories.resource.js';
-import { InventoryResource } from './resources/inventory.resource.js';
-import { ThemesResource } from './resources/themes.resource.js';
-import { PaymentMethodsResource } from './resources/payment-methods.resource.js';
 import { AuthResource } from './resources/auth.resource.js';
+import { CategoriesResource } from './resources/categories.resource.js';
+import { CustomersResource } from './resources/customers.resource.js';
+import { InventoryResource } from './resources/inventory.resource.js';
+import { OrdersResource } from './resources/orders.resource.js';
+import { PaymentMethodsResource } from './resources/payment-methods.resource.js';
+import { ProductsResource } from './resources/products.resource.js';
+import { StoresResource } from './resources/stores.resource.js';
+import { ThemesResource } from './resources/themes.resource.js';
+
 import type { KomerciaClientConfig } from './types.js';
 
 const DEFAULT_TIMEOUT_MS = 15_000;
@@ -33,8 +34,8 @@ export class KomerciaClient {
   readonly paymentMethods: PaymentMethodsResource;
 
   /**
-   * Static factory for the web app onboarding flow (magic link redemption).
-   * Only exposes auth — no merchant tokens required yet at this stage.
+   * Static factory for the web app login flow.
+   * Only exposes auth — no merchant tokens required at this stage.
    */
   static createForAuth(config: AuthOnlyConfig): { auth: AuthResource } {
     const timeoutMs = config.timeoutMs ?? DEFAULT_TIMEOUT_MS;
@@ -62,20 +63,7 @@ export class KomerciaClient {
     const nodeHttp = new HttpClient(config.nodeUrl, httpConfig);
     const laravelHttp = new HttpClient(config.laravelUrl, httpConfig);
 
-    // storeId is carried on the per-merchant session — resources receive it so they
-    // can embed it in paths without callers having to pass it on every method call.
-    // For resources that don't need a storeId in the path, we pass an empty string.
-    // Note: storeId must be provided by the caller via config if needed per resource.
-    // Resources that require storeId accept it in constructor (from config.nodeToken context).
-    // We derive storeId from the token context at the MCP layer; here we use a placeholder
-    // approach — the storeId is expected to be passed via a separate config field if needed.
-    // For now, resources that need storeId receive an empty string and the MCP layer
-    // should instantiate KomerciaClient with an extended config or pass storeId per call.
-    //
-    // DESIGN NOTE: storeId is not in KomerciaClientConfig because it comes from the JWT,
-    // not from env vars. The MCP auth guard should extract it and pass it here.
-    // This will be resolved in a future refactor once the MCP layer is wired up.
-    const storeId = (config as KomerciaClientConfig & { storeId?: string }).storeId ?? '';
+    const storeId = config.storeId ?? '';
 
     this.stores = new StoresResource(nodeHttp, config.nodePublicKey);
 

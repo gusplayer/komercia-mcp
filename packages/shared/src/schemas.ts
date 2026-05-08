@@ -1,4 +1,5 @@
 import { z } from 'zod';
+
 import { SCOPES } from './constants.js';
 
 export const StoreSchema = z.object({

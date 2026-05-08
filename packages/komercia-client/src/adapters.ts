@@ -1,3 +1,8 @@
+
+import type { KomerciaCategory } from "./resources/categories.resource.js";
+import type { KomerciaCustomer } from "./resources/customers.resource.js";
+import type { KomerciaOrder } from "./resources/orders.resource.js";
+import type { KomerciaProduct } from "./resources/products.resource.js";
 import type {
   Category,
   Customer,
@@ -5,19 +10,17 @@ import type {
   Product,
 } from "@komercia-mcp/shared";
 
-import type { KomerciaCategory } from "./resources/categories.resource.js";
-import type { KomerciaCustomer } from "./resources/customers.resource.js";
-import type { KomerciaOrder } from "./resources/orders.resource.js";
-import type { KomerciaProduct } from "./resources/products.resource.js";
-
 // Adapters bridge between Komercia's Spanish API field names and the
 // canonical English types used throughout the MCP layer.
 // All fields marked TODO will be verified/corrected after discovery runs.
 
 export function toProduct(k: KomerciaProduct): Product {
   const sku = typeof k["sku"] === "string" ? k["sku"] : null;
+  const rawCategoryId = k["categoria_id"];
   const categoryId =
-    k["categoria_id"] != null ? String(k["categoria_id"]) : null;
+    typeof rawCategoryId === "string" || typeof rawCategoryId === "number"
+      ? String(rawCategoryId)
+      : null;
   const images = Array.isArray(k["imagenes"])
     ? (k["imagenes"] as unknown[]).map(String)
     : [];
@@ -51,7 +54,11 @@ export function toOrder(k: KomerciaOrder): Order {
       : typeof k["currency"] === "string"
         ? k["currency"]
         : "COP";
-  const customerId = k["usuario"] != null ? String(k["usuario"]) : null;
+  const rawCustomerId = k["usuario"];
+  const customerId =
+    typeof rawCustomerId === "string" || typeof rawCustomerId === "number"
+      ? String(rawCustomerId)
+      : null;
   const createdAt =
     typeof k["created_at"] === "string" ? k["created_at"] : "";
   const updatedAt =

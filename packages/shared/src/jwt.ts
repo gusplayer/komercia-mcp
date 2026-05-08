@@ -1,6 +1,8 @@
 import { SignJWT, jwtVerify, errors as joseErrors } from 'jose';
-import type { MerchantJWTPayload } from './types.js';
+
 import { JWT_EXPIRY_SECONDS, SCOPES } from './constants.js';
+
+import type { MerchantJWTPayload } from './types.js';
 
 export class TokenExpiredError extends Error {
   constructor(message = 'Token has expired') {
@@ -44,7 +46,7 @@ export async function signMerchantToken(
     .setSubject(payload.sub)
     .setJti(jti)
     .setIssuedAt()
-    .setExpirationTime(`${expirySeconds}s`)
+    .setExpirationTime(`${String(expirySeconds)}s`)
     .sign(secretKey);
 }
 
@@ -61,17 +63,19 @@ export async function verifyMerchantToken(
       algorithms: ['HS256'],
     });
 
-    const sub = raw['sub'];
-    const store_id = raw['store_id'];
+    const sub = raw.sub;
+    // store_id is the JWT claim name (snake_case is standard wire format).
+    // We rename to camelCase locally to satisfy the linter.
+    const storeId = raw['store_id'];
     const email = raw['email'];
     const scope = raw['scope'];
-    const jti = raw['jti'];
-    const iat = raw['iat'];
-    const exp = raw['exp'];
+    const jti = raw.jti;
+    const iat = raw.iat;
+    const exp = raw.exp;
 
     if (
       typeof sub !== 'string' ||
-      typeof store_id !== 'string' ||
+      typeof storeId !== 'string' ||
       typeof email !== 'string' ||
       typeof scope !== 'string' ||
       typeof jti !== 'string' ||
@@ -87,7 +91,7 @@ export async function verifyMerchantToken(
 
     payload = {
       sub,
-      store_id,
+      store_id: storeId,
       email,
       scope: scope as MerchantJWTPayload['scope'],
       jti,

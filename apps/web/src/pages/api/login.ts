@@ -1,14 +1,17 @@
-import type { APIRoute } from 'astro';
-import { z } from 'zod';
 import crypto from 'node:crypto';
-import { SignJWT } from 'jose';
+
 import { KomerciaClient } from '@komercia-mcp/komercia-client';
 import { JWT_EXPIRY_SECONDS } from '@komercia-mcp/shared';
-import type { NodeLoginResponse, LaravelTokenResponse } from '@komercia-mcp/komercia-client';
+import { SignJWT } from 'jose';
+import { z } from 'zod';
+
+
 import { validateCsrfToken } from '../../lib/csrf.js';
 import { getConfig } from '../../lib/env.js';
 import { checkRateLimit, RateLimitExceededError } from '../../lib/rate-limit.js';
 import { createSession } from '../../lib/session.js';
+
+import type { APIRoute } from 'astro';
 
 const bodySchema = z.object({
   email: z.string().email(),
@@ -22,50 +25,87 @@ function jsonResponse(body: unknown, status: number): Response {
   });
 }
 
+/**
+ * Structured one-line log for ops. We deliberately log only the message —
+ * not the stack or full error object — to avoid accidentally writing
+ * tokens, headers, or env-var values into stdout.
+ */
+function logSafe(event: string, err: Error): void {
+   
+  console.error(JSON.stringify({ event, message: err.message, ts: new Date().toISOString() }));
+}
+
+interface NodeJwtPayload {
+  id: number;
+  email: string;
+  iat: number;
+  exp: number;
+}
+
+function decodeNodeJwt(token: string): NodeJwtPayload {
+  const payloadB64 = token.split('.')[1];
+  if (!payloadB64) throw new Error('Malformed Node JWT');
+  const payload = JSON.parse(Buffer.from(payloadB64, 'base64url').toString('utf-8')) as Partial<NodeJwtPayload>;
+  if (typeof payload.id !== 'number' || typeof payload.exp !== 'number') {
+    throw new Error('Node JWT missing required claims');
+  }
+  return payload as NodeJwtPayload;
+}
+
+function isAuthError(err: Error): boolean {
+  const m = err.message.toLowerCase();
+  return m.includes('401') || m.includes('unauthorized') || m.includes('invalid') || m.includes('credentials');
+}
+
 export const POST: APIRoute = async ({ request }) => {
-  // --- Parse body ---
+  // 1) Body validation
   let body: unknown;
   try {
     body = await request.json();
   } catch {
     return jsonResponse({ error: 'Invalid JSON body' }, 400);
   }
-
-  const parseResult = bodySchema.safeParse(body);
-  if (!parseResult.success) {
+  const parsed = bodySchema.safeParse(body);
+  if (!parsed.success) {
     return jsonResponse({ error: 'email and password are required' }, 400);
   }
+  const { email, password } = parsed.data;
 
-  const { email, password } = parseResult.data;
-
-  // --- Rate limit by IP ---
+  // 2) Rate limit by IP and email — Postgres-backed so it survives across
+  // Vercel serverless invocations.
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
   try {
-    checkRateLimit(`ip:${ip}`, 10, 60_000);
+    await checkRateLimit(`login_ip:${ip}`, 10, 60_000);
   } catch (err) {
     if (err instanceof RateLimitExceededError) {
       return jsonResponse({ error: 'Too many login attempts. Please wait a minute and try again.' }, 429);
     }
     throw err;
   }
+  // Per-email throttle resists targeted password spraying.
+  const earlyEmail = parsed.data.email.toLowerCase().trim();
+  if (earlyEmail) {
+    try {
+      await checkRateLimit(`login_email:${earlyEmail}`, 5, 60_000);
+    } catch (err) {
+      if (err instanceof RateLimitExceededError) {
+        return jsonResponse({ error: 'Too many login attempts for this account. Please wait a minute and try again.' }, 429);
+      }
+      throw err;
+    }
+  }
 
-  // --- Validate CSRF (double-submit cookie pattern) ---
+  // 3) CSRF
   const csrfHeader = request.headers.get('X-CSRF-Token');
   const cookieHeader = request.headers.get('cookie') ?? '';
   const csrfCookie =
-    cookieHeader
-      .split(';')
-      .map((c) => c.trim())
-      .find((c) => c.startsWith('csrf_token='))
-      ?.split('=')[1] ?? null;
-
+    cookieHeader.split(';').map((c) => c.trim()).find((c) => c.startsWith('csrf_token='))?.split('=')[1] ?? null;
   if (!validateCsrfToken(csrfCookie, csrfHeader)) {
     return jsonResponse({ error: 'Invalid CSRF token' }, 403);
   }
 
-  // --- Call Komercia backends ---
+  // 4) Auth client + parallel login (Node + Laravel)
   const config = getConfig();
-
   const authClient = KomerciaClient.createForAuth({
     nodeUrl: config.komerciaNodeUrl,
     laravelUrl: config.komerciaLaravelUrl,
@@ -78,67 +118,76 @@ export const POST: APIRoute = async ({ request }) => {
     authClient.auth.loginLaravel(email, password),
   ]);
 
-  // Node login is required
+  // Both backends are required: Node for short-lived panel JWT, Laravel for long-lived token + storeId.
   if (nodeResult.status === 'rejected') {
     const err = nodeResult.reason as Error;
-    // Distinguish auth failure from network/service errors
-    const message = err?.message?.toLowerCase() ?? '';
-    const isAuthError =
-      message.includes('401') ||
-      message.includes('unauthorized') ||
-      message.includes('invalid') ||
-      message.includes('credentials');
-
-    if (isAuthError) {
-      return jsonResponse({ error: 'Invalid email or password' }, 401);
-    }
-
-    console.error('[login] Komercia Node login failed:', err?.message);
+    if (isAuthError(err)) return jsonResponse({ error: 'Invalid email or password' }, 401);
+    // We log only the message (not the full error / stack) to avoid leaking
+    // env/config details into stdout. Astro server logs are visible to the
+    // hosting platform operator only.
+    logSafe('login.node_failed', err);
+    return jsonResponse({ error: 'Komercia service unavailable. Try again later.' }, 503);
+  }
+  if (laravelResult.status === 'rejected') {
+    const err = laravelResult.reason as Error;
+    if (isAuthError(err)) return jsonResponse({ error: 'Invalid email or password' }, 401);
+    logSafe('login.laravel_failed', err);
     return jsonResponse({ error: 'Komercia service unavailable. Try again later.' }, 503);
   }
 
-  const nodeData = nodeResult.value as NodeLoginResponse;
-  const nodeToken = nodeData.data.token;
-  const storeId = String(nodeData.data.storeId);
+  const nodeData = nodeResult.value;
+  const laravelData = laravelResult.value;
+  const nodeToken = nodeData.accessToken;
+  const laravelToken = laravelData.access_token;
+  const laravelRefresh = laravelData.refresh_token || undefined;
 
-  // Laravel login is secondary — log failure but proceed
-  let laravelToken = '';
-  let laravelRefresh: string | undefined;
-  if (laravelResult.status === 'fulfilled') {
-    const laravelData = laravelResult.value as LaravelTokenResponse;
-    laravelToken = laravelData.access_token;
-    laravelRefresh = laravelData.refresh_token ?? undefined;
-  } else {
-    console.warn('[login] Komercia Laravel login failed (non-fatal):', (laravelResult.reason as Error)?.message);
+  // 5) Decode Node JWT to extract merchantId and node_token_expires_at.
+  // The `id` claim on the NodeJS JWT is the merchantId (e.g. 32951), NOT the storeId.
+  let merchantId: string;
+  let nodeTokenExpiresAt: Date;
+  try {
+    const payload = decodeNodeJwt(nodeToken);
+    merchantId = String(payload.id);
+    nodeTokenExpiresAt = new Date(payload.exp * 1000);
+  } catch (err) {
+    logSafe('login.jwt_decode_failed', err as Error);
+    return jsonResponse({ error: 'Unexpected response from Komercia.' }, 502);
   }
 
-  // merchantId: Komercia Node doesn't directly expose it in the login response —
-  // use storeId as the merchant identifier until a dedicated field is available.
-  const merchantId = storeId;
-
-  // --- Generate jti first so we can correlate JWT <-> DB session ---
-  const jti = crypto.randomUUID();
-
-  // --- Persist session ---
+  // 6) Get the real storeId from Laravel: GET /api/admin/tienda → data.id (e.g. 1559).
+  let storeId: string;
+  let storeName: string;
   try {
-    const sessionParams = {
+    const tienda = await authClient.auth.getMyStore(laravelToken);
+    storeId = String(tienda.id);
+    storeName = tienda.nombre;
+  } catch (err) {
+    logSafe('login.store_lookup_failed', err as Error);
+    return jsonResponse({ error: 'Could not identify your Komercia store. Please try again.' }, 502);
+  }
+
+  // 7) Persist session — credentials AND tokens encrypted at rest.
+  const jti = crypto.randomUUID();
+  try {
+    const params: Parameters<typeof createSession>[0] = {
       jti,
       email,
+      password,
       merchantId,
       storeId,
       nodeToken,
+      nodeTokenExpiresAt,
       laravelToken,
-      ...(laravelRefresh !== undefined ? { laravelRefresh } : {}),
     };
-    await createSession(sessionParams);
+    if (laravelRefresh !== undefined) params.laravelRefresh = laravelRefresh;
+    await createSession(params);
   } catch (err) {
-    console.error('[login] Failed to persist session:', err);
+    logSafe('login.session_persist_failed', err as Error);
     return jsonResponse({ error: 'Internal server error' }, 500);
   }
 
-  // --- Sign JWT embedding our pre-generated jti ---
-  // We use jose directly rather than signMerchantToken because signMerchantToken
-  // generates its own jti internally and we need the jti to match the DB session.
+  // 8) Sign our own JWT (HS256, 6 months). Embed the pre-generated jti so it
+  // matches the DB row.
   const secretKey = new TextEncoder().encode(config.jwtSecret);
   const token = await new SignJWT({
     store_id: storeId,
@@ -149,8 +198,8 @@ export const POST: APIRoute = async ({ request }) => {
     .setSubject(merchantId)
     .setJti(jti)
     .setIssuedAt()
-    .setExpirationTime(`${JWT_EXPIRY_SECONDS}s`)
+    .setExpirationTime(`${String(JWT_EXPIRY_SECONDS)}s`)
     .sign(secretKey);
 
-  return jsonResponse({ token }, 200);
+  return jsonResponse({ token, store_id: storeId, store_name: storeName }, 200);
 };

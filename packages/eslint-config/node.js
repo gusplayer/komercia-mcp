@@ -26,6 +26,9 @@ export default tseslint.config(...baseConfig, {
     ],
     "import-x/no-duplicates": "error",
     "import-x/no-cycle": "warn",
-    "import-x/consistent-type-specifier-style": ["error", "prefer-inline"],
+    // Prefer top-level `import type { X }` over inline `import { type X }`.
+    // Required by @typescript-eslint/no-import-type-side-effects, which flags
+    // inline-only specifiers because they leave a side-effect import in CJS.
+    "import-x/consistent-type-specifier-style": ["error", "prefer-top-level"],
   },
 });

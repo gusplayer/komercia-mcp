@@ -1,10 +1,12 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import type { Tool } from '@modelcontextprotocol/sdk/types.js';
-import type { ITool, CallToolResult } from '../../mcp/tool.interface.js';
-import { ToolRegistry } from '../../mcp/tool.registry.js';
-import type { MerchantContext } from '../../auth/merchant-context.js';
+
 import { KomerciaSessionService } from '../../auth/komercia-session.service.js';
 import { config } from '../../config/env.js';
+import { ToolRegistry } from '../../mcp/tool.registry.js';
+
+import type { MerchantContext } from '../../auth/merchant-context.js';
+import type { ITool, CallToolResult } from '../../mcp/tool.interface.js';
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 interface PaymentGateway {
   id?: string | number;
@@ -66,7 +68,7 @@ export class ListPaymentGatewaysTool implements ITool, OnModuleInit {
         content: [
           {
             type: 'text',
-            text: 'Authentication required: your Komercia session has expired or was not found. Please request a new magic link at web.komercia-exit.com.',
+            text: 'Authentication required: your Komercia session has expired or was not found. Please log in again at mcp.komercia.co.',
           },
         ],
       };
@@ -121,12 +123,12 @@ export class ListPaymentGatewaysTool implements ITool, OnModuleInit {
       const disabled = gateways.filter((g) => !resolveGatewayEnabled(g));
 
       const lines: string[] = [
-        `**Payment Gateways — ${gateways.length} configured**`,
+        `**Payment Gateways — ${String(gateways.length)} configured**`,
         '',
       ];
 
       if (enabled.length > 0) {
-        lines.push(`**Enabled (${enabled.length})**`);
+        lines.push(`**Enabled (${String(enabled.length)})**`);
         for (const g of enabled) {
           lines.push(`  ✓ ${resolveGatewayName(g)}`);
         }
@@ -134,7 +136,7 @@ export class ListPaymentGatewaysTool implements ITool, OnModuleInit {
       }
 
       if (disabled.length > 0) {
-        lines.push(`**Disabled (${disabled.length})**`);
+        lines.push(`**Disabled (${String(disabled.length)})**`);
         for (const g of disabled) {
           lines.push(`  ✗ ${resolveGatewayName(g)}`);
         }

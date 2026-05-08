@@ -1,8 +1,10 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import type { Tool } from '@modelcontextprotocol/sdk/types.js';
-import type { ITool, CallToolResult } from '../../mcp/tool.interface.js';
+
 import { ToolRegistry } from '../../mcp/tool.registry.js';
+
 import type { MerchantContext } from '../../auth/merchant-context.js';
+import type { ITool, CallToolResult } from '../../mcp/tool.interface.js';
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 @Injectable()
 export class ExportInventoryMovementsTool implements ITool, OnModuleInit {
@@ -50,17 +52,19 @@ export class ExportInventoryMovementsTool implements ITool, OnModuleInit {
     this.toolRegistry.register(this);
   }
 
-  async execute(
+  execute(
     _args: unknown,
     _merchantContext: MerchantContext,
   ): Promise<CallToolResult> {
-    return {
+    void _args;
+    void _merchantContext;
+    return Promise.resolve({
       content: [
         {
           type: 'text',
           text: "Komercia's API does not expose an inventory movements log. However, I can show you current stock levels for all products. Would you like me to run `export_products` in JSON format? Each product includes its current stock quantity.",
         },
       ],
-    };
+    });
   }
 }

@@ -1,10 +1,13 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import type { Tool } from '@modelcontextprotocol/sdk/types.js';
-import type { ITool, CallToolResult } from '../../mcp/tool.interface.js';
-import { ToolRegistry } from '../../mcp/tool.registry.js';
-import type { MerchantContext } from '../../auth/merchant-context.js';
+
 import { KomerciaSessionService } from '../../auth/komercia-session.service.js';
+import { NodeTokenRefresher } from '../../auth/node-token-refresher.service.js';
 import { config } from '../../config/env.js';
+import { ToolRegistry } from '../../mcp/tool.registry.js';
+
+import type { MerchantContext } from '../../auth/merchant-context.js';
+import type { ITool, CallToolResult } from '../../mcp/tool.interface.js';
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 @Injectable()
 export class ExportThemeConfigTool implements ITool, OnModuleInit {
@@ -27,6 +30,7 @@ export class ExportThemeConfigTool implements ITool, OnModuleInit {
   constructor(
     private readonly toolRegistry: ToolRegistry,
     private readonly sessionService: KomerciaSessionService,
+    private readonly nodeTokenRefresher: NodeTokenRefresher,
   ) {}
 
   onModuleInit(): void {
@@ -44,13 +48,14 @@ export class ExportThemeConfigTool implements ITool, OnModuleInit {
         content: [
           {
             type: 'text',
-            text: 'Authentication required: your Komercia session has expired or was not found. Please request a new magic link at web.komercia-exit.com.',
+            text: 'Authentication required: your Komercia session has expired or was not found. Please log in again at mcp.komercia.co.',
           },
         ],
       };
     }
 
     try {
+      await this.nodeTokenRefresher.ensureFresh(session);
       const signal = AbortSignal.timeout(10_000);
       const response = await fetch(`${config.nodeUrl}/api/v1/templates/websites`, {
         method: 'GET',

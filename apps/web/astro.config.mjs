@@ -1,9 +1,20 @@
-import node from '@astrojs/node';
+import vercel from '@astrojs/vercel/serverless';
 import tailwind from '@astrojs/tailwind';
 import { defineConfig } from 'astro/config';
 
+// SSR with Vercel serverless functions. The Node adapter is no longer used —
+// the app deploys to Vercel and the Postgres pool is sized for serverless
+// (max: 1) in src/lib/db.ts.
 export default defineConfig({
   output: 'server',
-  adapter: node({ mode: 'standalone' }),
+  adapter: vercel({
+    webAnalytics: { enabled: false },
+    maxDuration: 30,
+  }),
   integrations: [tailwind()],
+  vite: {
+    // Load .env from the monorepo root in local dev.
+    // On Vercel, env vars are injected directly into process.env — this has no effect.
+    envDir: '../../',
+  },
 });

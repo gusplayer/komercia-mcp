@@ -1,0 +1,92 @@
+name: komercia-mcp
+
+# Local dev stack. The web app (Astro) deploys to Vercel — there's no Docker
+# build for it; run it locally with `pnpm --filter @komercia-mcp/web dev`.
+# This compose covers Postgres and the NestJS MCP API (which deploys to Railway).
+#
+# Modes:
+#   1) Deps only:       docker compose --profile deps up -d
+#                       (Postgres only — pair with `pnpm dev` on host)
+#   2) API parity:      docker compose --profile full up -d
+#                       (Postgres + db-init + api — mimics Railway runtime)
+#   3) Logs:            docker compose logs -f api
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: komercia_mcp_postgres
+    profiles: ["deps", "full"]
+    environment:
+      POSTGRES_DB: komercia_mcp
+      POSTGRES_USER: komercia
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-iZAYONSQ9GTwo9M46a11pQ}
+    ports:
+      - "5434:5432"   # 5434 host → 5432 container (avoid clashing with other dev DBs)
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U komercia -d komercia_mcp"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - komercia_mcp_net
+
+  db-init:
+    profiles: ["full"]
+    build:
+      context: .
+      dockerfile: apps/mcp-server/Dockerfile
+      target: migrate
+    container_name: komercia_mcp_db_init
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://komercia:${POSTGRES_PASSWORD:-iZAYONSQ9GTwo9M46a11pQ}@postgres:5432/komercia_mcp
+    restart: "no"
+    networks:
+      - komercia_mcp_net
+
+  api:
+    profiles: ["full"]
+    build:
+      context: .
+      dockerfile: apps/mcp-server/Dockerfile
+      target: runtime
+    container_name: komercia_mcp_api
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+    environment:
+      NODE_ENV: production
+      MCP_PORT: 3001
+      MCP_TRANSPORT: http
+      MCP_ALLOWED_ORIGINS: https://claude.ai,http://localhost:4321
+      DATABASE_URL: postgresql://komercia:${POSTGRES_PASSWORD:-iZAYONSQ9GTwo9M46a11pQ}@postgres:5432/komercia_mcp
+      JWT_SECRET: ${JWT_SECRET}
+      KOMERCIA_SESSION_ENCRYPTION_KEY: ${KOMERCIA_SESSION_ENCRYPTION_KEY}
+      KOMERCIA_NODE_URL: ${KOMERCIA_NODE_URL:-https://api.komercia.app}
+      KOMERCIA_NODE_PUBLIC_KEY: ${KOMERCIA_NODE_PUBLIC_KEY:-c6979297-txfg-4962-7sag-709c76a71755}
+      KOMERCIA_LARAVEL_URL: ${KOMERCIA_LARAVEL_URL:-https://api2.komercia.co}
+      KOMERCIA_LARAVEL_CLIENT_ID: ${KOMERCIA_LARAVEL_CLIENT_ID:-2}
+      KOMERCIA_LARAVEL_CLIENT_SECRET: ${KOMERCIA_LARAVEL_CLIENT_SECRET}
+      KOMERCIA_EDITOR_URL: ${KOMERCIA_EDITOR_URL:-https://editor.komercia.app}
+    ports:
+      - "3001:3001"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3001/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - komercia_mcp_net
+
+volumes:
+  pgdata:
+    name: komercia_mcp_pgdata
+
+networks:
+  komercia_mcp_net:
+    name: komercia_mcp_net

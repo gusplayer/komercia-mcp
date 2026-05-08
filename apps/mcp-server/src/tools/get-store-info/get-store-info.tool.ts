@@ -1,11 +1,14 @@
-import { Injectable, OnModuleInit, Optional } from '@nestjs/common';
-import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { KomerciaClient } from '@komercia-mcp/komercia-client';
-import type { Store } from '@komercia-mcp/shared';
-import type { ITool, CallToolResult } from '../../mcp/tool.interface.js';
-import { ToolRegistry } from '../../mcp/tool.registry.js';
-import type { MerchantContext } from '../../auth/merchant-context.js';
+import { Injectable, OnModuleInit, Optional } from '@nestjs/common';
+
 import { KomerciaSessionService } from '../../auth/komercia-session.service.js';
+import { NodeTokenRefresher } from '../../auth/node-token-refresher.service.js';
+import { ToolRegistry } from '../../mcp/tool.registry.js';
+
+import type { MerchantContext } from '../../auth/merchant-context.js';
+import type { ITool, CallToolResult } from '../../mcp/tool.interface.js';
+import type { Store } from '@komercia-mcp/shared';
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 export interface KomerciaStoresClient {
   get(storeId: string): Promise<Store>;
@@ -40,6 +43,8 @@ export class GetStoreInfoTool implements ITool, OnModuleInit {
     private readonly injectedClient: KomerciaClientInterface | null,
     @Optional()
     private readonly sessionService: KomerciaSessionService | null = null,
+    @Optional()
+    private readonly nodeTokenRefresher: NodeTokenRefresher | null = null,
   ) {}
 
   onModuleInit(): void {
@@ -88,10 +93,14 @@ export class GetStoreInfoTool implements ITool, OnModuleInit {
           content: [
             {
               type: 'text',
-              text: 'Authentication required: your Komercia session has expired or was not found. Please request a new magic link at web.komercia-exit.com.',
+              text: 'Authentication required: your Komercia session has expired or was not found. Please log in again at mcp.komercia.co.',
             },
           ],
         };
+      }
+
+      if (this.nodeTokenRefresher !== null) {
+        await this.nodeTokenRefresher.ensureFresh(session);
       }
 
       // Import config lazily so tests that don't reach this branch

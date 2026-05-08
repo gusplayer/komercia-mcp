@@ -1,4 +1,5 @@
 import { fetch } from 'undici';
+
 import type { EndpointConfig, EndpointResult } from '../types.js';
 
 const TIMEOUT_MS = 15_000;

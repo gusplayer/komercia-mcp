@@ -1,8 +1,10 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import type { Tool } from '@modelcontextprotocol/sdk/types.js';
-import type { ITool, CallToolResult } from '../../mcp/tool.interface.js';
+
 import { ToolRegistry } from '../../mcp/tool.registry.js';
+
 import type { MerchantContext } from '../../auth/merchant-context.js';
+import type { ITool, CallToolResult } from '../../mcp/tool.interface.js';
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 @Injectable()
 export class DownloadMediaArchiveTool implements ITool, OnModuleInit {
@@ -29,17 +31,19 @@ export class DownloadMediaArchiveTool implements ITool, OnModuleInit {
     this.toolRegistry.register(this);
   }
 
-  async execute(
+  execute(
     _args: unknown,
     _merchantContext: MerchantContext,
   ): Promise<CallToolResult> {
-    return {
+    void _args;
+    void _merchantContext;
+    return Promise.resolve({
       content: [
         {
           type: 'text',
           text: 'Media archive download is not yet available. This feature requires integrating with Cloudinary to generate a ZIP of your store images. Coming soon.',
         },
       ],
-    };
+    });
   }
 }

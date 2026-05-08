@@ -9,7 +9,10 @@ const envSchema = z.object({
   KOMERCIA_LARAVEL_URL: z.string().url().default('https://api2.komercia.co'),
   KOMERCIA_LARAVEL_CLIENT_ID: z.string().default('2'),
   KOMERCIA_LARAVEL_CLIENT_SECRET: z.string().default(''),
-  KOMERCIA_SESSION_ENCRYPTION_KEY: z.string().min(64).optional(),
+  // 32-byte AES-256-GCM key, hex-encoded (64 chars). Required.
+  KOMERCIA_SESSION_ENCRYPTION_KEY: z
+    .string()
+    .regex(/^[0-9a-fA-F]{64}$/, 'KOMERCIA_SESSION_ENCRYPTION_KEY must be 64 hex chars (32 bytes)'),
 });
 
 function loadEnv() {
@@ -18,7 +21,7 @@ function loadEnv() {
   if (!result.success) {
     const errors = result.error.flatten().fieldErrors;
     const messages = Object.entries(errors)
-      .map(([key, msgs]) => `  ${key}: ${(msgs ?? []).join(', ')}`)
+      .map(([key, msgs]) => `  ${key}: ${msgs.join(', ')}`)
       .join('\n');
     throw new Error(`Environment configuration is invalid:\n${messages}`);
   }
@@ -30,9 +33,7 @@ function loadEnv() {
 let _config: ReturnType<typeof loadEnv> | undefined;
 
 export function getConfig() {
-  if (!_config) {
-    _config = loadEnv();
-  }
+  _config ??= loadEnv();
   const raw = _config;
   return {
     // Raw env keys (backward compat)

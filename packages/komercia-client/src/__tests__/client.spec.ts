@@ -18,18 +18,23 @@ const MOCK_STORE = {
   domain: 'test-store.komercia.co',
 };
 
-// TODO: verify response shape after discovery
+// Real Komercia NodeJS shape (validated 2026-05): GET /api/v1/panel/filter-products/{storeId}
+// returns { data: KomerciaProduct[], pagination: { total, page, limit, hasPrev, hasNext } }
 const MOCK_PRODUCTS_RESPONSE = {
-  data: {
-    products: [
-      {
-        id: 1,
-        nombre: 'Widget A',
-        precio: 19990,
-        stock: 50,
-      },
-    ],
+  data: [
+    {
+      id: 1,
+      nombre: 'Widget A',
+      precio: 19990,
+      stock: 50,
+    },
+  ],
+  pagination: {
     total: 1,
+    page: 1,
+    limit: 50,
+    hasPrev: false,
+    hasNext: false,
   },
 };
 
@@ -106,6 +111,17 @@ describe('KomerciaClient', () => {
       );
 
       const client = makeClient();
+      // Mock returns page=1 from pagination, but we still expect the request URL
+      // to carry the requested page/limit params.
+      server.use(
+        http.get(`${NODE_URL}/api/v1/panel/filter-products/${STORE_ID}`, ({ request }) => {
+          capturedUrl = request.url;
+          return HttpResponse.json({
+            data: [],
+            pagination: { total: 0, page: 2, limit: 10, hasPrev: true, hasNext: false },
+          });
+        }),
+      );
       await client.products.list({ page: 2, limit: 10 });
 
       expect(capturedUrl).toContain('page=2');

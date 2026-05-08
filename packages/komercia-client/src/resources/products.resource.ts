@@ -9,7 +9,10 @@ export interface ProductFilterParams {
   withVariants?: boolean;
 }
 
-// TODO: verify response shape after discovery
+// Komercia panel product shape (validated 2026-05 against tienda 1559).
+// The `[key: string]: unknown` index keeps us forward-compatible: Komercia
+// adds fields over time (e.g. SKU, variants) and we surface them via
+// adapters.ts without breaking type checking.
 export interface KomerciaProduct {
   id: number | string;
   nombre: string;
@@ -18,11 +21,15 @@ export interface KomerciaProduct {
   [key: string]: unknown;
 }
 
-// TODO: verify response shape after discovery
+// GET /api/v1/panel/filter-products/{storeId} response
 interface NodeProductsResponse {
-  data: {
-    products: KomerciaProduct[];
+  data: KomerciaProduct[];
+  pagination: {
     total: number;
+    page: number;
+    limit: number;
+    hasPrev: boolean;
+    hasNext: boolean;
   };
 }
 
@@ -48,20 +55,16 @@ export class ProductsResource {
    */
   async list(params?: ProductFilterParams): Promise<ProductsPage> {
     const query = buildProductQuery(params);
-    // TODO: verify response shape after discovery
     const response = await this.nodeHttp.get<NodeProductsResponse>(
       `/api/v1/panel/filter-products/${this.storeId}${query}`,
       { auth: `Bearer ${this.nodeToken}` },
     );
 
-    const page = params?.page ?? 1;
-    const limit = params?.limit ?? 50;
-
     return {
-      products: response.data.products,
-      total: response.data.total,
-      page,
-      limit,
+      products: response.data,
+      total: response.pagination.total,
+      page: response.pagination.page,
+      limit: response.pagination.limit,
     };
   }
 
@@ -85,6 +88,7 @@ export class ProductsResource {
     const allProducts: KomerciaProduct[] = [];
     let page = 1;
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- pagination loop, exits via break
     while (true) {
       const result = await this.list({ ...params, page, limit });
       allProducts.push(...result.products);
@@ -103,11 +107,11 @@ export class ProductsResource {
 function buildProductQuery(params?: ProductFilterParams): string {
   if (params === undefined) return '';
   const parts: string[] = [];
-  if (params.page !== undefined) parts.push(`page=${params.page}`);
-  if (params.limit !== undefined) parts.push(`limit=${params.limit}`);
+  if (params.page !== undefined) parts.push(`page=${String(params.page)}`);
+  if (params.limit !== undefined) parts.push(`limit=${String(params.limit)}`);
   if (params.name !== undefined) parts.push(`name=${encodeURIComponent(params.name)}`);
   if (params.categoryID !== undefined) parts.push(`categoryID=${encodeURIComponent(params.categoryID)}`);
-  if (params.freeShipping !== undefined) parts.push(`freeShipping=${params.freeShipping}`);
-  if (params.withVariants !== undefined) parts.push(`withVariants=${params.withVariants}`);
+  if (params.freeShipping !== undefined) parts.push(`freeShipping=${String(params.freeShipping)}`);
+  if (params.withVariants !== undefined) parts.push(`withVariants=${String(params.withVariants)}`);
   return parts.length > 0 ? `?${parts.join('&')}` : '';
 }

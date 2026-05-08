@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { Logger } from 'nestjs-pino';
+
 import { AppModule } from './app.module.js';
 import { config } from './config/env.js';
 
@@ -34,13 +35,13 @@ async function bootstrap(): Promise<void> {
 
     const logger = app.get(Logger);
     logger.log(
-      `MCP server listening on port ${config.mcpPort} (HTTP/SSE transport)`,
+      `MCP server listening on port ${String(config.mcpPort)} (HTTP/SSE transport)`,
     );
   }
 }
 
 void bootstrap().catch((err: unknown) => {
-  // eslint-disable-next-line no-console
+   
   console.error('Fatal error during bootstrap', err);
   process.exit(1);
 });

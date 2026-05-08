@@ -1,12 +1,15 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { KomerciaClient, toCategory } from '@komercia-mcp/komercia-client';
-import type { Category } from '@komercia-mcp/shared';
-import type { ITool, CallToolResult } from '../../mcp/tool.interface.js';
-import { ToolRegistry } from '../../mcp/tool.registry.js';
-import type { MerchantContext } from '../../auth/merchant-context.js';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+
 import { KomerciaSessionService } from '../../auth/komercia-session.service.js';
+import { NodeTokenRefresher } from '../../auth/node-token-refresher.service.js';
 import { config } from '../../config/env.js';
+import { ToolRegistry } from '../../mcp/tool.registry.js';
+
+import type { MerchantContext } from '../../auth/merchant-context.js';
+import type { ITool, CallToolResult } from '../../mcp/tool.interface.js';
+import type { Category } from '@komercia-mcp/shared';
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 function buildCategoryTree(categories: Category[]): string {
   // Build parent -> children map
@@ -66,6 +69,7 @@ export class ExportCategoriesTool implements ITool, OnModuleInit {
   constructor(
     private readonly toolRegistry: ToolRegistry,
     private readonly sessionService: KomerciaSessionService,
+    private readonly nodeTokenRefresher: NodeTokenRefresher,
   ) {}
 
   onModuleInit(): void {
@@ -83,13 +87,14 @@ export class ExportCategoriesTool implements ITool, OnModuleInit {
         content: [
           {
             type: 'text',
-            text: 'Authentication required: your Komercia session has expired or was not found. Please request a new magic link at web.komercia-exit.com.',
+            text: 'Authentication required: your Komercia session has expired or was not found. Please log in again at mcp.komercia.co.',
           },
         ],
       };
     }
 
     try {
+      await this.nodeTokenRefresher.ensureFresh(session);
       const client = new KomerciaClient({
         nodeUrl: config.nodeUrl,
         laravelUrl: config.laravelUrl,
@@ -114,7 +119,7 @@ export class ExportCategoriesTool implements ITool, OnModuleInit {
       const tree = buildCategoryTree(categories);
 
       const output = [
-        `**Category Hierarchy — ${total} categories**`,
+        `**Category Hierarchy — ${String(total)} categories**`,
         '',
         '```',
         tree,

@@ -70,7 +70,7 @@ export class CustomersResource {
     const parts: string[] = [];
     if (params.type !== undefined) parts.push(`type=${encodeURIComponent(params.type)}`);
     if (params.value !== undefined) parts.push(`value=${encodeURIComponent(params.value)}`);
-    if (params.page !== undefined) parts.push(`page=${params.page}`);
+    if (params.page !== undefined) parts.push(`page=${String(params.page)}`);
     const query = parts.length > 0 ? `?${parts.join('&')}` : '';
 
     // TODO: verify response shape after discovery

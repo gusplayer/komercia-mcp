@@ -1,5 +1,4 @@
-// Simple in-memory rate limiter using a sliding window counter.
-// Suitable for single-instance deployments at this scale.
+import { getSql } from './db.js';
 
 export class RateLimitExceededError extends Error {
   constructor(message = 'Rate limit exceeded') {
@@ -8,47 +7,65 @@ export class RateLimitExceededError extends Error {
   }
 }
 
-interface WindowEntry {
-  count: number;
-  windowStart: number;
-}
-
-const store = new Map<string, WindowEntry>();
-
-// Periodically prune stale entries to prevent unbounded memory growth
-setInterval(
-  () => {
-    const now = Date.now();
-    for (const [key, entry] of store.entries()) {
-      // Remove entries whose window is well past (allow 2x window slack)
-      if (now - entry.windowStart > 7_200_000 /* 2h */) {
-        store.delete(key);
-      }
-    }
-  },
-  3_600_000, // run every hour
-);
-
 /**
- * Checks whether `key` has exceeded `max` requests within `windowMs` milliseconds.
- * Throws {@link RateLimitExceededError} if the limit is exceeded.
- * Uses a fixed window per `windowMs` interval.
+ * Postgres-backed sliding-window rate limiter. Survives across serverless
+ * invocations (Vercel) and shared between web instances. Uses a single
+ * `INSERT ... ON CONFLICT` to atomically increment within the current window
+ * or start a new one.
+ *
+ * The query plan is fast enough (PK lookup) to add < 2ms to the login path.
+ * Stale rows are pruned best-effort by `cleanupExpiredRateLimits()`.
  */
-export function checkRateLimit(key: string, max: number, windowMs: number): void {
-  const now = Date.now();
-  const existing = store.get(key);
+export async function checkRateLimit(
+  key: string,
+  max: number,
+  windowMs: number,
+): Promise<void> {
+  const sql = getSql();
+  const windowSeconds = Math.ceil(windowMs / 1000);
 
-  if (!existing || now - existing.windowStart >= windowMs) {
-    // Start a fresh window
-    store.set(key, { count: 1, windowStart: now });
-    return;
-  }
+  const rows = await sql<{ count: number; expired: boolean }[]>`
+    INSERT INTO rate_limits (key, count, window_start, expires_at)
+    VALUES (
+      ${key},
+      1,
+      now(),
+      now() + (${windowSeconds} || ' seconds')::interval
+    )
+    ON CONFLICT (key) DO UPDATE
+    SET
+      count = CASE
+        WHEN rate_limits.expires_at < now() THEN 1
+        ELSE rate_limits.count + 1
+      END,
+      window_start = CASE
+        WHEN rate_limits.expires_at < now() THEN now()
+        ELSE rate_limits.window_start
+      END,
+      expires_at = CASE
+        WHEN rate_limits.expires_at < now()
+          THEN now() + (${windowSeconds} || ' seconds')::interval
+        ELSE rate_limits.expires_at
+      END
+    RETURNING count, (window_start = now()) AS expired
+  `;
 
-  if (existing.count >= max) {
+  const row = rows[0];
+  if (row && row.count > max) {
     throw new RateLimitExceededError(
-      `Rate limit exceeded for key "${key}": ${max} requests per ${windowMs}ms`,
+      `Rate limit exceeded for key "${key}": ${String(max)} requests per ${String(windowMs)}ms`,
     );
   }
+}
 
-  existing.count += 1;
+/**
+ * Best-effort cleanup. Safe to call from any boot path; errors are swallowed.
+ */
+export async function cleanupExpiredRateLimits(): Promise<void> {
+  try {
+    const sql = getSql();
+    await sql`DELETE FROM rate_limits WHERE expires_at < now() - interval '1 hour'`;
+  } catch {
+    /* intentional: best-effort */
+  }
 }

@@ -1,104 +1,174 @@
-import * as crypto from 'crypto';
+import { createCryptoService  } from '@komercia-mcp/shared';
 import { Injectable, Logger } from '@nestjs/common';
+
 import { config } from '../config/env.js';
 import { getSql } from '../db/db.js';
 
+import type {CryptoService} from '@komercia-mcp/shared';
+
 export interface KomerciaSession {
   jti: string;
+  email: string;
+  merchantId: string;
   storeId: string;
   nodeToken: string;
+  nodeTokenExpiresAt: Date;
   laravelToken: string;
   laravelRefreshToken?: string;
 }
 
 interface KomerciaSessionRow {
   jti: string;
+  email: string;
+  merchant_id: string;
   store_id: string;
+  email_encrypted: string | null;
+  password_encrypted: string | null;
   node_token: string;
+  node_token_expires_at: Date | null;
   laravel_token: string;
   laravel_refresh: string | null;
 }
 
-function decrypt(encrypted: string, key: Buffer): string {
-  const parts = encrypted.split(':');
-  const ivHex = parts[0] ?? '';
-  const authTagHex = parts[1] ?? '';
-  const ciphertextHex = parts[2] ?? '';
-  const iv = Buffer.from(ivHex, 'hex');
-  const authTag = Buffer.from(authTagHex, 'hex');
-  const ciphertext = Buffer.from(ciphertextHex, 'hex');
-
-  const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
-  decipher.setAuthTag(authTag);
-
-  const decrypted = Buffer.concat([
-    decipher.update(ciphertext),
-    decipher.final(),
-  ]);
-  return decrypted.toString('utf8');
+interface RawCredentials {
+  email: string;
+  password: string;
 }
 
 /**
- * Reads Komercia backend tokens from the komercia_sessions Postgres table.
- * Sessions are created by the web app on merchant login; the MCP server only reads them.
+ * Reads (and refreshes) Komercia backend tokens stored in `komercia_sessions`.
+ *
+ * - Sessions are CREATED by the web app on login.
+ * - Sessions are READ on every MCP tool call.
+ * - The Komercia Node JWT expires in 2h with no refresh endpoint, so we keep
+ *   credentials encrypted alongside tokens. `getRawCredentials()` returns them
+ *   to `NodeTokenRefresher`, which performs a re-login when needed.
  */
 @Injectable()
 export class KomerciaSessionService {
   private readonly logger = new Logger(KomerciaSessionService.name);
+  private _crypto: CryptoService | undefined;
+
+  private crypto(): CryptoService | null {
+    if (this._crypto) return this._crypto;
+    const key = config.komerciaSessionEncryptionKey;
+    if (!key) {
+      this.logger.warn('KOMERCIA_SESSION_ENCRYPTION_KEY not set — sessions will be unreadable');
+      return null;
+    }
+    this._crypto = createCryptoService(key);
+    return this._crypto;
+  }
+
+  private async getRow(jti: string): Promise<KomerciaSessionRow | null> {
+    if (!config.databaseUrl) {
+      this.logger.warn('DATABASE_URL not set — skipping DB session lookup');
+      return null;
+    }
+    const sql = getSql();
+    const rows = await sql<KomerciaSessionRow[]>`
+      SELECT jti, email, merchant_id, store_id,
+             email_encrypted, password_encrypted,
+             node_token, node_token_expires_at,
+             laravel_token, laravel_refresh
+      FROM komercia_sessions
+      WHERE jti = ${jti}::uuid
+        AND expires_at > now()
+        AND revoked_at IS NULL
+      LIMIT 1
+    `;
+    return rows[0] ?? null;
+  }
 
   async getSession(jti: string): Promise<KomerciaSession | null> {
     try {
-      if (!config.databaseUrl) {
-        this.logger.warn('DATABASE_URL is not set — skipping DB session lookup');
-        return null;
-      }
-
-      const encryptionKeyHex = config.komerciaSessionEncryptionKey;
-      if (!encryptionKeyHex) {
-        this.logger.warn(
-          'KOMERCIA_SESSION_ENCRYPTION_KEY is not set — cannot decrypt session tokens',
-        );
-        return null;
-      }
-
-      const sql = getSql();
-
-      const rows = await sql<KomerciaSessionRow[]>`
-        SELECT jti, store_id, node_token, laravel_token, laravel_refresh
-        FROM komercia_sessions
-        WHERE jti = ${jti}
-          AND expires_at > now()
-        LIMIT 1
-      `;
-
-      const row = rows[0];
-      if (row === undefined) {
-        return null;
-      }
-
-      const key = Buffer.from(encryptionKeyHex, 'hex');
-      const nodeToken = decrypt(row.node_token, key);
-      const laravelToken = decrypt(row.laravel_token, key);
+      const row = await this.getRow(jti);
+      if (!row) return null;
+      const c = this.crypto();
+      if (!c) return null;
 
       const session: KomerciaSession = {
         jti: row.jti,
+        email: row.email,
+        merchantId: row.merchant_id,
         storeId: row.store_id,
-        nodeToken,
-        laravelToken,
+        nodeToken: c.decrypt(row.node_token),
+        nodeTokenExpiresAt: row.node_token_expires_at ?? new Date(0),
+        laravelToken: c.decrypt(row.laravel_token),
       };
-
-      if (row.laravel_refresh != null) {
-        session.laravelRefreshToken = decrypt(row.laravel_refresh, key);
+      if (row.laravel_refresh) {
+        session.laravelRefreshToken = c.decrypt(row.laravel_refresh);
       }
+
+      // Best-effort fire-and-forget audit trail.
+      void this.touchLastUsed(jti);
 
       return session;
     } catch (err) {
-      this.logger.error({ err }, 'Failed to retrieve session from DB — returning null');
+      this.logger.error({ err }, 'Failed to retrieve session');
       return null;
     }
   }
 
-  async storeSession(_session: KomerciaSession): Promise<void> {
-    throw new Error('Sessions are created by the web app, not the MCP server');
+  /**
+   * Returns the encrypted credentials for the given session — used by
+   * `NodeTokenRefresher` to re-login against Komercia when the Node JWT expires.
+   * Returns null when the row has no encrypted credentials (legacy v1 sessions).
+   */
+  async getRawCredentials(jti: string): Promise<RawCredentials | null> {
+    try {
+      const row = await this.getRow(jti);
+      if (!row?.email_encrypted || !row.password_encrypted) return null;
+      const c = this.crypto();
+      if (!c) return null;
+      return {
+        email: c.decrypt(row.email_encrypted),
+        password: c.decrypt(row.password_encrypted),
+      };
+    } catch (err) {
+      this.logger.error({ err }, 'Failed to retrieve raw credentials');
+      return null;
+    }
+  }
+
+  /**
+   * Persists a freshly-rotated Node token + its expiry. Called by NodeTokenRefresher.
+   */
+  async updateNodeToken(jti: string, encryptedNodeToken: string, expiresAt: Date): Promise<void> {
+    const sql = getSql();
+    await sql`
+      UPDATE komercia_sessions
+      SET node_token = ${encryptedNodeToken},
+          node_token_expires_at = ${expiresAt.toISOString()}::timestamptz
+      WHERE jti = ${jti}::uuid
+    `;
+  }
+
+  /**
+   * Marks a session as revoked (logout / regenerate token).
+   */
+  async revoke(jti: string): Promise<boolean> {
+    const sql = getSql();
+    const r = await sql`
+      UPDATE komercia_sessions
+      SET revoked_at = now()
+      WHERE jti = ${jti}::uuid AND revoked_at IS NULL
+    `;
+    return r.count > 0;
+  }
+
+  encrypt(plaintext: string): string {
+    const c = this.crypto();
+    if (!c) throw new Error('Crypto service unavailable');
+    return c.encrypt(plaintext);
+  }
+
+  private async touchLastUsed(jti: string): Promise<void> {
+    try {
+      const sql = getSql();
+      await sql`UPDATE komercia_sessions SET last_used_at = now() WHERE jti = ${jti}::uuid`;
+    } catch {
+      // intentional: audit-trail update is best-effort, never blocks tool calls.
+    }
   }
 }

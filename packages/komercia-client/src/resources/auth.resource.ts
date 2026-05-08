@@ -1,12 +1,9 @@
 import type { HttpClient } from '../http.js';
 
-// TODO: verify response shape after discovery
+// POST /api/v1/auth/stores/login response
+// JWT payload: { id: number (= storeId), email: string, iat, exp }
 export interface NodeLoginResponse {
-  data: {
-    token: string;
-    storeId: number;
-    [key: string]: unknown;
-  };
+  accessToken: string;
 }
 
 export interface LaravelTokenResponse {
@@ -21,10 +18,17 @@ export interface AuthResourceConfig {
   laravelClientSecret: string;
 }
 
+// GET /api/admin/tienda response (Laravel) — only the fields we use.
+export interface LaravelStoreInfo {
+  id: number;
+  nombre: string;
+  subdominio?: string;
+  [key: string]: unknown;
+}
+
 /**
- * AuthResource handles initial authentication against Komercia backends.
- * Used during magic link redemption (web app onboarding flow) to collect
- * and store the merchant's Komercia tokens in komercia_sessions.
+ * AuthResource handles initial authentication against Komercia backends
+ * and the post-login lookup of the real storeId.
  */
 export class AuthResource {
   constructor(
@@ -34,13 +38,24 @@ export class AuthResource {
   ) {}
 
   /**
+   * Returns the merchant's authenticated store (Laravel side).
+   * The `id` here is the canonical storeId used in NodeJS panel paths,
+   * NOT the `id` claim of the Komercia Node JWT (that one is the merchantId).
+   */
+  async getMyStore(laravelToken: string): Promise<LaravelStoreInfo> {
+    const response = await this.laravelHttp.get<{ data: LaravelStoreInfo }>(
+      '/api/admin/tienda',
+      { auth: `Bearer ${laravelToken}` },
+    );
+    return response.data;
+  }
+
+  /**
    * Authenticate against the NodeJS backend.
-   * POST /api/v1/auth/stores/login
-   * Returns a token and storeId to be stored in komercia_sessions.
-   * TODO: verify response shape after discovery
+   * POST /api/v1/auth/stores/login → { accessToken: string }
+   * The JWT payload carries { id: number } which is the store identifier.
    */
   async loginNode(email: string, password: string): Promise<NodeLoginResponse> {
-    // TODO: verify response shape after discovery
     return this.nodeHttp.post<NodeLoginResponse>('/api/v1/auth/stores/login', {
       email,
       password,
@@ -49,9 +64,8 @@ export class AuthResource {
 
   /**
    * Authenticate against the Laravel backend using OAuth2 password grant.
-   * POST /oauth/token (form-data)
-   * Returns access_token and refresh_token to be stored in komercia_sessions.
-   * TODO: verify response shape after discovery
+   * POST /oauth/token (form-data) → { access_token, refresh_token, ... }
+   * Requires a valid client_secret; treated as optional in the login flow.
    */
   async loginLaravel(email: string, password: string): Promise<LaravelTokenResponse> {
     const formData = new URLSearchParams({
@@ -63,7 +77,6 @@ export class AuthResource {
       scope: '',
     });
 
-    // TODO: verify response shape after discovery
     return this.laravelHttp.postForm<LaravelTokenResponse>('/oauth/token', formData);
   }
 }

@@ -33,8 +33,12 @@ const envSchema = z.object({
     .enum(['development', 'production', 'test'])
     .optional()
     .transform((val) => val ?? 'development'),
-  DATABASE_URL: z.string().min(1, 'DATABASE_URL is required').optional().default(''),
-  KOMERCIA_SESSION_ENCRYPTION_KEY: z.string().min(64).optional(),
+  DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
+  // 32-byte AES-256-GCM key, hex-encoded (64 chars). Required: without it the
+  // MCP server cannot decrypt sessions, which is its only purpose.
+  KOMERCIA_SESSION_ENCRYPTION_KEY: z
+    .string()
+    .regex(/^[0-9a-fA-F]{64}$/, 'KOMERCIA_SESSION_ENCRYPTION_KEY must be 64 hex chars (32 bytes)'),
   KOMERCIA_NODE_URL: z.string().default('https://api.komercia.app'),
   KOMERCIA_LARAVEL_URL: z.string().default('https://api2.komercia.co'),
   KOMERCIA_EDITOR_URL: z.string().default('https://editor.komercia.app'),

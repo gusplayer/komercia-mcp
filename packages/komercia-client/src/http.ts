@@ -1,4 +1,5 @@
 import pRetry, { AbortError } from 'p-retry';
+
 import {
   KomerciaApiError,
   KomerciaAuthError,
@@ -73,7 +74,7 @@ export class HttpClient {
         throw err;
       }
 
-      await this.throwOnError(response, path);
+      this.throwOnError(response, path);
 
       return response.json() as Promise<T>;
     };
@@ -122,7 +123,7 @@ export class HttpClient {
         throw err;
       }
 
-      await this.throwOnError(response, path);
+      this.throwOnError(response, path);
 
       return response.arrayBuffer();
     };
@@ -171,7 +172,7 @@ export class HttpClient {
         throw err;
       }
 
-      await this.throwOnError(response, path);
+      this.throwOnError(response, path);
 
       return response.text();
     };
@@ -232,7 +233,7 @@ export class HttpClient {
         throw err;
       }
 
-      await this.throwOnError(response, path);
+      this.throwOnError(response, path);
 
       return response.json() as Promise<T>;
     };
@@ -253,7 +254,7 @@ export class HttpClient {
     });
   }
 
-  private async throwOnError(response: Response, path: string): Promise<void> {
+  private throwOnError(response: Response, path: string): void {
     if (response.ok) return;
 
     const status = response.status;
@@ -271,7 +272,7 @@ export class HttpClient {
       throw new KomerciaRateLimitError(retryAfterMs, path);
     }
 
-    const message = `HTTP ${status} from ${path}`;
+    const message = `HTTP ${String(status)} from ${path}`;
     if (status >= 400 && status < 500) {
       // Non-retryable 4xx — throw KomerciaApiError so p-retry stops
       throw new KomerciaApiError(status, path, message);

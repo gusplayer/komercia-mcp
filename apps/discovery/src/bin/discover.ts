@@ -1,13 +1,15 @@
 #!/usr/bin/env node
 import { writeFileSync, mkdirSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { loadConfig } from '../config.js';
-import { EndpointTester, getRawBody } from '../engine/endpoint-tester.js';
 import { AuthManager } from '../engine/auth-manager.js';
+import { EndpointTester, getRawBody } from '../engine/endpoint-tester.js';
 import { inferSchema } from '../engine/schema-inferrer.js';
-import { generateMarkdown } from '../reporters/markdown.reporter.js';
 import { generateApiMap } from '../reporters/json.reporter.js';
+import { generateMarkdown } from '../reporters/markdown.reporter.js';
+
 import type { BackendReport, DiscoveryReport, EndpointResult } from '../types.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -69,9 +71,9 @@ async function main(): Promise<void> {
         }
       }
 
-      const statusLabel = result.ok ? `${result.statusCode} OK` : `${result.statusCode} FAIL`;
+      const statusLabel = result.ok ? `${String(result.statusCode)} OK` : `${String(result.statusCode)} FAIL`;
       console.log(
-        `  [${result.method}] ${result.path} -> ${statusLabel} (${result.responseTimeMs}ms)`,
+        `  [${result.method}] ${result.path} -> ${statusLabel} (${String(result.responseTimeMs)}ms)`,
       );
 
       endpointResults.push(result);
@@ -108,9 +110,9 @@ async function main(): Promise<void> {
 
   // Summary
   console.log('\n--- Discovery Summary ---');
-  console.log(`  Total endpoints tested : ${totalTested}`);
-  console.log(`  Passed                 : ${totalOk}`);
-  console.log(`  Failed                 : ${totalFailed}`);
+  console.log(`  Total endpoints tested : ${String(totalTested)}`);
+  console.log(`  Passed                 : ${String(totalOk)}`);
+  console.log(`  Failed                 : ${String(totalFailed)}`);
   console.log('-------------------------\n');
 
   // Exit 0 even if some endpoints failed

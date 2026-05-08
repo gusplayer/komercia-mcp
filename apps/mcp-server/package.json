@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "description": "NestJS MCP server — exposes Komercia data as Claude.ai tools",
   "private": true,
+  "type": "module",
   "scripts": {
-    "build": "nest build",
-    "dev": "nest start --watch",
+    "build": "tsc -b",
+    "dev": "tsx watch src/main.ts",
     "start": "node dist/main.js",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -38,6 +39,7 @@
     "@vitest/coverage-v8": "^2.1.0",
     "eslint": "^9.14.0",
     "pino-pretty": "^11.3.0",
+    "tsx": "^4.19.0",
     "typescript": "^5.5.0",
     "vitest": "^2.1.0"
   }

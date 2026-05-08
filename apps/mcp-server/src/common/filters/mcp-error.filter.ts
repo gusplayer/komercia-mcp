@@ -1,12 +1,15 @@
 import {
-  type ArgumentsHost,
+  
   Catch,
-  type ExceptionFilter,
-  HttpException,
+  
+  HttpException
 } from '@nestjs/common';
-import type { IncomingMessage, ServerResponse } from 'node:http';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
+
 import { REQUEST_ID_HEADER } from '../interceptors/request-id.interceptor.js';
+
+import type {ArgumentsHost, ExceptionFilter} from '@nestjs/common';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 
 @Catch()
 export class McpErrorFilter implements ExceptionFilter {

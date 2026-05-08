@@ -1,10 +1,13 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import type { Tool } from '@modelcontextprotocol/sdk/types.js';
-import type { ITool, CallToolResult } from '../../mcp/tool.interface.js';
-import { ToolRegistry } from '../../mcp/tool.registry.js';
-import type { MerchantContext } from '../../auth/merchant-context.js';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+
 import { KomerciaSessionService } from '../../auth/komercia-session.service.js';
+import { NodeTokenRefresher } from '../../auth/node-token-refresher.service.js';
 import { config } from '../../config/env.js';
+import { ToolRegistry } from '../../mcp/tool.registry.js';
+
+import type { MerchantContext } from '../../auth/merchant-context.js';
+import type { ITool, CallToolResult } from '../../mcp/tool.interface.js';
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 interface BackendCheckResult {
   name: string;
@@ -16,6 +19,7 @@ interface BackendCheckResult {
 
 @Injectable()
 export class ValidateKomerciaApisTool implements ITool, OnModuleInit {
+  private readonly logger = new Logger(ValidateKomerciaApisTool.name);
   readonly definition: Tool = {
     name: 'validate_komercia_apis',
     description:
@@ -35,6 +39,7 @@ export class ValidateKomerciaApisTool implements ITool, OnModuleInit {
   constructor(
     private readonly toolRegistry: ToolRegistry,
     private readonly sessionService: KomerciaSessionService,
+    private readonly nodeTokenRefresher: NodeTokenRefresher,
   ) {}
 
   onModuleInit(): void {
@@ -52,10 +57,22 @@ export class ValidateKomerciaApisTool implements ITool, OnModuleInit {
         content: [
           {
             type: 'text',
-            text: 'Authentication required: your Komercia session has expired or was not found. Please request a new magic link at web.komercia-exit.com.',
+            text: 'Authentication required: your Komercia session has expired or was not found. Please log in again at mcp.komercia.co.',
           },
         ],
       };
+    }
+
+    try {
+      await this.nodeTokenRefresher.ensureFresh(session);
+    } catch (err) {
+      // If refresh fails (e.g. session was auto-revoked), proceed with the
+      // (likely stale) token — the Node check below will surface this as
+      // auth_error in the report. We still log so ops can see the cause.
+      this.logger.warn(
+        { err: (err as Error).message, jti: merchantContext.jti },
+        'Node token refresh failed during validate_komercia_apis; running with stale token',
+      );
     }
 
     const checks = await Promise.allSettled([
@@ -79,7 +96,7 @@ export class ValidateKomerciaApisTool implements ITool, OnModuleInit {
       }
       const names = ['NodeJS (api.komercia.app)', 'Laravel (api2.komercia.co)'];
       return {
-        name: names[i] ?? `Backend ${i + 1}`,
+        name: names[i] ?? `Backend ${String(i + 1)}`,
         url: i === 0 ? config.nodeUrl : config.laravelUrl,
         status: 'offline' as const,
         responseTimeMs: 0,
@@ -88,7 +105,7 @@ export class ValidateKomerciaApisTool implements ITool, OnModuleInit {
 
     const rows = results.map((r) => {
       const statusIcon = r.status === 'online' ? '✓ Online' : r.status === 'auth_error' ? '⚠ Auth Error' : '✗ Offline';
-      return `| ${r.name} | ${statusIcon} | ${r.responseTimeMs}ms |`;
+      return `| ${r.name} | ${statusIcon} | ${String(r.responseTimeMs)}ms |`;
     });
 
     const text = [

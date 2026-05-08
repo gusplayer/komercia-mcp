@@ -1,7 +1,7 @@
-import crypto from 'node:crypto';
+import { createCryptoService, JWT_EXPIRY_SECONDS } from '@komercia-mcp/shared';
+
 import { getSql } from './db.js';
 import { getConfig } from './env.js';
-import { JWT_EXPIRY_SECONDS } from '@komercia-mcp/shared';
 
 export class SessionExpiredError extends Error {
   constructor(message = 'Session has expired') {
@@ -17,65 +17,26 @@ export class SessionNotFoundError extends Error {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Encryption helpers — AES-256-GCM
-// ---------------------------------------------------------------------------
-
-function getEncryptionKey(): Buffer {
-  const config = getConfig();
-  const hex = config.komerciaSessionEncryptionKey;
-  if (!hex || hex.length < 64) {
-    throw new Error('KOMERCIA_SESSION_ENCRYPTION_KEY must be a 32-byte (64 hex chars) key');
+let _crypto: ReturnType<typeof createCryptoService> | undefined;
+function crypto() {
+  if (!_crypto) {
+    const { komerciaSessionEncryptionKey } = getConfig();
+    if (!komerciaSessionEncryptionKey) {
+      throw new Error('KOMERCIA_SESSION_ENCRYPTION_KEY is required to (en|de)crypt sessions');
+    }
+    _crypto = createCryptoService(komerciaSessionEncryptionKey);
   }
-  return Buffer.from(hex, 'hex');
+  return _crypto;
 }
-
-/**
- * Encrypts plaintext with AES-256-GCM.
- * Returns `iv:authTag:ciphertext` (all hex-encoded, colon-separated).
- */
-function encrypt(plaintext: string): string {
-  const key = getEncryptionKey();
-  const iv = crypto.randomBytes(12); // 96-bit IV for GCM
-  const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
-
-  const encrypted = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()]);
-  const authTag = cipher.getAuthTag();
-
-  return [iv.toString('hex'), authTag.toString('hex'), encrypted.toString('hex')].join(':');
-}
-
-/**
- * Decrypts a value produced by `encrypt`.
- */
-function decrypt(stored: string): string {
-  const key = getEncryptionKey();
-  const parts = stored.split(':');
-  if (parts.length !== 3) {
-    throw new Error('Invalid encrypted value format');
-  }
-  const [ivHex, authTagHex, ciphertextHex] = parts as [string, string, string];
-
-  const iv = Buffer.from(ivHex, 'hex');
-  const authTag = Buffer.from(authTagHex, 'hex');
-  const ciphertext = Buffer.from(ciphertextHex, 'hex');
-
-  const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
-  decipher.setAuthTag(authTag);
-
-  return Buffer.concat([decipher.update(ciphertext), decipher.final()]).toString('utf8');
-}
-
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
 
 export interface CreateSessionParams {
   jti: string;
   email: string;
+  password: string;
   merchantId: string;
   storeId: string;
   nodeToken: string;
+  nodeTokenExpiresAt: Date;
   laravelToken: string;
   laravelRefresh?: string;
   expirySeconds?: number;
@@ -83,38 +44,44 @@ export interface CreateSessionParams {
 
 /**
  * Persists a new session in komercia_sessions.
- * Tokens are encrypted at rest with AES-256-GCM.
+ * Tokens AND merchant credentials are encrypted at rest with AES-256-GCM.
+ *
+ * Credentials are stored to support automatic Node-token re-login after the
+ * Komercia Node JWT expires (2h). They are decrypted only inside the MCP
+ * server when calling NodeTokenRefresher; never returned to the client.
  */
 export async function createSession(params: CreateSessionParams): Promise<{ jti: string }> {
   const {
     jti,
     email,
+    password,
     merchantId,
     storeId,
     nodeToken,
+    nodeTokenExpiresAt,
     laravelToken,
     laravelRefresh,
     expirySeconds = JWT_EXPIRY_SECONDS,
   } = params;
 
+  const c = crypto();
   const sql = getSql();
 
-  const encryptedNode = encrypt(nodeToken);
-  const encryptedLaravel = encrypt(laravelToken);
-  const encryptedRefresh = laravelRefresh ? encrypt(laravelRefresh) : null;
-
   await sql`
-    INSERT INTO komercia_sessions
-      (jti, email, merchant_id, store_id, node_token, laravel_token, laravel_refresh, expires_at)
-    VALUES (
-      ${jti}::uuid,
-      ${email},
-      ${merchantId},
-      ${storeId},
-      ${encryptedNode},
-      ${encryptedLaravel},
-      ${encryptedRefresh},
-      now() + (${expirySeconds} || ' seconds')::interval
+    INSERT INTO komercia_sessions (
+      jti, email, merchant_id, store_id,
+      email_encrypted, password_encrypted,
+      node_token, node_token_expires_at,
+      laravel_token, laravel_refresh,
+      expires_at, schema_version
+    ) VALUES (
+      ${jti}::uuid, ${email}, ${merchantId}, ${storeId},
+      ${c.encrypt(email)}, ${c.encrypt(password)},
+      ${c.encrypt(nodeToken)}, ${nodeTokenExpiresAt.toISOString()}::timestamptz,
+      ${c.encrypt(laravelToken)},
+      ${laravelRefresh ? c.encrypt(laravelRefresh) : null},
+      now() + (${expirySeconds} || ' seconds')::interval,
+      2
     )
   `;
 
@@ -126,15 +93,18 @@ export interface SessionData {
   merchantId: string;
   storeId: string;
   nodeToken: string;
+  nodeTokenExpiresAt: Date;
   laravelToken: string;
   laravelRefresh?: string;
 }
 
 /**
- * Retrieves a session by jti. Returns null if not found or expired.
- * Tokens are decrypted before being returned.
+ * Retrieves a session by jti. Returns null if not found, expired, or revoked.
+ * Tokens are decrypted before being returned. Credentials (email/password)
+ * are NOT exposed by this function — only the MCP server reads those for refresh.
  */
 export async function getSession(jti: string): Promise<SessionData | null> {
+  const c = crypto();
   const sql = getSql();
 
   const rows = await sql<
@@ -143,33 +113,52 @@ export async function getSession(jti: string): Promise<SessionData | null> {
       merchant_id: string;
       store_id: string;
       node_token: string;
+      node_token_expires_at: Date | null;
       laravel_token: string;
       laravel_refresh: string | null;
     }[]
   >`
-    SELECT email, merchant_id, store_id, node_token, laravel_token, laravel_refresh
+    SELECT email, merchant_id, store_id, node_token, node_token_expires_at, laravel_token, laravel_refresh
     FROM komercia_sessions
     WHERE jti = ${jti}::uuid
       AND expires_at > now()
+      AND revoked_at IS NULL
   `;
 
-  if (rows.length === 0) {
+  const row = rows[0];
+  if (row === undefined) {
     return null;
   }
 
-  const row = rows[0]!;
-
-  const base = {
+  const data: SessionData = {
     email: row.email,
     merchantId: row.merchant_id,
     storeId: row.store_id,
-    nodeToken: decrypt(row.node_token),
-    laravelToken: decrypt(row.laravel_token),
+    nodeToken: c.decrypt(row.node_token),
+    // Fall back to a far-past date if the column is null (legacy v1 rows).
+    // The MCP refresher will treat this as "needs refresh now".
+    nodeTokenExpiresAt: row.node_token_expires_at ?? new Date(0),
+    laravelToken: c.decrypt(row.laravel_token),
   };
 
   if (row.laravel_refresh) {
-    return { ...base, laravelRefresh: decrypt(row.laravel_refresh) };
+    data.laravelRefresh = c.decrypt(row.laravel_refresh);
   }
 
-  return base;
+  return data;
+}
+
+/**
+ * Marks a session as revoked. After this, getSession returns null.
+ */
+export async function revokeSession(jti: string, email: string): Promise<boolean> {
+  const sql = getSql();
+  const result = await sql`
+    UPDATE komercia_sessions
+    SET revoked_at = now()
+    WHERE jti = ${jti}::uuid
+      AND email = ${email}
+      AND revoked_at IS NULL
+  `;
+  return result.count > 0;
 }

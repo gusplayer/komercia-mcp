@@ -1,5 +1,5 @@
-import type { Store } from '@komercia-mcp/shared';
 import type { HttpClient } from '../http.js';
+import type { Store } from '@komercia-mcp/shared';
 
 export class StoresResource {
   constructor(
