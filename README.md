@@ -37,20 +37,18 @@ Your token is valid for 6 months and is read-only. Click **"Revoke this token"**
 git clone https://github.com/gustavomoreno/komercia-mcp.git
 cd komercia-mcp
 
-# Copy and edit .env.local (secrets are pre-generated for first run)
-cp .env.example .env.local
+# Copy the env template and fill in your values
+cp .env.example .env
 
 pnpm install
 
-# 1) Bring up Postgres (port 5434)
-docker compose --env-file .env.local --profile deps up -d postgres
+# 1) Bring up Postgres (port 5434) and run migrations
+docker compose --profile deps up -d
 
 # 2) Apply DB migrations
-DATABASE_URL=$(grep ^DATABASE_URL .env.local | cut -d= -f2-) \
-  node scripts/migrate.mjs
+node scripts/migrate.mjs
 
 # 3) Start both apps (web on 4321, mcp server on 3001)
-set -a; source .env.local; set +a
 pnpm dev
 ```
 
@@ -73,9 +71,9 @@ node scripts/smoke-test.mjs
 
 For parity with production:
 ```bash
-docker compose --env-file .env.local --profile full up -d --build
+docker compose --profile full up -d --build
 ```
-This builds web + mcp-server images, runs the migration job, and brings up the whole stack on `localhost:4321` (web) and `localhost:3001` (api).
+Builds the mcp-server image, runs the migration job, and brings up the full stack on `localhost:3001` (api). The web app runs outside Docker — use `pnpm dev` for it.
 
 ### Project structure
 

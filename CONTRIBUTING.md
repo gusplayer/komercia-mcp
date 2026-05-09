@@ -14,13 +14,12 @@ cd komercia-mcp
 pnpm install
 
 # Local dev DB (Postgres on port 5434)
-docker compose --env-file .env.local --profile deps up -d postgres
+docker compose --profile deps up -d
 
 # Run migrations
-DATABASE_URL=$(grep ^DATABASE_URL .env.local | cut -d= -f2-) node scripts/migrate.mjs
+node scripts/migrate.mjs
 
 # Run web (4321) and MCP server (3001) locally
-set -a; source .env.local; set +a
 pnpm dev
 ```
 
