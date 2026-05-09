@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@komercia-mcp/shared": "workspace:*",
-    "p-retry": "^6.2.0",
+    "p-retry": "^8.0.0",
     "undici": "^7.0.0"
   },
   "devDependencies": {
