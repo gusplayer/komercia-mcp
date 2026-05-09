@@ -26,26 +26,49 @@ Ask Claude questions like:
 
 ## Quick start (merchants)
 
+There are two steps: get a token, then connect it to whichever Claude client you use. You only need **one** of the connection options below.
+
 ### Step 1 — Get your token
 
 Visit [mcp.komercia.co](https://mcp.komercia.co), log in with your Komercia credentials, and copy the token shown on screen. It's valid for 6 months and is read-only.
 
-### Step 2 — Connect your client (pick one)
+### Step 2 — Connect to Claude (choose one option)
 
-All clients use the same token. Choose whichever you already use:
+> All options use the same token from Step 1. Pick the one that matches your Claude client.
 
-**Claude.ai** (recommended — no install needed)
+| Option | Where you use Claude | Install required? |
+|---|---|---|
+| [A · Claude.ai](#option-a--claudeai-web--mobile) | Browser or mobile app | No |
+| [B · Claude Desktop](#option-b--claude-desktop-app) | Mac / Windows desktop app | Node 18+ |
+| [C · Claude Code or Cursor](#option-c--claude-code--cursor-terminal--ide) | Terminal or IDE | Claude Code CLI |
 
-In [Claude.ai](https://claude.ai), go to **Settings → Integrations** and add a new integration:
+---
 
-| Field | Value |
-|---|---|
-| Server URL | `https://api-mcp.komercia.co/sse` |
-| Authentication | Paste your token |
+#### Option A · Claude.ai (web & mobile)
 
-**Claude Desktop**
+No installation required. Works on any browser or the Claude mobile app.
 
-In `claude_desktop_config.json`:
+1. In [Claude.ai](https://claude.ai), go to **Settings → Integrations**
+2. Click **Add custom integration → MCP Server**
+3. Set the URL to `https://api-mcp.komercia.co/sse`
+4. Paste your token in the **Authorization** field and save
+
+---
+
+#### Option B · Claude Desktop app
+
+The desktop app uses a JSON config file and requires the `mcp-remote` bridge.
+
+```bash
+npm install -g mcp-remote
+```
+
+Then open (or create) the config file:
+
+- **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+
+Add this inside `mcpServers`:
 
 ```json
 {
@@ -58,14 +81,35 @@ In `claude_desktop_config.json`:
 }
 ```
 
-**Claude Code / Cursor**
+Restart Claude Desktop. The **komercia** server will appear as active.
+
+---
+
+#### Option C · Claude Code / Cursor (terminal & IDE)
+
+**Claude Code:**
 
 ```bash
 claude mcp add --transport http komercia https://api-mcp.komercia.co \
   --header "Authorization: Bearer YOUR_TOKEN"
 ```
 
-Full setup guide for all clients: [mcp.komercia.co/uso](https://mcp.komercia.co/uso)
+**Cursor / Windsurf / other MCP clients:**
+
+```json
+{
+  "mcpServers": {
+    "komercia": {
+      "url": "https://api-mcp.komercia.co/sse",
+      "headers": { "Authorization": "Bearer YOUR_TOKEN" }
+    }
+  }
+}
+```
+
+---
+
+Full step-by-step guide with screenshots: [mcp.komercia.co/uso](https://mcp.komercia.co/uso)
 
 ---
 
