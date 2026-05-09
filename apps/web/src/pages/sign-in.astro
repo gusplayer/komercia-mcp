@@ -22,60 +22,58 @@ Astro.cookies.set('csrf_token', csrfToken, {
   <div class="min-h-screen flex flex-col">
 
     <!-- Minimal header -->
-    <header class="h-14 flex items-center px-6 border-b border-subtle">
+    <header class="h-14 flex items-center px-6 lg:px-8 border-b border-subtle">
       <a href="/" class="font-semibold text-sm" style="color:var(--text-primary)">
-        komercia<span style="color:var(--accent)"> exit</span>
+        komercia<span class="text-accent-color"> exit</span>
       </a>
       <div class="ml-auto"><ThemeToggle /></div>
     </header>
 
-    <!-- Main content -->
-    <main class="flex-1 grid md:grid-cols-5">
+    <!-- Main split -->
+    <main class="flex-1 grid lg:grid-cols-2">
 
-      <!-- Left panel: form (3 cols on md, full on mobile) -->
-      <div class="md:col-span-3 flex items-center justify-center p-8 md:p-16">
-        <div class="max-w-sm w-full">
-          <a href="/" class="link text-sm flex items-center gap-1 mb-8">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="15 18 9 12 15 6"/>
-            </svg>
-            Volver
-          </a>
+      <!-- LEFT: form area -->
+      <div class="flex items-center justify-center px-6 py-12 lg:py-0">
+        <div class="w-full max-w-sm">
+          <!-- Back link -->
+          <a href="/" class="link inline-flex items-center gap-1 text-xs mb-10">← Volver al inicio</a>
 
-          <h1 class="text-3xl font-bold mb-2">Inicia sesión</h1>
+          <!-- Heading -->
+          <h1 class="text-3xl font-semibold tracking-tight mb-2" style="letter-spacing:-0.02em">Inicia sesión</h1>
           <p class="text-sm text-muted mb-8">Con tu cuenta de Komercia</p>
 
+          <!-- Form -->
           <LoginForm />
 
-          <p class="text-xs text-center mt-6 text-faint">
-            Tus credenciales se usan solo para autenticarte y nunca se almacenan.
+          <!-- Footer note -->
+          <p class="text-[11px] text-faint text-center mt-8 leading-relaxed">
+            Tus credenciales se usan solo para autenticarte y nunca se almacenan.<br>
+            <a href="/#seguridad" class="link-accent">Lee nuestro modelo de seguridad →</a>
           </p>
         </div>
       </div>
 
-      <!-- Right panel: decorative (2 cols on md, hidden on mobile) -->
+      <!-- RIGHT: decorative panel -->
       <div
-        class="hidden md:flex md:col-span-2 flex-col items-center justify-center relative overflow-hidden"
-        style="background: var(--bg-secondary)"
+        class="hidden lg:flex relative overflow-hidden items-center justify-center"
+        style="background-color: var(--bg-secondary); border-left: 1px solid var(--border);"
       >
-        <!-- Decorative dot pattern background -->
-        <div class="absolute inset-0 bg-dot-pattern opacity-20"></div>
-
-        <!-- Content -->
-        <div class="relative z-10 px-10 text-center">
-          <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-center max-w-xs mx-auto leading-tight">
+        <!-- Particle field background -->
+        <div class="particle-field"></div>
+        <div class="particle-accent"></div>
+        <!-- Centered content -->
+        <div class="relative z-10 max-w-sm px-12 text-center">
+          <h2 class="text-4xl font-semibold tracking-tight mb-4" style="letter-spacing:-0.02em; line-height:1.1">
             Tus datos,<br>
-            <span style="color:var(--accent)">siempre<br>contigo.</span>
+            <span style="color: var(--accent)">siempre contigo.</span>
           </h2>
-          <p class="text-sm text-muted text-center mt-4">
-            Exporta todo antes de que cierre Komercia.
+          <p class="text-sm text-muted leading-relaxed">
+            Exporta todo de tu tienda Komercia conversando con Claude.ai.
           </p>
         </div>
-
-        <!-- Teal glow accent -->
-        <div class="absolute bottom-0 left-0 right-0 h-64 bg-glow-teal opacity-40 pointer-events-none"></div>
       </div>
-
     </main>
   </div>
 </Base>
+</content>
+</invoke>

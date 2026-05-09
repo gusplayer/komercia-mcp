@@ -2,34 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Design tokens ──────────────────────────────────────────────── */
+/* ─── Design tokens — Inception-inspired editorial palette ───────── */
 :root {
-  /* Light mode (default) */
-  --bg-primary:    #ffffff;
-  --bg-secondary:  #f8fafc;
-  --bg-tertiary:   #f1f5f9;
-  --border:        #e2e8f0;
-  --border-md:     #cbd5e1;
-  --text-primary:  #0a0e1a;
-  --text-secondary:#475569;
-  --text-tertiary: #94a3b8;
-  --accent:        #0d9488;
-  --accent-hover:  #0f766e;
-  --accent-subtle: #f0fdfa;
+  /* Light mode — warm cream like Inception (default) */
+  --bg-primary:    #faf8f3;        /* warm cream */
+  --bg-secondary:  #f4f1ea;        /* slightly darker cream */
+  --bg-tertiary:   #ede9df;        /* sand-cream */
+  --border:        #e6e0d2;        /* warm beige border */
+  --border-md:     #d6cdb8;        /* stronger warm border */
+  --text-primary:  #1a1f2c;        /* near-black with warmth */
+  --text-secondary:#525767;
+  --text-tertiary: #8a8d99;
+  --accent:        #2d9d8f;        /* desaturated Inception teal */
+  --accent-hover:  #237a6f;
+  --accent-subtle: #ecf6f4;
+  --accent-on:     #ffffff;        /* text on accent fill */
 }
 
 .dark {
-  --bg-primary:    #0a0e1a;
-  --bg-secondary:  #0f1420;
-  --bg-tertiary:   #1a2030;
-  --border:        #1e2638;
-  --border-md:     #2a3548;
-  --text-primary:  #f5f7fa;
-  --text-secondary:#a8b2c7;
-  --text-tertiary: #6b7689;
-  --accent:        #14b8a6;
-  --accent-hover:  #0d9488;
-  --accent-subtle: #134e4a;
+  --bg-primary:    #0c0e14;        /* warmer near-black */
+  --bg-secondary:  #11141d;
+  --bg-tertiary:   #181c27;
+  --border:        #1e2330;
+  --border-md:     #2a3140;
+  --text-primary:  #ecedf2;
+  --text-secondary:#9fa4b3;
+  --text-tertiary: #5d6273;
+  --accent:        #3eada3;        /* exact Inception teal */
+  --accent-hover:  #4fbeb3;
+  --accent-subtle: #133634;
+  --accent-on:     #0c0e14;        /* dark text on bright teal */
 }
 
 /* ─── Base ───────────────────────────────────────────────────────── */
@@ -149,32 +151,41 @@
     border: 1px solid var(--border-md);
   }
 
-  /* Section container */
+  /* Section container — editorial spacing */
   .section {
-    @apply py-24 md:py-32;
+    @apply py-20 md:py-28;
+  }
+  .section-tight {
+    @apply py-16 md:py-20;
   }
   .container {
-    @apply mx-auto px-4 sm:px-6 lg:px-8;
-    max-width: 72rem;
+    @apply mx-auto px-6 lg:px-8;
+    max-width: 64rem;
   }
   .container-wide {
-    @apply mx-auto px-4 sm:px-6 lg:px-8;
-    max-width: 88rem;
+    @apply mx-auto px-6 lg:px-8;
+    max-width: 80rem;
+  }
+  .container-narrow {
+    @apply mx-auto px-6 lg:px-8;
+    max-width: 42rem;
   }
 
-  /* Section headings */
+  /* Section headings — refined editorial */
   .section-eyebrow {
-    @apply text-xs font-semibold uppercase tracking-widest;
+    @apply text-[11px] font-medium uppercase tracking-[0.18em];
     color: var(--accent);
   }
   .section-heading {
-    @apply text-3xl md:text-4xl font-bold tracking-tight mt-3;
+    @apply text-3xl md:text-[2.5rem] font-semibold tracking-tight mt-4;
+    line-height: 1.1;
     color: var(--text-primary);
+    letter-spacing: -0.02em;
   }
   .section-subheading {
-    @apply text-lg mt-4 leading-relaxed;
+    @apply text-base md:text-lg mt-4 leading-relaxed;
     color: var(--text-secondary);
-    max-width: 42rem;
+    max-width: 38rem;
   }
 
   /* Pill badge */
@@ -290,6 +301,100 @@
     background-color: color-mix(in srgb, var(--accent) 8%, transparent);
     border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
     color: var(--accent);
+  }
+
+  /* Editorial flat row — alternative to .card for minimal sections */
+  .row-flat {
+    @apply py-6 border-b transition-colors duration-150;
+    border-color: var(--border);
+  }
+  .row-flat:last-child { border-bottom: none; }
+
+  /* Tool table row */
+  .tool-row {
+    @apply grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-6 py-5 items-baseline border-b
+           transition-colors duration-150;
+    border-color: var(--border);
+  }
+  .tool-row:hover { background-color: color-mix(in srgb, var(--bg-secondary) 50%, transparent); }
+  .tool-row:last-child { border-bottom: none; }
+
+  /* Particle field (decorative right panel) — denser, Inception-style */
+  .particle-field {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 1px 1px, var(--text-tertiary) 1.2px, transparent 1.2px);
+    background-size: 14px 14px;
+    background-position: 0 0;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black 30%, transparent 95%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black 30%, transparent 95%);
+    opacity: 0.35;
+  }
+  .dark .particle-field { opacity: 0.55; }
+
+  /* Accent particles overlay — sparse colored dots on top of particle-field */
+  .particle-accent {
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(2px 2px at 18% 24%, var(--accent), transparent),
+      radial-gradient(2px 2px at 72% 36%, var(--accent), transparent),
+      radial-gradient(2px 2px at 32% 68%, var(--accent), transparent),
+      radial-gradient(1.5px 1.5px at 84% 78%, var(--accent), transparent),
+      radial-gradient(2px 2px at 58% 14%, var(--accent), transparent),
+      radial-gradient(1.5px 1.5px at 12% 82%, var(--accent), transparent);
+    background-repeat: no-repeat;
+    opacity: 0.85;
+  }
+
+  /* Hero ASCII / dot field — sparse & wide */
+  .ascii-field {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 1px 1px, var(--border-md) 1px, transparent 0);
+    background-size: 20px 20px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    opacity: 0.4;
+  }
+
+  /* Scroll animations — progressive enhancement
+     Elements default to visible. Only when html has .anim-ready
+     (set by ScrollAnimate.astro) do they hide until in-view. */
+  .anim-ready [data-animate] {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+  .anim-ready [data-animate].in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .anim-ready [data-animate-delay="100"].in-view { transition-delay: 100ms; }
+  .anim-ready [data-animate-delay="200"].in-view { transition-delay: 200ms; }
+  .anim-ready [data-animate-delay="300"].in-view { transition-delay: 300ms; }
+  .anim-ready [data-animate-delay="400"].in-view { transition-delay: 400ms; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .anim-ready [data-animate] { opacity: 1; transform: none; transition: none; }
+  }
+
+  /* Hero gradient mask */
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .hero-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 0%,
+      color-mix(in srgb, var(--accent) 10%, transparent) 0%,
+      transparent 70%);
   }
 }
 
