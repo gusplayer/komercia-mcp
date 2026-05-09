@@ -111,6 +111,8 @@ claude mcp add --transport http komercia https://api-mcp.komercia.co \
 
 Full step-by-step guide with screenshots: [mcp.komercia.co/uso](https://mcp.komercia.co/uso)
 
+> **Prompt ideas:** not sure what to ask? [mcp.komercia.co/recetas](https://mcp.komercia.co/recetas) has 18 ready-to-use prompts for products, orders, customers, and inventory.
+
 ---
 
 ## Available tools
