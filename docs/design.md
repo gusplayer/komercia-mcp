@@ -204,6 +204,7 @@ All defined in `@layer components` of `global.css`.
 | ---------------------- | --------------------------------------------------------------- |
 | `.btn-primary`         | Action Orange filled CTA, white text, 8px radius                |
 | `.btn-secondary`       | Deep Plum outlined, transparent fill, hover → fog-gray          |
+| `.btn-dark`            | Ink-blue filled pill (high-emphasis CTA in light contexts)      |
 | `.btn-ghost`           | Steel border, charcoal text, hover darkens border               |
 | `.btn-link`            | Underlined plum text link, hover → orange                       |
 | `.card`                | Ghost-white card with `shadow-card`, 8px radius, 24px padding   |
@@ -228,9 +229,13 @@ All defined in `@layer components` of `global.css`.
 | `.alert-warning`       | Left-border amber alert                                         |
 | `.alert-success`       | Left-border moss alert                                          |
 | `.section-eyebrow`     | Uppercase 12px deep-plum label                                  |
+| `.eyebrow-badge`       | Bordered pill eyebrow with optional 12px icon                   |
 | `.section-heading`     | 40px Inter 600, primary text                                    |
 | `.section-heading-lg`  | 48px Inter 600 variant                                          |
+| `.heading-bicolor`     | Bicolor headline (`<span class="muted">` for slate qualifier); `.lg` / `.sm` modifiers |
 | `.section-subheading`  | 18px slate supporting copy, 38rem max width                     |
+| `.stat-number`         | 40px Inter 600 deep-plum metric                                 |
+| `.stat-label`          | 12px slate caption beneath `.stat-number`                       |
 | `.container`           | 1200px max-width with 24px inline padding                       |
 | `.container-narrow`    | 720px max-width with 24px inline padding                        |
 | `.section`             | `padding-block: 96px`                                            |
@@ -240,6 +245,11 @@ All defined in `@layer components` of `global.css`.
 | `.grid-pattern-strong` | Same grid at 15% opacity                                        |
 | `.row-flat`            | Border-bottom row, 20px vertical padding                        |
 | `.tool-row`            | 12-col grid row with hover-tint                                 |
+| `.icon-box`            | Tinted square wrapper for `IconBox` (sized via inline style)    |
+| `.feature-card`        | Horizontal pill row with leading IconBox + label + desc         |
+| `.feature-card-label`  | 16px ink-blue label inside `.feature-card`                      |
+| `.feature-card-desc`   | 13px slate description inside `.feature-card`                   |
+| `.deco-grid-mask`      | Radial-gradient mask helper for hero background art             |
 
 ---
 
@@ -258,6 +268,7 @@ above in a typed Astro component for consistent reuse.
 | `Container`      | `width: 'page' \| 'narrow'`                                                | Applies the corresponding container class                     |
 | `Section`        | `padding: 'default' \| 'tight'`, `background: 'page' \| 'fog'`             | Wraps slot in `<section class="section ...">`                 |
 | `GridPattern`    | `intensity: 'subtle' \| 'strong'`, `position?: 'absolute' \| 'relative'`   | Decorative background overlay                                 |
+| `IconBox`        | `variant: 'plum' \| 'orange' \| 'blue' \| 'green' \| 'cyan' \| 'teal' \| 'red'`, `size: 'sm' \| 'md' \| 'lg'` | Tinted square with centered icon (Column-style feature glyph) |
 
 If a component does not yet exist in the codebase, prefer building it on
 top of the primitive class first; promote to a component only on the
@@ -310,3 +321,149 @@ Concretely this means:
 If a future requirement reintroduces dark mode, treat it as a new design
 exercise rather than a flag flip — the ramp, semantic mapping, and shadow
 language all need redesign.
+
+---
+
+## 11. Column-inspired patterns
+
+A second pass of Column reference work introduced a small set of editorial
+patterns layered on top of the existing primitives. They are additive — the
+older primitives remain canonical; these refine specific moments (heroes,
+feature lists, metrics rows, marquee CTAs).
+
+### Bicolor headlines
+
+Use `.heading-bicolor` when a sentence reads as **subject + qualifier** and
+you want the qualifier to recede. The `<span class="muted">` half adopts
+slate text; the rest stays ink-blue.
+
+```html
+<h1 class="heading-bicolor lg">
+  Move every store off Komercia
+  <span class="muted">before the platform sunsets.</span>
+</h1>
+```
+
+Sizes follow `text-display` by default; modifier classes `.lg` (60px /
+display-lg) and `.sm` (40px / heading) are available for hero and card
+contexts respectively.
+
+### Eyebrow badges
+
+`.eyebrow-badge` is a bordered pill version of `.section-eyebrow`. Use it
+for hero or major section labels where a flat eyebrow looks unanchored on a
+busy hero. Optionally include a 12px leading SVG.
+
+```html
+<span class="eyebrow-badge">
+  <svg>…</svg>
+  Trusted at scale
+</span>
+```
+
+Reach for `.section-eyebrow` (flat, no border) for in-page sub-sections;
+reserve `.eyebrow-badge` for hero/major-section moments.
+
+### Icon boxes
+
+`<IconBox variant size>` renders a tinted square with a centered icon
+(passed via slot). Replaces ad-hoc inline `<div class="…">` icon wrappers
+across feature grids.
+
+```astro
+<IconBox variant="blue" size="md">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <!-- icon paths -->
+  </svg>
+</IconBox>
+```
+
+| Prop      | Values                                                            | Default |
+| --------- | ----------------------------------------------------------------- | ------- |
+| `variant` | `plum` · `orange` · `blue` · `green` · `cyan` · `teal` · `red`    | `plum`  |
+| `size`    | `sm` (32px) · `md` (40px) · `lg` (48px)                           | `md`    |
+
+Background is the variant color at 8–18% opacity; foreground (icon stroke
+or fill via `currentColor`) is the variant's full hue. The container has
+8px radius and is `aria-hidden`, so the icon is purely decorative — supply
+adjacent text for meaning.
+
+### Feature cards
+
+`.feature-card` is the horizontal pill row used in Column's feature grids.
+It pairs an `IconBox` with a label and optional one-line description.
+
+```html
+<a href="#orders" class="feature-card">
+  <IconBox variant="orange" size="md"><svg>…</svg></IconBox>
+  <div>
+    <div class="feature-card-label">Order export</div>
+    <div class="feature-card-desc">Full history with line items and customers.</div>
+  </div>
+</a>
+```
+
+Hover lifts the row 1px and upgrades the shadow from `--shadow-card` to
+`--shadow-sm`. Use it inside the right column of the **left-label +
+right-grid** asymmetric pattern (below).
+
+### Stat numbers
+
+`.stat-number` + `.stat-label` typeset metrics rows (e.g. "$2T+ moved
+annually"). The number uses Inter 600 at 40px in deep-plum; the label sits
+beneath in 12px slate. Constrain the wrapper width so the row breathes.
+
+```html
+<div class="grid grid-cols-2 md:grid-cols-4 gap-12">
+  <div>
+    <p class="stat-number">12k+</p>
+    <p class="stat-label">stores migrated</p>
+  </div>
+  <!-- … -->
+</div>
+```
+
+### Black CTA variant
+
+`.btn-dark` is the ink-blue/black filled pill used for high-emphasis
+secondary CTAs in light contexts (typically beside `.btn-primary` in a
+hero, or as the standalone CTA on a fog-gray section). Reserve it — over
+two `.btn-dark` per viewport flattens visual hierarchy.
+
+### Section pattern: left-label + right-grid
+
+A recurring Column section uses an asymmetric 4/8 (or 5/7) split:
+
+- **Left column:** an eyebrow badge, a bicolor heading (sm), one short
+  paragraph, and a single text link or `.btn-link`.
+- **Right column:** a 2× or 3× grid of `.feature-card` rows.
+
+This keeps the *what we do* description anchored on the left while the
+right column carries the inventory of capabilities — visually denser but
+still scannable thanks to the shared IconBox rhythm.
+
+```html
+<section class="section">
+  <div class="container grid md:grid-cols-12 gap-12">
+    <div class="md:col-span-4">
+      <span class="eyebrow-badge">Exports</span>
+      <h2 class="heading-bicolor sm">
+        Lightweight payments
+        <span class="muted">with first-class data portability.</span>
+      </h2>
+      <p class="section-subheading">…</p>
+    </div>
+    <div class="md:col-span-8 grid sm:grid-cols-2 gap-3">
+      <a class="feature-card">…</a>
+      <a class="feature-card">…</a>
+      <!-- … -->
+    </div>
+  </div>
+</section>
+```
+
+### Helper utilities
+
+| Class             | Purpose                                                               |
+| ----------------- | --------------------------------------------------------------------- |
+| `.deco-grid-mask` | Radial-gradient mask for hero background art (fades edges to transparent) |

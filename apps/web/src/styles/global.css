@@ -289,6 +289,35 @@
     cursor: not-allowed;
   }
 
+  /* Black filled pill — emphatic CTA in light contexts */
+  .btn-dark {
+    background: var(--color-ink-blue);
+    color: var(--color-ghost-white);
+    border: 1px solid var(--color-ink-blue);
+    border-radius: var(--radius-default);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.14px;
+    padding: 12px 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 150ms, box-shadow 150ms;
+    box-shadow: var(--shadow-subtle-5);
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .btn-dark:hover {
+    background: #000000;
+    border-color: #000000;
+  }
+  .btn-dark:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
   /* Plain text + subtle border — tertiary action */
   .btn-ghost {
     background: transparent;
@@ -373,6 +402,54 @@
     color: var(--color-ghost-white);
     border-radius: var(--radius-default);
     padding: 24px;
+  }
+
+  /* Column-style horizontal pill card with leading IconBox */
+  .feature-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--color-ghost-white);
+    border-radius: var(--radius-default);
+    padding: 14px 18px;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 150ms, transform 150ms;
+    text-decoration: none;
+    color: inherit;
+  }
+  .feature-card:hover {
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+  }
+  .feature-card-label {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-ink-blue);
+    line-height: 1.3;
+  }
+  .feature-card-desc {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--color-slate-text);
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+
+  /* ── Icon box (tinted square) ─────────────────────────────── */
+
+  .icon-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    flex-shrink: 0;
+    transition: background-color 150ms;
+  }
+  .icon-box svg {
+    width: var(--icon-size, 18px);
+    height: var(--icon-size, 18px);
   }
 
   /* ── Badges ───────────────────────────────────────────────── */
@@ -477,6 +554,29 @@
     line-height: 1;
   }
 
+  /* Bordered pill version of section-eyebrow (Column "TRUSTED AT SCALE") */
+  .eyebrow-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border: 1px solid var(--color-steel-gray);
+    border-radius: 6px;
+    background: var(--color-ghost-white);
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-deep-plum);
+    margin-bottom: 24px;
+  }
+  .eyebrow-badge svg {
+    width: 12px;
+    height: 12px;
+    color: var(--color-deep-plum);
+  }
+
   .section-heading {
     font-family: var(--font-display);
     font-weight: 600;
@@ -504,6 +604,56 @@
     letter-spacing: var(--tracking-subheading);
     color: var(--color-slate-text);
     max-width: 38rem;
+  }
+
+  /* Bicolor headlines — primary span + muted secondary span */
+  .heading-bicolor {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--text-display);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+    color: var(--color-ink-blue);
+    margin: 0 0 16px;
+  }
+  .heading-bicolor .muted {
+    color: var(--color-slate-text);
+  }
+  .heading-bicolor.lg {
+    font-size: var(--text-display-lg);
+    line-height: var(--leading-display-lg);
+    letter-spacing: var(--tracking-display-lg);
+  }
+  .heading-bicolor.sm {
+    font-size: var(--text-heading);
+    line-height: var(--leading-heading);
+    letter-spacing: var(--tracking-heading);
+  }
+
+  /* Stat counter typography (Column "$2T+" style) */
+  .stat-number {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 40px;
+    line-height: 1;
+    letter-spacing: -0.8px;
+    color: var(--color-deep-plum);
+    margin: 0;
+  }
+  .stat-label {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--color-slate-text);
+    margin: 8px 0 0;
+    line-height: 1.4;
+    max-width: 200px;
+  }
+
+  /* Soft radial mask helper for hero/decorative bg art */
+  .deco-grid-mask {
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 30%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 30%, transparent 100%);
   }
 
   /* ── Inputs ───────────────────────────────────────────────── */
