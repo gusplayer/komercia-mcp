@@ -1,0 +1,518 @@
+---
+// recetas.astro — Curated prompt recipes that work well with Komercia MCP + Claude.
+// 18 prompts organized in 4 categories. Solves the "I don't know what to ask" pain point.
+import Base from '../layouts/Base.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import ScrollAnimate from '../components/ScrollAnimate.astro';
+import Button from '../components/Button.astro';
+import Card from '../components/Card.astro';
+import Container from '../components/Container.astro';
+import Section from '../components/Section.astro';
+import GridPattern from '../components/GridPattern.astro';
+import IconBox from '../components/IconBox.astro';
+
+// Domain types for the prompt catalog.
+type Color = 'blue' | 'green' | 'orange' | 'plum';
+
+interface Prompt {
+  text: string;
+  tools: string[];
+}
+
+interface Category {
+  id: string;
+  label: string;
+  shortLabel: string;
+  desc: string;
+  color: Color;
+  background: 'white' | 'fog';
+  prompts: Prompt[];
+}
+
+const categories: Category[] = [
+  {
+    id: 'analitica',
+    label: 'Analítica conversacional',
+    shortLabel: 'Analítica',
+    desc: 'Pídele a Claude que analice tus datos como lo haría un analista — ventas, comportamiento de clientes, performance de productos.',
+    color: 'blue',
+    background: 'white',
+    prompts: [
+      {
+        text: '¿Cuál fue mi producto más vendido el mes pasado? Dame las top 5 ventas con totales.',
+        tools: ['export_orders', 'export_products'],
+      },
+      {
+        text: 'Compara mis ventas de este mes vs el anterior. ¿Qué productos crecieron y cuáles cayeron?',
+        tools: ['export_orders', 'export_products'],
+      },
+      {
+        text: '¿Quiénes son mis 10 mejores clientes por monto comprado en los últimos 6 meses?',
+        tools: ['export_customers', 'export_orders'],
+      },
+      {
+        text: '¿Qué método de pago usan más mis clientes? Dame el porcentaje por cada uno.',
+        tools: ['export_orders', 'list_payment_gateways'],
+      },
+      {
+        text: 'Identifica productos que venden bien pero tienen poco stock. Lista los que se van a quedar sin inventario en menos de 30 días.',
+        tools: ['export_products', 'export_inventory_movements'],
+      },
+    ],
+  },
+  {
+    id: 'reportes',
+    label: 'Reportes y exports',
+    shortLabel: 'Reportes',
+    desc: 'Genera CSV, JSON, o formatos listos para migrar — todo conversando, sin abrir Excel.',
+    color: 'green',
+    background: 'fog',
+    prompts: [
+      {
+        text: 'Exporta todas las órdenes pagadas del último trimestre como CSV. Incluye nombre del cliente, ciudad, total y método de pago.',
+        tools: ['export_orders'],
+      },
+      {
+        text: 'Dame mi catálogo completo en formato Shopify, listo para importar.',
+        tools: ['export_products'],
+      },
+      {
+        text: 'Genera un JSON con todos mis clientes, sus direcciones y total comprado.',
+        tools: ['export_customers', 'export_orders'],
+      },
+      {
+        text: 'Resume mi inventario por categoría. Cuántos productos hay y cuál es el stock total de cada categoría.',
+        tools: ['export_categories', 'export_products'],
+      },
+      {
+        text: 'Backup completo de mi tienda en JSON: productos, órdenes, clientes, categorías, imágenes.',
+        tools: [
+          'export_products',
+          'export_orders',
+          'export_customers',
+          'export_categories',
+          'download_media_archive',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'operacion',
+    label: 'Operación día a día',
+    shortLabel: 'Operación',
+    desc: 'Detecta problemas, encuentra oportunidades, y mantén tu catálogo limpio sin esfuerzo manual.',
+    color: 'orange',
+    background: 'white',
+    prompts: [
+      {
+        text: 'Detecta productos sin imagen, sin descripción, o sin precio. Lista los que necesitan atención.',
+        tools: ['export_products'],
+      },
+      {
+        text: '¿Qué clientes me compraron más de una vez en los últimos 3 meses? Dame nombres y emails.',
+        tools: ['export_customers', 'export_orders'],
+      },
+      {
+        text: 'Productos creados o modificados este mes — ¿cuáles son?',
+        tools: ['export_products'],
+      },
+      {
+        text: '¿Cuántas órdenes hubo entre $100.000 y $500.000 COP el mes pasado? ¿Y promedio por método de pago?',
+        tools: ['export_orders'],
+      },
+    ],
+  },
+  {
+    id: 'migracion',
+    label: 'Migración y diagnóstico',
+    shortLabel: 'Migración',
+    desc: 'Prepara tu tienda para otra plataforma o verifica que todo funcione correctamente.',
+    color: 'plum',
+    background: 'fog',
+    prompts: [
+      {
+        text: 'Prepara un export completo en formato Tiendanube, con productos, variantes, categorías y precios.',
+        tools: ['export_products', 'export_categories'],
+      },
+      {
+        text: '¿A qué plataforma me conviene migrar mi tienda según mi catálogo y tipo de productos?',
+        tools: ['suggest_alternative_platforms', 'get_store_info', 'export_products'],
+      },
+      {
+        text: '¿Mis APIs de Komercia están funcionando? Hazme un health check.',
+        tools: ['validate_komercia_apis'],
+      },
+      {
+        text: 'Datos generales de mi tienda: nombre, plan, dominio, estado. Resúmemelo.',
+        tools: ['get_store_info'],
+      },
+    ],
+  },
+];
+
+// Total tool count across categories — labels for the stats row.
+const totalPrompts = categories.reduce((acc, c) => acc + c.prompts.length, 0);
+---
+
+<Base
+  title="Recetas — Prompts que funcionan con Komercia MCP"
+  description="18 prompts curados que demuestran lo que Claude puede hacer con tu tienda Komercia. Analítica, reportes, operación y migración."
+>
+  <Navbar activePage="recetas" />
+
+  <main>
+    <!-- ─── Hero ───────────────────────────────────────────────── -->
+    <section style="position: relative; padding: 96px 0 72px; background: var(--color-ghost-white); overflow: hidden;">
+      <GridPattern variant="subtle" />
+
+      <Container size="narrow">
+        <div style="text-align: center; position: relative; z-index: 1;">
+          <div class="eyebrow-badge" style="margin-inline: auto;" data-animate>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 18h6"/>
+              <path d="M10 22h4"/>
+              <path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V18h6v-1.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z"/>
+            </svg>
+            RECETAS DE PROMPTS
+          </div>
+
+          <h1 class="heading-bicolor lg" data-animate data-animate-delay="100" style="margin-top: 24px;">
+            Pregúntale a Claude. <span class="muted">Sabe de tu tienda.</span>
+          </h1>
+
+          <p
+            style="font-family: var(--font-sans); font-weight: 400; font-size: 18px; line-height: 1.5; color: var(--color-slate-text); max-width: 36rem; margin: 24px auto 0;"
+            data-animate
+            data-animate-delay="200"
+          >
+            18 prompts curados para sacarle el máximo a Claude con tus datos de Komercia. Copia, pega y arranca.
+          </p>
+
+          <div
+            class="flex flex-wrap justify-center"
+            style="gap: 12px; margin-top: 32px;"
+            data-animate
+            data-animate-delay="300"
+          >
+            <Button variant="primary" size="lg" href="/sign-in">Obtener mi token</Button>
+            <Button variant="secondary" size="lg" href="/uso">Ver cómo conectar →</Button>
+          </div>
+        </div>
+      </Container>
+    </section>
+
+    <!-- ─── Stats row ──────────────────────────────────────────── -->
+    <section style="background: var(--color-fog-gray); border-top: 1px solid var(--color-steel-gray); border-bottom: 1px solid var(--color-steel-gray); padding: 48px 0;">
+      <Container>
+        <div class="grid grid-cols-3" style="gap: 32px; text-align: center;">
+          <div data-animate>
+            <p class="stat-number" style="margin-inline: auto;">{totalPrompts}</p>
+            <p class="stat-label" style="margin-inline: auto;">Prompts probados</p>
+          </div>
+          <div data-animate data-animate-delay="100">
+            <p class="stat-number" style="margin-inline: auto;">{categories.length}</p>
+            <p class="stat-label" style="margin-inline: auto;">Categorías de uso</p>
+          </div>
+          <div data-animate data-animate-delay="200">
+            <p class="stat-number" style="margin-inline: auto;">11</p>
+            <p class="stat-label" style="margin-inline: auto;">Herramientas conectadas</p>
+          </div>
+        </div>
+      </Container>
+    </section>
+
+    <!-- ─── Category sections ──────────────────────────────────── -->
+    {categories.map((cat) => (
+      <Section background={cat.background} id={cat.id} padding="default">
+        <Container>
+          <div class="category-block" data-animate>
+
+            <!-- Left col: category header -->
+            <div class="category-header">
+              <div style="display: inline-flex; margin-bottom: 16px;">
+                <IconBox variant={cat.color} size="md">
+                  {cat.color === 'blue' && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <line x1="18" y1="20" x2="18" y2="10"/>
+                      <line x1="12" y1="20" x2="12" y2="4"/>
+                      <line x1="6" y1="20" x2="6" y2="14"/>
+                      <line x1="3" y1="20" x2="21" y2="20"/>
+                    </svg>
+                  )}
+                  {cat.color === 'green' && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="7 10 12 15 17 10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                  )}
+                  {cat.color === 'orange' && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                    </svg>
+                  )}
+                  {cat.color === 'plum' && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                      <path d="M3 5v14a9 3 0 0 0 18 0V5"/>
+                      <path d="M3 12a9 3 0 0 0 18 0"/>
+                    </svg>
+                  )}
+                </IconBox>
+              </div>
+              <h2 style="font-family: var(--font-sans); font-weight: 600; font-size: 24px; line-height: 1.2; letter-spacing: -0.36px; color: var(--color-ink-blue); margin: 0 0 12px;">
+                {cat.label}
+              </h2>
+              <p style="font-family: var(--font-sans); font-size: 13px; font-weight: 400; color: var(--color-slate-text); line-height: 1.6; margin: 0;">
+                {cat.desc}
+              </p>
+            </div>
+
+            <!-- Right col: prompts grid -->
+            <div class="prompt-grid">
+              {cat.prompts.map((prompt, pi) => (
+                <div data-animate data-animate-delay={String(pi * 60)}>
+                  <Card variant="default" padding="md">
+                    <div class="prompt-card">
+                      <button
+                        type="button"
+                        class="prompt-copy"
+                        data-prompt={prompt.text}
+                        aria-label="Copiar prompt"
+                      >
+                        <svg class="icon-copy" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                        <svg class="icon-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: none;">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                      </button>
+
+                      <div class="prompt-meta">
+                        <IconBox variant={cat.color} size="sm">
+                          {cat.color === 'blue' && (
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <line x1="18" y1="20" x2="18" y2="10"/>
+                              <line x1="12" y1="20" x2="12" y2="4"/>
+                              <line x1="6" y1="20" x2="6" y2="14"/>
+                              <line x1="3" y1="20" x2="21" y2="20"/>
+                            </svg>
+                          )}
+                          {cat.color === 'green' && (
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                              <polyline points="7 10 12 15 17 10"/>
+                              <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                          )}
+                          {cat.color === 'orange' && (
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                            </svg>
+                          )}
+                          {cat.color === 'plum' && (
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                              <path d="M3 5v14a9 3 0 0 0 18 0V5"/>
+                              <path d="M3 12a9 3 0 0 0 18 0"/>
+                            </svg>
+                          )}
+                        </IconBox>
+                        <span>
+                          {cat.shortLabel.toUpperCase()} · {prompt.tools.length} {prompt.tools.length === 1 ? 'herramienta' : 'herramientas'}
+                        </span>
+                      </div>
+
+                      <blockquote class="prompt-quote">{prompt.text}</blockquote>
+
+                      <div class="prompt-tools">
+                        {prompt.tools.map((tool) => (
+                          <code class="code-chip">{tool}</code>
+                        ))}
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+              ))}
+            </div>
+
+          </div>
+        </Container>
+      </Section>
+    ))}
+
+    <!-- ─── Final CTA ─────────────────────────────────────────── -->
+    <Section background="white" padding="default">
+      <Container size="narrow">
+        <div style="text-align: center;">
+          <div class="eyebrow-badge" style="margin-inline: auto;" data-animate>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+            EMPIEZA AHORA
+          </div>
+          <h2
+            class="heading-bicolor"
+            style="text-align: center; margin-top: 16px;"
+            data-animate
+            data-animate-delay="100"
+          >
+            Tu primera consulta. <span class="muted">En 3 minutos.</span>
+          </h2>
+          <p
+            class="section-subheading"
+            style="margin: 16px auto 0; text-align: center;"
+            data-animate
+            data-animate-delay="200"
+          >
+            Conecta tu tienda Komercia a Claude.ai, copia uno de estos prompts, y mira lo que pasa.
+          </p>
+          <div
+            class="flex flex-wrap justify-center"
+            style="gap: 12px; margin-top: 32px;"
+            data-animate
+            data-animate-delay="300"
+          >
+            <Button variant="primary" size="lg" href="/sign-in">Obtener token</Button>
+            <Button variant="secondary" size="lg" href="/uso">Ver instalación →</Button>
+          </div>
+        </div>
+      </Container>
+    </Section>
+  </main>
+
+  <Footer />
+  <ScrollAnimate />
+</Base>
+
+<style>
+  /* Category block: left header (3 cols) + right prompt grid (9 cols) on lg */
+  .category-block {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+  @media (min-width: 1024px) {
+    .category-block {
+      grid-template-columns: 3fr 9fr;
+      gap: 48px;
+    }
+  }
+
+  .category-header {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Prompt grid — 1 col on mobile, 2 cols on md+ */
+  .prompt-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  @media (min-width: 768px) {
+    .prompt-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* Prompt card — vertical stack with hovering copy button */
+  .prompt-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .prompt-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-deep-plum);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding-right: 36px;
+  }
+
+  .prompt-quote {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--color-ink-blue);
+    line-height: 1.5;
+    padding-left: 12px;
+    border-left: 2px solid var(--color-deep-plum);
+    margin: 0;
+  }
+
+  .prompt-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  /* Copy button — top-right corner ghost button */
+  .prompt-copy {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid var(--color-steel-gray);
+    border-radius: 6px;
+    color: var(--color-slate-text);
+    cursor: pointer;
+    transition: color 150ms, border-color 150ms, background-color 150ms;
+    padding: 0;
+  }
+  .prompt-copy:hover {
+    color: var(--color-deep-plum);
+    border-color: var(--color-deep-plum);
+    background: var(--color-ghost-white);
+  }
+  .prompt-copy.copied {
+    color: var(--color-success-moss);
+    border-color: var(--color-success-moss);
+  }
+  .prompt-copy.copied .icon-copy { display: none; }
+  .prompt-copy.copied .icon-check { display: inline-block !important; }
+</style>
+
+<script>
+  // Wire up clipboard copy for every prompt card.
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.prompt-copy');
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const prompt = btn.getAttribute('data-prompt') ?? '';
+      try {
+        await navigator.clipboard.writeText(prompt);
+      } catch {
+        // Fallback for browsers without async clipboard support.
+        const ta = document.createElement('textarea');
+        ta.value = prompt;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      btn.classList.add('copied');
+      btn.setAttribute('aria-label', 'Prompt copiado');
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.setAttribute('aria-label', 'Copiar prompt');
+      }, 1500);
+    });
+  });
+</script>

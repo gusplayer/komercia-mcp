@@ -1,0 +1,61 @@
+---
+// 404.astro — Custom not-found page styled to match the editorial design system.
+// Renders a centered eyebrow + bicolor heading + sub + dual CTA on a "narrow" container.
+import Base from '../layouts/Base.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import Container from '../components/Container.astro';
+import Button from '../components/Button.astro';
+---
+
+<Base
+  title="404 — Página no encontrada · Komercia MCP"
+  description="La página que buscas no existe. Tal vez se movió, o nunca existió."
+  noindex={true}
+>
+  <Navbar />
+
+  <main>
+    <Container size="narrow">
+      <div style="padding: 144px 0 96px; text-align: center;">
+        <div class="eyebrow-badge" style="margin-inline: auto;">
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          ERROR 404
+        </div>
+
+        <h1 class="heading-bicolor lg" style="margin-top: 24px;">
+          Esta página no existe. <span class="muted">Pero tu tienda sí.</span>
+        </h1>
+
+        <p
+          style="font-family: 'Inter', sans-serif; font-weight: 400; font-size: 16px; line-height: 1.6; color: var(--color-slate-text); max-width: 28rem; margin: 24px auto 0;"
+        >
+          La URL que buscas no está disponible. Tal vez se movió, o nunca existió.
+        </p>
+
+        <div
+          style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 32px;"
+        >
+          <Button variant="primary" href="/">Volver al inicio</Button>
+          <Button variant="secondary" href="/uso">Ver guía de instalación</Button>
+        </div>
+      </div>
+    </Container>
+  </main>
+
+  <Footer />
+</Base>

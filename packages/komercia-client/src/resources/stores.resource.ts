@@ -41,9 +41,7 @@ export class StoresResource {
     const data = response.data;
     if (!data) throw new Error(`Store ${storeId} not found`);
 
-    const domain = data.tiendasInfo?.dominio
-      ? data.tiendasInfo.dominio
-      : `${data.subdominio}.komercia.co`;
+    const domain = data.tiendasInfo?.dominio ?? `${data.subdominio}.komercia.co`;
 
     return {
       id: String(data.id),

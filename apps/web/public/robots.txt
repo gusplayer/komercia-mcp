@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /token
+Disallow: /sign-in
+
+Sitemap: https://mcp.komercia.co/sitemap-index.xml

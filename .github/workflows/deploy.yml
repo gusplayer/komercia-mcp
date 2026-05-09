@@ -31,10 +31,10 @@ jobs:
       - name: Build MCP server
         run: pnpm build --filter @komercia-mcp/mcp-server
 
-      - name: Deploy to Railway
-        # TODO: replace with actual Railway deploy action/CLI call
-        # Example: uses: railwayapp/railway-github-action@v1
-        run: echo "Deploy step — configure Railway CLI here"
+      - name: Deploy to Railway (manual for now)
+        run: |
+          echo "::notice::Railway deploys are currently triggered manually via 'railway up' on a developer machine."
+          echo "::notice::CI only validates the build artifacts. Wire up railway/cli action when ready."
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           # Secrets injected by Railway at runtime — listed here for documentation:

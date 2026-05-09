@@ -16,6 +16,7 @@
     "clean": "rm -rf dist .astro tsconfig.tsbuildinfo"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.4.2",
     "@astrojs/tailwind": "^5.1.0",
     "@astrojs/vercel": "^8.0.0",
     "@komercia-mcp/komercia-client": "workspace:*",

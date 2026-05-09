@@ -135,6 +135,10 @@ import Card from './Card.astro';
     var container = document.getElementById('chat-messages');
     if (!container) return;
 
+    // Respect users who prefer reduced motion: render the final state of the
+    // conversation immediately and skip the animation/loop entirely.
+    var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     // Message sequence definitions — realistic Komercia + Claude interaction
     type ChatMessage = { type: 'user' | 'claude' | 'tool' | 'file'; text: string; html?: string };
     var messages: ChatMessage[] = [
@@ -241,12 +245,35 @@ import Card from './Card.astro';
       }
     }
 
+    function renderStaticConversation() {
+      if (!container) return;
+      container.innerHTML = '';
+      messages.forEach(function (msg) {
+        var el: HTMLElement;
+        if (msg.type === 'user') {
+          el = createUserBubble(msg.text);
+        } else if (msg.type === 'tool') {
+          el = createToolCall(msg.text);
+        } else if (msg.type === 'file') {
+          el = createFileAttachment(msg.text);
+        } else {
+          el = createClaudeBubble(msg.text, msg.html);
+        }
+        // Skip the entry transition: show the final state directly.
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+        el.style.transition = 'none';
+        container!.appendChild(el);
+      });
+      scrollToBottom();
+    }
+
     function runSequence() {
       if (!container) return;
       container.innerHTML = '';
       var delay = 400;
-      var stepDelay = 1200;
-      var typingDelay = 850;
+      var stepDelay = 900;
+      var typingDelay = 700;
 
       messages.forEach(function (msg) {
         var isAssistant = msg.type === 'claude' || msg.type === 'file';
@@ -295,13 +322,17 @@ import Card from './Card.astro';
         }
       });
 
-      // Loop: wait 4s after last message then restart
+      // Loop: wait briefly after the last message then restart
       timers.push(setTimeout(function () {
         clearTimers();
         runSequence();
-      }, delay + 4000));
+      }, delay + 1000));
     }
 
-    runSequence();
+    if (prefersReducedMotion) {
+      renderStaticConversation();
+    } else {
+      runSequence();
+    }
   })();
 </script>
