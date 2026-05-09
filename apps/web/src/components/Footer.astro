@@ -1,0 +1,124 @@
+---
+const productLinks = [
+  { label: 'Cómo funciona', href: '/#como-funciona' },
+  { label: 'Tools', href: '/#tools' },
+  { label: 'FAQ', href: '/#faq' },
+  { label: 'Roadmap', href: '#' },
+];
+
+const docsLinks = [
+  { label: 'Guía rápida', href: '/sign-in' },
+  { label: 'Catálogo de tools', href: '/#tools' },
+  { label: 'Seguridad', href: '/#seguridad' },
+  { label: 'Status', href: '#' },
+];
+
+const resourceLinks = [
+  { label: 'GitHub', href: 'https://github.com/gusplayer/komercia-mcp', external: true },
+  { label: 'Reportar bug', href: 'https://github.com/gusplayer/komercia-mcp/issues', external: true },
+  { label: 'Komercia', href: 'https://komercia.co', external: true },
+  { label: 'Claude.ai', href: 'https://claude.ai', external: true },
+];
+
+const legalLinks = [
+  { label: 'Términos', href: '#' },
+  { label: 'Privacidad', href: '#' },
+  { label: 'Licencia MIT', href: 'https://github.com/gusplayer/komercia-mcp/blob/main/LICENSE', external: true },
+];
+---
+
+<footer class="border-t border-subtle bg-surface">
+  <div class="container py-16">
+    <!-- Top grid: brand + 4 link columns -->
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8">
+
+      <!-- Col 1: Brand -->
+      <div class="col-span-2 lg:col-span-1">
+        <!-- TODO: replace with SVG logo -->
+        <a href="/" class="font-sans font-semibold text-sm inline-flex items-center mb-3">
+          komercia<span class="text-accent-color"> exit</span>
+        </a>
+        <p class="text-sm text-muted leading-relaxed mb-4">
+          Exporta tu tienda Komercia con Claude.ai
+        </p>
+        <p class="text-xs text-faint">Open source · MIT License</p>
+      </div>
+
+      <!-- Col 2: Producto -->
+      <div>
+        <p class="text-xs uppercase tracking-widest text-faint font-semibold mb-4">Producto</p>
+        <ul class="space-y-0">
+          {productLinks.map((link) => (
+            <li>
+              <a href={link.href} class="text-sm text-muted hover:text-primary transition-colors block py-1">
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Col 3: Documentación -->
+      <div>
+        <p class="text-xs uppercase tracking-widest text-faint font-semibold mb-4">Documentación</p>
+        <ul class="space-y-0">
+          {docsLinks.map((link) => (
+            <li>
+              <a href={link.href} class="text-sm text-muted hover:text-primary transition-colors block py-1">
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Col 4: Recursos -->
+      <div>
+        <p class="text-xs uppercase tracking-widest text-faint font-semibold mb-4">Recursos</p>
+        <ul class="space-y-0">
+          {resourceLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="text-sm text-muted hover:text-primary transition-colors block py-1"
+                {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Col 5: Legal -->
+      <div>
+        <p class="text-xs uppercase tracking-widest text-faint font-semibold mb-4">Legal</p>
+        <ul class="space-y-0">
+          {legalLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="text-sm text-muted hover:text-primary transition-colors block py-1"
+                {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Bottom row -->
+    <div class="border-t border-subtle pt-8 mt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <p class="text-xs text-faint">
+        © 2026 Komercia Exit MCP · Hecho con ❤️ en Colombia · MIT License
+      </p>
+      <div class="flex items-center gap-2">
+        <span class="pill">Powered by Claude</span>
+        <span class="pill">Built with Astro</span>
+      </div>
+    </div>
+  </div>
+</footer>

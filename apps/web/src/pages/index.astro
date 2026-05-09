@@ -1,6 +1,10 @@
 ---
 import Base from '../layouts/Base.astro';
+import AnnouncementBanner from '../components/AnnouncementBanner.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
 import LoginForm from '../components/LoginForm.astro';
+import ChatMock from '../components/ChatMock.astro';
 import { generateCsrfToken } from '../lib/csrf.js';
 
 // Issue a CSRF token and set it as an HttpOnly-like cookie for the double-submit pattern.
@@ -10,49 +14,700 @@ const csrfToken = generateCsrfToken();
 Astro.cookies.set('csrf_token', csrfToken, {
   path: '/',
   sameSite: 'strict',
-  httpOnly: false, // must be JS-readable for the double-submit pattern
+  httpOnly: false,
   secure: import.meta.env.PROD,
   maxAge: 3600,
 });
 ---
 
 <Base
-  title="Export your Komercia store"
-  description="Sign in with your Komercia store credentials to generate your export token."
+  title="Komercia Exit MCP — Exporta tu tienda con Claude.ai"
+  description="El MCP oficial de Komercia. Exporta productos, órdenes, clientes y más conversando con Claude.ai. Gratis, seguro, sin código."
 >
-  <main class="page-container">
-    <!-- Header -->
-    <div class="mb-8">
-      <div class="inline-flex items-center gap-2 text-xs font-medium text-slate-400 mb-6 px-3 py-1.5 rounded-full border border-slate-200 bg-slate-50">
-        <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
-        Unofficial community migration tool
+  <!-- Section 1: Announcement Banner -->
+  <AnnouncementBanner />
+
+  <!-- Section 2: Navbar -->
+  <Navbar />
+
+  <!-- Section 3: Hero -->
+  <section class="py-32 md:py-40 relative overflow-hidden">
+    <div class="absolute inset-0 bg-glow-teal bg-dot-pattern"></div>
+    <div class="container relative">
+      <div class="grid md:grid-cols-2 gap-16 items-center">
+        <!-- Left column -->
+        <div>
+          <div class="pill-accent mb-6">
+            <span style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block"></span>
+            MCP Oficial de Komercia
+          </div>
+
+          <h1 class="text-5xl md:text-7xl font-bold tracking-tight text-balance">
+            Tus datos,<br>tu tienda,<br>
+            <span style="color: var(--accent)">tu próximo paso.</span>
+          </h1>
+
+          <p class="text-xl mt-6 leading-relaxed" style="color:var(--text-secondary); max-width:480px">
+            Exporta, migra o respalda todo lo de tu tienda Komercia conversando con Claude.
+            Gratis, seguro, sin código.
+          </p>
+
+          <div class="flex flex-wrap gap-3 mt-8">
+            <a href="#obtener-token" class="btn-primary px-6 py-3 text-base">
+              Obtener mi token gratis
+            </a>
+            <a href="#como-funciona" class="btn-secondary px-6 py-3 text-base">
+              Cómo funciona →
+            </a>
+          </div>
+        </div>
+
+        <!-- Right column -->
+        <div class="flex justify-center">
+          <ChatMock />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4: Trust bar -->
+  <div id="trust-bar" class="bg-surface border-y border-subtle py-6">
+    <div class="container">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <!-- Official -->
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:color-mix(in srgb, var(--accent) 10%, transparent)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <span class="font-medium text-sm" style="color:var(--text-primary)">Oficial Komercia</span>
+        </div>
+        <!-- Open Source -->
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:color-mix(in srgb, var(--accent) 10%, transparent)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)">
+              <polyline points="16 18 22 12 16 6"/>
+              <polyline points="8 6 2 12 8 18"/>
+            </svg>
+          </div>
+          <span class="font-medium text-sm" style="color:var(--text-primary)">100% Open Source</span>
+        </div>
+        <!-- Free -->
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:color-mix(in srgb, var(--accent) 10%, transparent)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)">
+              <polyline points="20 12 20 22 4 22 4 12"/>
+              <rect x="2" y="7" width="20" height="5"/>
+              <path d="M12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+            </svg>
+          </div>
+          <span class="font-medium text-sm" style="color:var(--text-primary)">Gratis para siempre</span>
+        </div>
+        <!-- Claude -->
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:color-mix(in srgb, var(--accent) 10%, transparent)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)">
+              <rect x="4" y="4" width="16" height="16" rx="2"/>
+              <rect x="9" y="9" width="6" height="6"/>
+              <line x1="9" y1="1" x2="9" y2="4"/>
+              <line x1="15" y1="1" x2="15" y2="4"/>
+              <line x1="9" y1="20" x2="9" y2="23"/>
+              <line x1="15" y1="20" x2="15" y2="23"/>
+              <line x1="20" y1="9" x2="23" y2="9"/>
+              <line x1="20" y1="14" x2="23" y2="14"/>
+              <line x1="1" y1="9" x2="4" y2="9"/>
+              <line x1="1" y1="14" x2="4" y2="14"/>
+            </svg>
+          </div>
+          <span class="font-medium text-sm" style="color:var(--text-primary)">Powered by Claude</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 5: Cómo funciona -->
+  <section id="como-funciona" class="section">
+    <div class="container">
+      <div class="text-center">
+        <p class="section-eyebrow">Cómo funciona</p>
+        <h2 class="section-heading">Listo en 3 minutos</h2>
+        <p class="section-subheading mx-auto">Sin instalar nada. Sin tocar código.</p>
       </div>
 
-      <h1 class="text-3xl font-bold text-slate-900 mb-3 leading-tight">
-        Export your Komercia store data
-      </h1>
-      <p class="text-base text-slate-500 leading-relaxed">
-        Sign in with your Komercia store credentials to generate your personal export token.
-        Then use it to connect Claude.ai to your store and export everything.
-      </p>
+      <div class="grid md:grid-cols-3 gap-8 mt-16">
+        <!-- Step 1 -->
+        <div class="card p-8">
+          <div class="step-number">01</div>
+          <h3 class="text-xl font-semibold mt-4 mb-3">Genera tu token</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            Inicia sesión con tu cuenta Komercia y obtén tu token de exportación personal en segundos.
+          </p>
+        </div>
+        <!-- Step 2 -->
+        <div class="card p-8">
+          <div class="step-number">02</div>
+          <h3 class="text-xl font-semibold mt-4 mb-3">Conecta Claude</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            Pega el token en Claude.ai y agrega el conector MCP. Solo lo haces una vez.
+          </p>
+        </div>
+        <!-- Step 3 -->
+        <div class="card p-8">
+          <div class="step-number">03</div>
+          <h3 class="text-xl font-semibold mt-4 mb-3">Conversa y exporta</h3>
+          <p class="text-sm text-muted leading-relaxed">
+            Pídele a Claude lo que necesites en lenguaje natural. Él hace el resto.
+          </p>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <!-- Login card -->
-    <div class="card">
-      <h2 class="text-sm font-semibold text-slate-700 mb-5">Sign in to get your export token</h2>
-      <LoginForm />
+  <!-- Section 6: Video demo -->
+  <section id="demo" class="section">
+    <div class="container">
+      <div class="text-center">
+        <p class="section-eyebrow">Demo</p>
+        <h2 class="section-heading">Velo en acción</h2>
+        <p class="section-subheading mx-auto">2 minutos para ver todo lo que puedes hacer.</p>
+      </div>
+
+      <!-- TODO: reemplazar con <iframe data-yt-id=""> cuando esté el video -->
+      <div class="aspect-video w-full max-w-3xl mx-auto mt-12 rounded-2xl overflow-hidden bg-surface border border-subtle flex items-center justify-center">
+        <div class="flex flex-col items-center gap-4">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)">
+            <circle cx="12" cy="12" r="10"/>
+            <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/>
+          </svg>
+          <p class="text-sm text-muted">Video disponible próximamente</p>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <!-- Privacy note -->
-    <p class="mt-5 text-xs text-slate-400 text-center leading-relaxed">
-      Your credentials are used only to verify your identity and are not stored in plain text.
-    </p>
+  <!-- Section 7: Qué puedes exportar -->
+  <section id="exportar" class="section">
+    <div class="container">
+      <div class="text-center">
+        <p class="section-eyebrow">Qué exportas</p>
+        <h2 class="section-heading">Todo tu negocio, en tus manos</h2>
+        <p class="section-subheading mx-auto">Cada dato de tu tienda, en el formato que necesites.</p>
+      </div>
 
-    <!-- Footer links -->
-    <p class="mt-4 text-center text-xs text-slate-400">
-      <a href="/tools" class="underline hover:text-slate-600 transition-colors">Available data</a>
-      &middot;
-      <a href="/faq" class="underline hover:text-slate-600 transition-colors">FAQ</a>
-    </p>
-  </main>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
+        <!-- Productos -->
+        <div class="card hover:bg-elevated transition-colors cursor-default p-6">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16.5 9.4l-9-5.19M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+              <line x1="12" y1="22.08" x2="12" y2="12"/>
+            </svg>
+          </div>
+          <h3 class="text-base font-semibold mt-1 mb-1">Productos</h3>
+          <p class="text-sm text-muted">Catálogo completo con variantes, precios e imágenes</p>
+        </div>
+        <!-- Órdenes -->
+        <div class="card hover:bg-elevated transition-colors cursor-default p-6">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+          </div>
+          <h3 class="text-base font-semibold mt-1 mb-1">Órdenes</h3>
+          <p class="text-sm text-muted">Historial completo de ventas con detalle</p>
+        </div>
+        <!-- Clientes -->
+        <div class="card hover:bg-elevated transition-colors cursor-default p-6">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <h3 class="text-base font-semibold mt-1 mb-1">Clientes</h3>
+          <p class="text-sm text-muted">Base de datos con direcciones e historial</p>
+        </div>
+        <!-- Inventario -->
+        <div class="card hover:bg-elevated transition-colors cursor-default p-6">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10"/>
+              <line x1="12" y1="20" x2="12" y2="4"/>
+              <line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+          </div>
+          <h3 class="text-base font-semibold mt-1 mb-1">Inventario</h3>
+          <p class="text-sm text-muted">Movimientos de stock y trazabilidad</p>
+        </div>
+        <!-- Categorías -->
+        <div class="card hover:bg-elevated transition-colors cursor-default p-6">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+              <line x1="12" y1="11" x2="12" y2="17"/>
+              <line x1="9" y1="14" x2="15" y2="14"/>
+            </svg>
+          </div>
+          <h3 class="text-base font-semibold mt-1 mb-1">Categorías</h3>
+          <p class="text-sm text-muted">Estructura jerárquica de tu catálogo</p>
+        </div>
+        <!-- Diseño -->
+        <div class="card hover:bg-elevated transition-colors cursor-default p-6">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/>
+              <circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/>
+              <circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/>
+              <circle cx="6.5" cy="12.5" r="0.5" fill="currentColor"/>
+              <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
+            </svg>
+          </div>
+          <h3 class="text-base font-semibold mt-1 mb-1">Diseño</h3>
+          <p class="text-sm text-muted">Configuración de tema, colores y fuentes</p>
+        </div>
+        <!-- Pagos -->
+        <div class="card hover:bg-elevated transition-colors cursor-default p-6">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+              <line x1="1" y1="10" x2="23" y2="10"/>
+            </svg>
+          </div>
+          <h3 class="text-base font-semibold mt-1 mb-1">Pagos</h3>
+          <p class="text-sm text-muted">Pasarelas activas y métodos configurados</p>
+        </div>
+        <!-- Imágenes -->
+        <div class="card hover:bg-elevated transition-colors cursor-default p-6">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+          </div>
+          <h3 class="text-base font-semibold mt-1 mb-1">Imágenes</h3>
+          <p class="text-sm text-muted">Archivo ZIP con todos los assets</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 8: Casos de uso -->
+  <section id="casos" class="section">
+    <div class="container">
+      <div class="text-center">
+        <p class="section-eyebrow">Casos de uso</p>
+        <h2 class="section-heading">¿Para qué lo usan los merchants?</h2>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6 mt-12">
+        <!-- Migrar -->
+        <div class="card p-8">
+          <div class="feature-icon w-12 h-12">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="17 1 21 5 17 9"/>
+              <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+              <polyline points="7 23 3 19 7 15"/>
+              <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold mt-4 mb-3">Migrar a otra plataforma</h3>
+          <p class="text-sm text-muted leading-relaxed mb-4">
+            Genera exports listos para Shopify, Tiendanube o WooCommerce. Sin manipular CSVs a mano.
+          </p>
+          <blockquote class="text-xs italic" style="color:var(--accent)">
+            "Exporta mis productos en formato Shopify"
+          </blockquote>
+        </div>
+        <!-- Backup -->
+        <div class="card p-8">
+          <div class="feature-icon w-12 h-12">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold mt-4 mb-3">Backup de tu tienda</h3>
+          <p class="text-sm text-muted leading-relaxed mb-4">
+            Mantén una copia segura de todo tu negocio antes de que cierre Komercia.
+          </p>
+          <blockquote class="text-xs italic" style="color:var(--accent)">
+            "Descarga todos mis datos en JSON"
+          </blockquote>
+        </div>
+        <!-- Análisis -->
+        <div class="card p-8">
+          <div class="feature-icon w-12 h-12">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold mt-4 mb-3">Análisis con IA</h3>
+          <p class="text-sm text-muted leading-relaxed mb-4">
+            Pídele a Claude que analice tus ventas, detecte patrones y te sugiera qué hacer.
+          </p>
+          <blockquote class="text-xs italic" style="color:var(--accent)">
+            "¿Cuál fue mi producto más vendido este año?"
+          </blockquote>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 9: Cómo conectar a Claude -->
+  <section id="conectar" class="section">
+    <div class="container">
+      <div class="text-center">
+        <p class="section-eyebrow">Configuración</p>
+        <h2 class="section-heading">Conectarlo es más fácil de lo que crees</h2>
+        <p class="section-subheading mx-auto">4 pasos, una sola vez.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-16 items-start mt-12">
+        <!-- Left: steps -->
+        <div class="space-y-6">
+          <div class="flex gap-4">
+            <div class="step-number flex-shrink-0">1</div>
+            <div>
+              <h4 class="font-semibold mb-1">Abre Claude.ai y ve a <strong>Configuración → Conectores</strong></h4>
+              <p class="text-sm text-muted">Disponible desde el menú de tu perfil en claude.ai.</p>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <div class="step-number flex-shrink-0">2</div>
+            <div>
+              <h4 class="font-semibold mb-1">Click en <strong>"Agregar conector personalizado"</strong></h4>
+              <p class="text-sm text-muted">Busca la opción para agregar un nuevo servidor MCP.</p>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <div class="step-number flex-shrink-0">3</div>
+            <div>
+              <h4 class="font-semibold mb-1">Pega la URL del servidor</h4>
+              <p class="text-sm text-muted mb-1">Copia y pega esta dirección en el campo URL:</p>
+              <code class="code-chip">https://mcp.komercia-exit.com</code>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <div class="step-number flex-shrink-0">4</div>
+            <div>
+              <h4 class="font-semibold mb-1">Pega tu token en el campo <strong>Authorization</strong> y guarda</h4>
+              <p class="text-sm text-muted">Usa el token que obtuviste al iniciar sesión con tu cuenta Komercia.</p>
+            </div>
+          </div>
+
+          <a href="#obtener-token" class="btn-primary mt-8 inline-flex">Obtener mi token ahora →</a>
+        </div>
+
+        <!-- Right: mock UI card -->
+        <div>
+          <div class="pill-accent text-xs mb-4 inline-flex">Claude.ai</div>
+          <div class="card p-6 max-w-sm">
+            <div class="flex items-center justify-between mb-5">
+              <span class="font-semibold text-sm">Agregar conector</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-faint">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </div>
+            <div class="space-y-4">
+              <div>
+                <p class="text-xs font-medium text-muted mb-1.5">URL del servidor</p>
+                <div class="code-chip text-xs w-full py-2 px-3 flex items-center">
+                  https://mcp.komercia-exit.com
+                </div>
+              </div>
+              <div>
+                <p class="text-xs font-medium text-muted mb-1.5">Authorization</p>
+                <div class="code-chip text-xs w-full py-2 px-3 flex items-center">
+                  eyJhbGci...
+                </div>
+              </div>
+            </div>
+            <button class="w-full mt-5 py-2 rounded-lg text-sm font-medium text-white" style="background:var(--accent)">
+              Guardar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 10: Catálogo de tools -->
+  <section id="tools" class="section">
+    <div class="container">
+      <div class="text-center">
+        <p class="section-eyebrow">11 herramientas</p>
+        <h2 class="section-heading">Todo lo que puedes pedirle a Claude</h2>
+        <p class="section-subheading mx-auto">Cada tool está optimizada para una tarea específica.</p>
+      </div>
+
+      <div class="mt-12 flex flex-col divide-y border-subtle">
+        <div class="flex flex-col md:flex-row md:items-center gap-2 py-5">
+          <code class="code-chip text-sm w-full md:w-64 flex-shrink-0">get_store_info</code>
+          <span class="text-sm text-muted flex-1">Info general: nombre, plan, dominio y estado de tu tienda</span>
+          <span class="text-xs italic flex-shrink-0 hidden md:block" style="color:var(--accent)">"¿Cuáles son los datos de mi tienda?"</span>
+        </div>
+        <div class="flex flex-col md:flex-row md:items-center gap-2 py-5">
+          <code class="code-chip text-sm w-full md:w-64 flex-shrink-0">validate_komercia_apis</code>
+          <span class="text-sm text-muted flex-1">Verifica que las APIs de Komercia estén disponibles</span>
+          <span class="text-xs italic flex-shrink-0 hidden md:block" style="color:var(--accent)">"¿Puedo conectarme a mi tienda?"</span>
+        </div>
+        <div class="flex flex-col md:flex-row md:items-center gap-2 py-5">
+          <code class="code-chip text-sm w-full md:w-64 flex-shrink-0">export_products</code>
+          <span class="text-sm text-muted flex-1">Catálogo en CSV, JSON, formato Shopify o WooCommerce</span>
+          <span class="text-xs italic flex-shrink-0 hidden md:block" style="color:var(--accent)">"Exporta mis productos a Shopify"</span>
+        </div>
+        <div class="flex flex-col md:flex-row md:items-center gap-2 py-5">
+          <code class="code-chip text-sm w-full md:w-64 flex-shrink-0">export_orders</code>
+          <span class="text-sm text-muted flex-1">Historial completo de ventas en CSV</span>
+          <span class="text-xs italic flex-shrink-0 hidden md:block" style="color:var(--accent)">"Dame mis ventas del último año"</span>
+        </div>
+        <div class="flex flex-col md:flex-row md:items-center gap-2 py-5">
+          <code class="code-chip text-sm w-full md:w-64 flex-shrink-0">export_customers</code>
+          <span class="text-sm text-muted flex-1">Lista de clientes con direcciones e historial</span>
+          <span class="text-xs italic flex-shrink-0 hidden md:block" style="color:var(--accent)">"Exporta todos mis clientes"</span>
+        </div>
+        <div class="flex flex-col md:flex-row md:items-center gap-2 py-5">
+          <code class="code-chip text-sm w-full md:w-64 flex-shrink-0">export_categories</code>
+          <span class="text-sm text-muted flex-1">Árbol de categorías de tu catálogo</span>
+          <span class="text-xs italic flex-shrink-0 hidden md:block" style="color:var(--accent)">"Muéstrame mis categorías"</span>
+        </div>
+        <div class="flex flex-col md:flex-row md:items-center gap-2 py-5">
+          <code class="code-chip text-sm w-full md:w-64 flex-shrink-0">export_inventory_movements</code>
+          <span class="text-sm text-muted flex-1">Historial de movimientos de stock</span>
+          <span class="text-xs italic flex-shrink-0 hidden md:block" style="color:var(--accent)">"¿Cómo cambió mi inventario este mes?"</span>
+        </div>
+        <div class="flex flex-col md:flex-row md:items-center gap-2 py-5">
+          <code class="code-chip text-sm w-full md:w-64 flex-shrink-0">export_theme_config</code>
+          <span class="text-sm text-muted flex-1">Configuración de diseño: colores, fuentes, tema</span>
+          <span class="text-xs italic flex-shrink-0 hidden md:block" style="color:var(--accent)">"Guarda la config de mi tema"</span>
+        </div>
+        <div class="flex flex-col md:flex-row md:items-center gap-2 py-5">
+          <code class="code-chip text-sm w-full md:w-64 flex-shrink-0">list_payment_gateways</code>
+          <span class="text-sm text-muted flex-1">Pasarelas de pago activas y métodos configurados</span>
+          <span class="text-xs italic flex-shrink-0 hidden md:block" style="color:var(--accent)">"¿Qué métodos de pago tengo?"</span>
+        </div>
+        <div class="flex flex-col md:flex-row md:items-center gap-2 py-5">
+          <code class="code-chip text-sm w-full md:w-64 flex-shrink-0">download_media_archive</code>
+          <span class="text-sm text-muted flex-1">ZIP con todas las imágenes de tu tienda</span>
+          <span class="text-xs italic flex-shrink-0 hidden md:block" style="color:var(--accent)">"Descarga todas mis fotos de productos"</span>
+        </div>
+        <div class="flex flex-col md:flex-row md:items-center gap-2 py-5">
+          <code class="code-chip text-sm w-full md:w-64 flex-shrink-0">suggest_alternative_platforms</code>
+          <span class="text-sm text-muted flex-1">Análisis de qué plataforma conviene para migrar</span>
+          <span class="text-xs italic flex-shrink-0 hidden md:block" style="color:var(--accent)">"¿A qué plataforma me mudo?"</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 11: Seguridad -->
+  <div style="background:var(--bg-secondary)" class="border-y border-subtle">
+    <section id="seguridad" class="section">
+      <div class="container">
+        <div class="text-center">
+          <p class="section-eyebrow">Seguridad</p>
+          <h2 class="section-heading">Tu seguridad, sin compromisos</h2>
+          <p class="section-subheading mx-auto">Diseñado desde el inicio para ser seguro y transparente.</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8 mt-12">
+          <!-- No passwords -->
+          <div>
+            <div class="feature-icon w-12 h-12">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold mt-4 mb-2">Sin almacenar contraseñas</h3>
+            <p class="text-sm text-muted leading-relaxed">
+              Tu password se usa solo para autenticarte y nunca queda en nuestros servidores. Nunca.
+            </p>
+          </div>
+          <!-- Open source -->
+          <div>
+            <div class="feature-icon w-12 h-12">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="16 18 22 12 16 6"/>
+                <polyline points="8 6 2 12 8 18"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold mt-4 mb-2">Código 100% abierto</h3>
+            <p class="text-sm text-muted leading-relaxed">
+              Todo el código está en GitHub. Auditado por ti, por Komercia, por la comunidad.
+            </p>
+          </div>
+          <!-- Read-only -->
+          <div>
+            <div class="feature-icon w-12 h-12">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <polyline points="9 12 11 14 15 10"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold mt-4 mb-2">Solo lectura</h3>
+            <p class="text-sm text-muted leading-relaxed">
+              Los tokens generan acceso de solo lectura. El MCP no puede modificar nada en tu tienda.
+            </p>
+          </div>
+        </div>
+
+        <div class="text-center mt-8">
+          <a href="/security" class="link-accent text-sm inline-flex items-center gap-1">
+            Lee nuestro modelo de seguridad completo →
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Section 12: FAQ -->
+  <section id="faq" class="section">
+    <div class="container">
+      <div class="max-w-2xl mx-auto">
+        <div class="text-center">
+          <p class="section-eyebrow">FAQ</p>
+          <h2 class="section-heading">Preguntas frecuentes</h2>
+        </div>
+
+        <div class="mt-12">
+          <details class="faq-item">
+            <summary>
+              ¿Qué es exactamente este MCP?
+              <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="faq-body">
+              Es el conector oficial de Komercia para Claude.ai. Te permite exportar y consultar todos los datos de tu tienda conversando en lenguaje natural, sin escribir código.
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              ¿Es gratis?
+              <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="faq-body">
+              Sí, completamente gratis. Solo necesitas una cuenta activa de Komercia y una cuenta de Claude.ai.
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              ¿Es seguro? ¿Qué hacen con mi contraseña?
+              <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="faq-body">
+              Tu contraseña se usa una sola vez para autenticarte y nunca se almacena. Generamos un token JWT de solo lectura. El código es open source y auditable en GitHub.
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              ¿Qué datos puedo exportar?
+              <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="faq-body">
+              Productos con variantes e imágenes, órdenes históricas, clientes con direcciones, categorías, configuración de tema, métodos de pago, movimientos de inventario y más.
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              ¿En qué formatos puedo exportar?
+              <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="faq-body">
+              CSV genérico, JSON estructurado, formato Shopify y formato WooCommerce. Claude puede transformar los datos a cualquier otro formato que necesites.
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              ¿Puedo migrar a otra plataforma con esto?
+              <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="faq-body">
+              Sí, es uno de sus usos principales. Genera exports listos para Shopify, Tiendanube, WooCommerce, VTEX y otras plataformas.
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              ¿Necesito saber programar?
+              <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="faq-body">
+              No. Si sabes hacer login y copiar/pegar un texto, puedes usarlo. Toda la interacción es en español natural.
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              ¿Cuánto dura mi token de acceso?
+              <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="faq-body">
+              6 meses. Después puedes generar uno nuevo desde esta misma página.
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              ¿Qué pasa con mis datos cuando cierre Komercia?
+              <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="faq-body">
+              Mientras tu cuenta siga activa, podrás exportar todo. Te recomendamos hacer un backup completo lo antes posible.
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              ¿Dónde reporto bugs o sugiero mejoras?
+              <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="faq-body">
+              En GitHub: abre un issue en el repositorio. Es open source y bienvenidas las contribuciones.
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 13: Final CTA with embedded form -->
+  <section id="obtener-token" class="section">
+    <div class="container">
+      <div class="text-center max-w-lg mx-auto">
+        <h2 class="text-4xl font-bold">Empieza ahora.</h2>
+        <p class="section-subheading mx-auto">
+          Ingresa con tu cuenta Komercia y obtén tu token al instante.
+        </p>
+
+        <div class="card p-8 mt-8 text-left">
+          <LoginForm />
+        </div>
+
+        <p class="text-xs text-center mt-4" style="color:var(--text-tertiary)">
+          Tus credenciales se usan solo para verificar tu identidad y nunca se almacenan en texto plano.
+        </p>
+        <p class="text-sm text-center mt-3 text-muted">
+          ¿No tienes cuenta de Komercia?
+          <a href="https://komercia.co" class="link-accent">Regístrate gratis →</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 14: Footer -->
+  <Footer />
 </Base>

@@ -1,0 +1,81 @@
+---
+import Base from '../layouts/Base.astro';
+import LoginForm from '../components/LoginForm.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
+import { generateCsrfToken } from '../lib/csrf.js';
+
+const csrfToken = generateCsrfToken();
+Astro.cookies.set('csrf_token', csrfToken, {
+  path: '/',
+  sameSite: 'strict',
+  httpOnly: false,
+  secure: import.meta.env.PROD,
+  maxAge: 3600,
+});
+---
+
+<Base
+  title="Iniciar sesión — Komercia Exit MCP"
+  description="Inicia sesión con tu cuenta Komercia para obtener tu token de exportación personal."
+  noindex={true}
+>
+  <div class="min-h-screen flex flex-col">
+
+    <!-- Minimal header -->
+    <header class="h-14 flex items-center px-6 border-b border-subtle">
+      <a href="/" class="font-semibold text-sm" style="color:var(--text-primary)">
+        komercia<span style="color:var(--accent)"> exit</span>
+      </a>
+      <div class="ml-auto"><ThemeToggle /></div>
+    </header>
+
+    <!-- Main content -->
+    <main class="flex-1 grid md:grid-cols-5">
+
+      <!-- Left panel: form (3 cols on md, full on mobile) -->
+      <div class="md:col-span-3 flex items-center justify-center p-8 md:p-16">
+        <div class="max-w-sm w-full">
+          <a href="/" class="link text-sm flex items-center gap-1 mb-8">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            Volver
+          </a>
+
+          <h1 class="text-3xl font-bold mb-2">Inicia sesión</h1>
+          <p class="text-sm text-muted mb-8">Con tu cuenta de Komercia</p>
+
+          <LoginForm />
+
+          <p class="text-xs text-center mt-6 text-faint">
+            Tus credenciales se usan solo para autenticarte y nunca se almacenan.
+          </p>
+        </div>
+      </div>
+
+      <!-- Right panel: decorative (2 cols on md, hidden on mobile) -->
+      <div
+        class="hidden md:flex md:col-span-2 flex-col items-center justify-center relative overflow-hidden"
+        style="background: var(--bg-secondary)"
+      >
+        <!-- Decorative dot pattern background -->
+        <div class="absolute inset-0 bg-dot-pattern opacity-20"></div>
+
+        <!-- Content -->
+        <div class="relative z-10 px-10 text-center">
+          <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-center max-w-xs mx-auto leading-tight">
+            Tus datos,<br>
+            <span style="color:var(--accent)">siempre<br>contigo.</span>
+          </h2>
+          <p class="text-sm text-muted text-center mt-4">
+            Exporta todo antes de que cierre Komercia.
+          </p>
+        </div>
+
+        <!-- Teal glow accent -->
+        <div class="absolute bottom-0 left-0 right-0 h-64 bg-glow-teal opacity-40 pointer-events-none"></div>
+      </div>
+
+    </main>
+  </div>
+</Base>

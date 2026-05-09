@@ -1,87 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
-
-const faqs = [
-  {
-    q: 'Is this tool affiliated with Komercia?',
-    a: 'No. This is an unofficial, open-source community tool built to help Komercia merchants export their data before the platform closes. It is not endorsed by or affiliated with Komercia in any way.',
-  },
-  {
-    q: 'Is my store data safe?',
-    a: 'Your credentials are used only to verify your identity and generate a secure session token. They are never stored in plain text — Komercia tokens are encrypted at rest in our database using AES-256-GCM. Your product, order, and customer data is read directly from Komercia\'s API and is never stored by this tool. The MCP server is read-only and cannot modify your store.',
-  },
-  {
-    q: 'How long is my token valid?',
-    a: '6 months from when you log in. After that, just log in again from the home page to get a fresh token.',
-  },
-  {
-    q: 'What data can I export?',
-    a: 'You can export products (with images, pricing, and stock), orders (with line items and totals), customers (with contact info and addresses), product categories, and inventory movement history. All exports are available in CSV or JSON format. Products can also be exported in Shopify or WooCommerce-compatible formats.',
-  },
-  {
-    q: 'What platforms can I migrate to?',
-    a: 'The exported files are compatible with Shopify, WooCommerce, Tiendanube, and any other platform that accepts standard CSV imports. Claude can help you format the data for whichever platform you\'re moving to.',
-  },
-  {
-    q: 'My token stopped working — what do I do?',
-    a: 'Tokens are valid for 6 months. If yours has expired, simply log in again from the home page to get a new one.',
-  },
-  {
-    q: 'Can I use this token more than once?',
-    a: 'Yes. The JWT token you receive is valid for 6 months and can be used for multiple conversations with Claude.ai.',
-  },
-  {
-    q: 'How do I add the token to Claude.ai?',
-    a: 'In Claude.ai, go to Settings → Integrations (or Connectors), click "Add integration", enter the Komercia MCP server URL, and paste your JWT as the auth token. Once connected, start a new chat and ask Claude to export your data.',
-  },
-];
 ---
-
-<Base
-  title="FAQ — Komercia Export"
-  description="Frequently asked questions about the Komercia store data export tool."
->
-  <main class="max-w-2xl mx-auto px-4 py-16 sm:px-6">
-    <!-- Header -->
-    <div class="mb-10">
-      <a href="/" class="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-600 transition-colors mb-6">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m15 18-6-6 6-6"/>
-        </svg>
-        Back
-      </a>
-      <h1 class="text-2xl font-bold text-slate-900 mb-2">Frequently asked questions</h1>
-      <p class="text-slate-500 text-sm">
-        Everything you need to know about exporting your Komercia store data.
-      </p>
+<Base title="FAQ — Komercia Exit MCP">
+  <div class="min-h-screen flex items-center justify-center">
+    <div class="text-center">
+      <p class="text-muted mb-4">Redirigiendo a FAQ...</p>
+      <a href="/#faq" class="btn-primary">Ir a preguntas frecuentes</a>
     </div>
-
-    <!-- FAQ list -->
-    <div class="space-y-1">
-      {faqs.map((faq, i) => (
-        <details
-          class="group border border-slate-200 rounded-lg overflow-hidden"
-          id={`faq-${i}`}
-        >
-          <summary class="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer list-none select-none hover:bg-slate-50 transition-colors">
-            <span class="text-sm font-medium text-slate-800">{faq.q}</span>
-            <span class="flex-shrink-0 w-5 h-5 text-slate-400 transition-transform group-open:rotate-180">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m6 9 6 6 6-6"/>
-              </svg>
-            </span>
-          </summary>
-          <div class="px-5 pb-4 pt-1 border-t border-slate-100">
-            <p class="text-sm text-slate-600 leading-relaxed">{faq.a}</p>
-          </div>
-        </details>
-      ))}
-    </div>
-
-    <p class="mt-10 text-center text-xs text-slate-400">
-      <a href="/" class="underline hover:text-slate-600 transition-colors">Get your export token</a>
-      &middot;
-      <a href="/tools" class="underline hover:text-slate-600 transition-colors">Available tools</a>
-    </p>
-  </main>
+  </div>
+  <script>window.location.replace('/#faq');</script>
 </Base>

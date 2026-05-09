@@ -1,0 +1,69 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+
+export interface Props {
+  activePage?: string;
+}
+
+const { activePage } = Astro.props;
+
+const navLinks = [
+  { label: 'Cómo funciona', href: '/#como-funciona', key: 'como-funciona' },
+  { label: 'Tools', href: '/#tools', key: 'tools' },
+  { label: 'FAQ', href: '/#faq', key: 'faq' },
+];
+---
+
+<nav class="navbar" id="main-nav">
+  <div class="container-wide w-full flex items-center justify-between gap-6">
+    <!-- Left: Logo -->
+    <div class="flex-shrink-0">
+      <!-- TODO: replace with SVG logo -->
+      <a href="/" class="font-sans font-semibold text-sm flex items-center">
+        komercia<span class="text-accent-color"> exit</span>
+      </a>
+    </div>
+
+    <!-- Center: Nav links (hidden on mobile, visible md+) -->
+    <nav class="hidden md:flex items-center gap-6" aria-label="Main navigation">
+      {navLinks.map((link) => (
+        <a
+          href={link.href}
+          class={[
+            'text-sm transition-colors',
+            activePage === link.key
+              ? 'text-accent-color'
+              : 'text-muted hover:text-primary',
+          ].join(' ')}
+        >
+          {link.label}
+        </a>
+      ))}
+    </nav>
+
+    <!-- Right: Theme toggle + CTA -->
+    <div class="flex items-center gap-3 flex-shrink-0">
+      <ThemeToggle />
+      <a href="/sign-in" class="btn-primary text-sm px-4 py-2">Obtener token</a>
+    </div>
+  </div>
+</nav>
+
+<script is:inline>
+  (function () {
+    var nav = document.getElementById('main-nav');
+    if (!nav) return;
+
+    function onScroll() {
+      if (window.scrollY > 10) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    // Run once on load in case page is already scrolled
+    onScroll();
+  })();
+</script>

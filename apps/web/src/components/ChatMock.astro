@@ -1,0 +1,176 @@
+---
+// No props — this is a static visual component
+---
+
+<div class="card max-w-sm w-full" style="box-shadow: 0 8px 40px -8px rgb(0 0 0 / 0.4), 0 0 0 1px var(--border);">
+  <!-- Window chrome bar -->
+  <div class="flex items-center gap-2 mb-4 pb-3 border-b border-subtle">
+    <span class="w-2 h-2 rounded-full" style="background: #ef4444;"></span>
+    <span class="w-2 h-2 rounded-full" style="background: #f59e0b;"></span>
+    <span class="w-2 h-2 rounded-full" style="background: #10b981;"></span>
+    <span class="text-xs text-faint ml-2">Claude.ai</span>
+  </div>
+
+  <!-- Chat messages area -->
+  <div id="chat-messages" class="flex flex-col gap-3 py-2 min-h-[280px]">
+    <!-- Messages are injected by script -->
+  </div>
+</div>
+
+<script>
+  (function () {
+    var container = document.getElementById('chat-messages');
+    if (!container) return;
+
+    // Message definitions
+    var messages = [
+      {
+        type: 'user',
+        text: 'Exporta mis productos a formato Shopify',
+      },
+      {
+        type: 'claude',
+        text: 'Conectándome a tu tienda Komercia...',
+      },
+      {
+        type: 'tool',
+        text: 'export_products(format: "shopify")',
+      },
+      {
+        type: 'claude',
+        text: 'Listo. Exporté 247 productos con variantes e imágenes.',
+      },
+      {
+        type: 'file',
+        text: 'productos-shopify.csv',
+      },
+    ];
+
+    var timers: ReturnType<typeof setTimeout>[] = [];
+
+    function clearTimers() {
+      timers.forEach(function (t) { clearTimeout(t); });
+      timers = [];
+    }
+
+    function createUserBubble(text: string) {
+      var el = document.createElement('div');
+      el.className = 'chat-bubble-user opacity-0 translate-y-2';
+      el.style.cssText = 'transition: opacity 400ms ease, transform 400ms ease;';
+      el.textContent = text;
+      return el;
+    }
+
+    function createClaudeBubble(text: string) {
+      var el = document.createElement('div');
+      el.className = 'chat-bubble-claude opacity-0 translate-y-2';
+      el.style.cssText = 'transition: opacity 400ms ease, transform 400ms ease;';
+      el.textContent = text;
+      return el;
+    }
+
+    function createToolCall(text: string) {
+      var el = document.createElement('div');
+      el.className = 'chat-tool-call opacity-0 translate-y-2';
+      el.style.cssText = 'transition: opacity 400ms ease, transform 400ms ease;';
+      el.innerHTML = '<span style="margin-right: 4px;">⚡</span>' + text;
+      return el;
+    }
+
+    function createFileAttachment(text: string) {
+      var el = document.createElement('div');
+      el.className = 'chat-bubble-claude opacity-0 translate-y-2';
+      el.style.cssText = 'transition: opacity 400ms ease, transform 400ms ease; display: flex; align-items: center; gap: 8px;';
+      el.innerHTML = '<span>📎</span><span style="font-family: var(--font-mono, monospace); font-size: 0.75rem;">' + text + '</span>';
+      return el;
+    }
+
+    function createTypingIndicator() {
+      var el = document.createElement('div');
+      el.className = 'chat-bubble-claude';
+      el.style.cssText = 'display: flex; align-items: center; gap: 4px;';
+      for (var i = 0; i < 3; i++) {
+        var dot = document.createElement('span');
+        dot.style.cssText = 'display: inline-block; width: 5px; height: 5px; border-radius: 50%; background-color: var(--text-tertiary); animation: pulse 1.4s ease-in-out infinite;';
+        dot.style.animationDelay = (i * 0.2) + 's';
+        el.appendChild(dot);
+      }
+      return el;
+    }
+
+    function revealElement(el: HTMLElement) {
+      // Force a reflow so the transition fires
+      void el.offsetHeight;
+      el.classList.remove('opacity-0', 'translate-y-2');
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }
+
+    function scrollToBottom() {
+      container!.scrollTop = container!.scrollHeight;
+    }
+
+    function runSequence() {
+      container!.innerHTML = '';
+      var delay = 400;
+      var stepDelay = 1200;
+      var typingDelay = 800;
+
+      messages.forEach(function (msg, index) {
+        var isClaudeOrFile = msg.type === 'claude' || msg.type === 'file';
+
+        if (isClaudeOrFile) {
+          // Show typing indicator before Claude messages
+          timers.push(setTimeout(function () {
+            var typing = createTypingIndicator();
+            container!.appendChild(typing);
+            scrollToBottom();
+
+            // Remove typing indicator and show real message
+            timers.push(setTimeout(function () {
+              container!.removeChild(typing);
+
+              var el: HTMLElement;
+              if (msg.type === 'file') {
+                el = createFileAttachment(msg.text);
+              } else {
+                el = createClaudeBubble(msg.text);
+              }
+              container!.appendChild(el);
+              revealElement(el);
+              scrollToBottom();
+            }, typingDelay));
+          }, delay));
+
+          delay += typingDelay + stepDelay;
+        } else {
+          // User and tool messages appear immediately (no typing indicator)
+          (function (d, m) {
+            timers.push(setTimeout(function () {
+              var el: HTMLElement;
+              if (m.type === 'user') {
+                el = createUserBubble(m.text);
+              } else {
+                el = createToolCall(m.text);
+              }
+              container!.appendChild(el);
+              revealElement(el);
+              scrollToBottom();
+            }, d));
+          })(delay, msg);
+
+          delay += stepDelay;
+        }
+      });
+
+      // After all messages, wait 4s then loop
+      timers.push(setTimeout(function () {
+        clearTimers();
+        runSequence();
+      }, delay + 4000));
+    }
+
+    // Kick off the animation loop
+    runSequence();
+  })();
+</script>

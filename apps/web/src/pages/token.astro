@@ -1,27 +1,42 @@
 ---
 import Base from '../layouts/Base.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
 ---
 
-<Base title="Export token — Komercia Export">
-  <main class="page-container text-center">
-    <div class="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center mx-auto mb-6">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
-        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-      </svg>
+<Base
+  title="Token de exportación — Komercia Exit MCP"
+  description="Tu token de exportación de Komercia. Úsalo para conectar Claude.ai a tu tienda."
+  noindex={true}
+>
+  <Navbar />
+
+  <main class="section">
+    <div class="container">
+      <div class="max-w-md mx-auto text-center">
+        <!-- Icon -->
+        <div class="feature-icon w-16 h-16 mx-auto mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+
+        <h1 class="text-2xl font-bold mb-3">Tu token fue mostrado en la página de inicio</h1>
+        <p class="text-muted text-base mb-8 max-w-sm mx-auto leading-relaxed">
+          Si necesitas un nuevo token de exportación, inicia sesión nuevamente. Tu token es válido por 6 meses una vez emitido.
+        </p>
+
+        <a href="/#obtener-token" class="btn-primary inline-flex">Iniciar sesión de nuevo</a>
+
+        <p class="mt-8 text-xs text-faint">
+          <a href="/#tools" class="link-accent">Ver herramientas disponibles</a>
+          &middot;
+          <a href="/#faq" class="link-accent">Preguntas frecuentes</a>
+        </p>
+      </div>
     </div>
-
-    <h1 class="text-2xl font-bold text-slate-900 mb-3">Your token was displayed on the login page</h1>
-    <p class="text-slate-500 text-base mb-8 max-w-sm mx-auto">
-      If you need a new export token, please log in again. Your token is valid for 6 months once issued.
-    </p>
-
-    <a href="/" class="btn-primary inline-flex">Log in again</a>
-
-    <p class="mt-8 text-xs text-slate-400">
-      <a href="/tools" class="underline hover:text-slate-600 transition-colors">Available data</a>
-      &middot;
-      <a href="/faq" class="underline hover:text-slate-600 transition-colors">FAQ</a>
-    </p>
   </main>
+
+  <Footer />
 </Base>

@@ -1,0 +1,60 @@
+---
+// No props — content is static
+---
+
+<div id="announcement-banner" class="banner relative">
+  <div class="flex items-center justify-center gap-2">
+    <!-- Teal dot -->
+    <span
+      class="w-1.5 h-1.5 rounded-full flex-shrink-0"
+      style="background-color: var(--accent);"
+    ></span>
+
+    <!-- Message -->
+    <span>
+      Komercia evoluciona. Este es el MCP oficial para llevar tus datos cuando quieras —
+      <a
+        href="/#como-funciona"
+        class="font-semibold underline underline-offset-2"
+      >Aprende más →</a>
+    </span>
+  </div>
+
+  <!-- Close button -->
+  <button
+    id="banner-close"
+    class="absolute right-4 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-6 h-6 rounded opacity-60 hover:opacity-100 transition-opacity"
+    aria-label="Cerrar"
+    style="color: var(--text-primary);"
+  >
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"/>
+      <line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  </button>
+</div>
+
+<script is:inline>
+  (function () {
+    var banner = document.getElementById('announcement-banner');
+    var closeBtn = document.getElementById('banner-close');
+
+    if (!banner) return;
+
+    // Hide if already dismissed
+    try {
+      if (localStorage.getItem('banner-dismissed-v1') === 'true') {
+        banner.style.display = 'none';
+      }
+    } catch (_) {}
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function () {
+        banner.style.display = 'none';
+        try {
+          localStorage.setItem('banner-dismissed-v1', 'true');
+        } catch (_) {}
+      });
+    }
+  })();
+</script>
