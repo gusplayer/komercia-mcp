@@ -26,11 +26,15 @@ Ask Claude questions like:
 
 ## Quick start (merchants)
 
-### 1. Get your token
+### Step 1 — Get your token
 
 Visit [mcp.komercia.co](https://mcp.komercia.co), log in with your Komercia credentials, and copy the token shown on screen. It's valid for 6 months and is read-only.
 
-### 2. Connect Claude.ai
+### Step 2 — Connect your client (pick one)
+
+All clients use the same token. Choose whichever you already use:
+
+**Claude.ai** (recommended — no install needed)
 
 In [Claude.ai](https://claude.ai), go to **Settings → Integrations** and add a new integration:
 
@@ -39,7 +43,7 @@ In [Claude.ai](https://claude.ai), go to **Settings → Integrations** and add a
 | Server URL | `https://api-mcp.komercia.co/sse` |
 | Authentication | Paste your token |
 
-### 3. Connect Claude Desktop
+**Claude Desktop**
 
 In `claude_desktop_config.json`:
 
@@ -47,23 +51,21 @@ In `claude_desktop_config.json`:
 {
   "mcpServers": {
     "komercia": {
-      "command": "npx",
-      "args": ["-y", "@komercia/mcp-client"],
-      "env": {
-        "KOMERCIA_TOKEN": "your-token-here"
-      }
+      "command": "mcp-remote",
+      "args": ["https://api-mcp.komercia.co/sse", "--header", "Authorization: Bearer YOUR_TOKEN"]
     }
   }
 }
 ```
 
-### 4. Connect Claude Code / Cursor
+**Claude Code / Cursor**
 
 ```bash
-claude mcp add komercia --transport sse https://api-mcp.komercia.co/sse
+claude mcp add --transport http komercia https://api-mcp.komercia.co \
+  --header "Authorization: Bearer YOUR_TOKEN"
 ```
 
-Then set your token in the integration settings.
+Full setup guide for all clients: [mcp.komercia.co/uso](https://mcp.komercia.co/uso)
 
 ---
 
