@@ -1,38 +1,48 @@
 ---
-// No props — content is static
+// AnnouncementBanner.astro — Top-of-page banner aligned with the Column design system.
+// Deep-plum background, ghost-white text, dismissible (localStorage v4 key).
 ---
 
-<div id="announcement-banner" class="banner relative">
-  <div class="flex items-center justify-center gap-2">
-    <!-- Teal dot -->
-    <span
-      class="w-1.5 h-1.5 rounded-full flex-shrink-0"
-      style="background-color: var(--accent);"
-    ></span>
+<div id="announcement-banner" class="banner" style="position: relative;">
+  <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
 
     <!-- Message -->
-    <span>
-      Komercia evoluciona. Este es el MCP oficial para llevar tus datos cuando quieras —
-      <a
-        href="/#como-funciona"
-        class="font-semibold underline underline-offset-2"
-      >Aprende más →</a>
+    <span style="font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 400; color: var(--color-ghost-white);">
+      Nuevo:
     </span>
+    <a
+      href="/uso"
+      class="banner-cta-link"
+      style="font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; color: var(--color-ghost-white); text-decoration: underline; text-underline-offset: 2px; white-space: nowrap;"
+    >
+      El MCP oficial de Komercia ya está disponible para Claude.ai →
+    </a>
+
   </div>
 
   <!-- Close button -->
   <button
     id="banner-close"
-    class="absolute right-4 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-6 h-6 rounded opacity-60 hover:opacity-100 transition-opacity"
     aria-label="Cerrar"
-    style="color: var(--text-primary);"
+    class="banner-close-btn"
+    style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; background: none; border: none; padding: 0; cursor: pointer; color: var(--color-ghost-white); opacity: 0.7; transition: opacity 0.15s ease;"
   >
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="18" y1="6" x2="6" y2="18"/>
-      <line x1="6" y1="6" x2="18" y2="18"/>
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+      <line x1="1.5" y1="1.5" x2="12.5" y2="12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="12.5" y1="1.5" x2="1.5" y2="12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
     </svg>
   </button>
 </div>
+
+<style>
+  .banner-close-btn:hover {
+    opacity: 1;
+  }
+  .banner-cta-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+</style>
 
 <script is:inline>
   (function () {
@@ -41,9 +51,9 @@
 
     if (!banner) return;
 
-    // Hide if already dismissed
+    // Hide if already dismissed (key: banner-dismissed-v4)
     try {
-      if (localStorage.getItem('banner-dismissed-v1') === 'true') {
+      if (localStorage.getItem('banner-dismissed-v4') === 'true') {
         banner.style.display = 'none';
       }
     } catch (_) {}
@@ -52,7 +62,7 @@
       closeBtn.addEventListener('click', function () {
         banner.style.display = 'none';
         try {
-          localStorage.setItem('banner-dismissed-v1', 'true');
+          localStorage.setItem('banner-dismissed-v4', 'true');
         } catch (_) {}
       });
     }

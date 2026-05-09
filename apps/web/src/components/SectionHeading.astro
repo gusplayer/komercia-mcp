@@ -1,0 +1,36 @@
+---
+// SectionHeading.astro — Eyebrow + title + description heading block.
+// Uses ScrollAnimate-compatible data attributes for staggered reveal animations.
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  description?: string;
+  align?: 'left' | 'center';
+  size?: 'md' | 'lg';
+  class?: string;
+}
+
+const {
+  eyebrow,
+  title,
+  description,
+  align = 'left',
+  size = 'md',
+  class: className = '',
+} = Astro.props;
+
+const headingClass = size === 'lg' ? 'section-heading section-heading-lg' : 'section-heading';
+const alignStyle = align === 'center' ? 'text-align:center;' : '';
+const subWrap = align === 'center' ? 'margin-inline:auto;' : '';
+---
+
+<div class={className} style={alignStyle}>
+  {eyebrow && <p class="section-eyebrow" data-animate>{eyebrow}</p>}
+  <h2 class={headingClass} data-animate data-animate-delay="100">{title}</h2>
+  {description && (
+    <p class="section-subheading" style={subWrap} data-animate data-animate-delay="200">
+      {description}
+    </p>
+  )}
+</div>

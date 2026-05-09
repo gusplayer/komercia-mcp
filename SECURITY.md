@@ -10,7 +10,7 @@
 
 **Please do not open a public GitHub issue for security vulnerabilities.**
 
-Send a detailed report to: **security@komercia-exit.example**
+Send a detailed report to: **security@komercia.co**
 
 Include:
 

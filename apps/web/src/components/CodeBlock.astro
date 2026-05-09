@@ -1,0 +1,13 @@
+---
+// CodeBlock.astro — Monospace code surface using the .code-block class.
+
+interface Props {
+  code: string;
+  language?: string;
+  class?: string;
+}
+
+const { code, language, class: className = '' } = Astro.props;
+---
+
+<pre class={`code-block ${className}`} data-language={language}>{code}</pre>

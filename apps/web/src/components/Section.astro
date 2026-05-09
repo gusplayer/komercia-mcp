@@ -1,0 +1,30 @@
+---
+// Section.astro — Vertical rhythm wrapper with optional background variants.
+
+interface Props {
+  background?: 'white' | 'fog' | 'plum' | 'pattern';
+  padding?: 'tight' | 'default';
+  id?: string;
+  class?: string;
+}
+
+const {
+  background = 'white',
+  padding = 'default',
+  id,
+  class: className = '',
+} = Astro.props;
+
+const bgMap: Record<string, string> = {
+  white: '',
+  fog: 'section-fog',
+  plum: 'bg-plum',
+  pattern: 'grid-pattern',
+};
+
+const padClass = padding === 'tight' ? 'section-tight' : 'section';
+---
+
+<section id={id} class={`${padClass} ${bgMap[background]} ${className}`}>
+  <slot />
+</section>

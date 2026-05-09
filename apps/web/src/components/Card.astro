@@ -1,0 +1,37 @@
+---
+// Card.astro — Surface wrapper aligned with the Column design system.
+// Renders one of the predefined card classes (default, flat, callout-orange, callout-plum).
+
+interface Props {
+  variant?: 'default' | 'flat' | 'callout-orange' | 'callout-plum';
+  padding?: 'sm' | 'md' | 'lg';
+  class?: string;
+  as?: 'div' | 'article' | 'section';
+}
+
+const {
+  variant = 'default',
+  padding = 'md',
+  class: className = '',
+  as = 'div',
+} = Astro.props;
+
+const variantMap: Record<string, string> = {
+  default: 'card',
+  flat: 'card-flat',
+  'callout-orange': 'card-callout-orange',
+  'callout-plum': 'card-callout-plum',
+};
+
+const paddingMap: Record<string, string> = {
+  sm: 'padding:16px;',
+  md: '',
+  lg: 'padding:32px;',
+};
+
+const Tag = as;
+---
+
+<Tag class={`${variantMap[variant]} ${className}`} style={paddingMap[padding]}>
+  <slot />
+</Tag>

@@ -1,0 +1,68 @@
+---
+// Button.astro — Polymorphic button/link component aligned with the Column design system.
+// Renders <a> when `href` is provided, otherwise <button>.
+
+interface Props {
+  variant?: 'primary' | 'secondary' | 'ghost' | 'link';
+  size?: 'sm' | 'md' | 'lg';
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+  external?: boolean;
+  class?: string;
+  fullWidth?: boolean;
+  ariaLabel?: string;
+  id?: string;
+}
+
+const {
+  variant = 'primary',
+  size = 'md',
+  href,
+  type = 'button',
+  disabled,
+  external,
+  class: className = '',
+  fullWidth,
+  ariaLabel,
+  id,
+} = Astro.props;
+
+const variantClass = `btn-${variant}`;
+
+const sizeStyles: Record<string, string> = {
+  sm: 'font-size:13px; padding:8px 14px;',
+  md: 'font-size:14px; padding:12px 20px;',
+  lg: 'font-size:15px; padding:14px 24px;',
+};
+
+const sizeStyle = sizeStyles[size];
+const widthStyle = fullWidth ? 'width:100%; justify-content:center;' : '';
+const inlineStyle = `${sizeStyle} ${widthStyle}`.trim();
+
+const externalAttrs = external ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+---
+
+{href ? (
+  <a
+    href={href}
+    class={`${variantClass} ${className}`}
+    style={inlineStyle}
+    aria-label={ariaLabel}
+    id={id}
+    {...externalAttrs}
+  >
+    <slot />
+  </a>
+) : (
+  <button
+    type={type}
+    class={`${variantClass} ${className}`}
+    style={inlineStyle}
+    disabled={disabled}
+    aria-label={ariaLabel}
+    id={id}
+  >
+    <slot />
+  </button>
+)}

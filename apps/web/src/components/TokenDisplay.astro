@@ -1,4 +1,8 @@
 ---
+// TokenDisplay.astro — Standalone token display with copy-to-clipboard action.
+// Aligned with the Column design system (light-only, fintech aesthetic).
+import Button from './Button.astro';
+
 export interface Props {
   token: string;
 }
@@ -12,49 +16,49 @@ const masked =
     : token;
 ---
 
-<div class="space-y-4">
-  <div
+<div style="display: flex; flex-direction: column; gap: 16px;">
+  <!-- Token box -->
+  <pre
     id="token-box"
-    class="relative rounded-lg border border-slate-200 bg-slate-50 p-4 font-mono text-sm text-slate-700 break-all select-all"
+    class="code-block"
     aria-label="JWT token (masked)"
-  >
-    <span id="token-masked">{masked}</span>
-  </div>
+    style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; word-break: break-all; user-select: all; white-space: pre-wrap;"
+  ><span id="token-masked">{masked}</span></pre>
 
-  <button
-    id="copy-btn"
-    type="button"
-    class="btn-primary w-full"
-    data-token={token}
-  >
-    <span id="copy-label" class="flex items-center justify-center gap-2">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Copy button — orange fill, success state changes text only (no color shift) -->
+  <Button variant="primary" fullWidth id="copy-btn" class="token-copy-btn">
+    <span id="copy-label" class="inline-flex items-center" style="gap: 8px;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
         <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
       </svg>
-      Copy token to clipboard
+      Copiar token al portapapeles
     </span>
-    <span id="copy-success" class="hidden items-center justify-center gap-2 text-green-100">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <span id="copy-success" class="hidden items-center" style="gap: 8px;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <polyline points="20 6 9 17 4 12"/>
       </svg>
-      Copied!
+      Copiado
     </span>
-  </button>
+  </Button>
+
+  <!-- Hidden data carrier for the raw token -->
+  <span id="token-raw" data-token={token} hidden></span>
 </div>
 
 <script>
-  const btn = document.getElementById('copy-btn') as HTMLButtonElement;
-  const copyLabel = document.getElementById('copy-label') as HTMLSpanElement;
-  const copySuccess = document.getElementById('copy-success') as HTMLSpanElement;
+  const btn         = document.getElementById('copy-btn')      as HTMLButtonElement;
+  const copyLabel   = document.getElementById('copy-label')    as HTMLSpanElement;
+  const copySuccess = document.getElementById('copy-success')  as HTMLSpanElement;
+  const tokenRaw    = document.getElementById('token-raw')     as HTMLSpanElement;
 
   btn.addEventListener('click', async () => {
-    const token = btn.dataset['token'] ?? '';
+    const token = tokenRaw?.dataset['token'] ?? '';
 
     try {
       await navigator.clipboard.writeText(token);
     } catch {
-      // Fallback for older browsers
+      // Fallback for older browsers without Clipboard API
       const textarea = document.createElement('textarea');
       textarea.value = token;
       textarea.style.position = 'fixed';
@@ -65,18 +69,16 @@ const masked =
       document.body.removeChild(textarea);
     }
 
+    // Show copied state — checkmark + text, no color change
     copyLabel.classList.add('hidden');
     copySuccess.classList.remove('hidden');
     copySuccess.classList.add('inline-flex');
-    btn.classList.add('bg-green-600', 'hover:bg-green-700');
-    btn.classList.remove('bg-accent', 'hover:bg-accent-dark');
 
+    // Revert after 3s
     setTimeout(() => {
       copyLabel.classList.remove('hidden');
       copySuccess.classList.add('hidden');
       copySuccess.classList.remove('inline-flex');
-      btn.classList.remove('bg-green-600', 'hover:bg-green-700');
-      btn.classList.add('bg-accent', 'hover:bg-accent-dark');
     }, 3000);
   });
 </script>

@@ -1,9 +1,13 @@
 ---
+// sign-in.astro — Login page with Column design system.
+// Light-only fintech aesthetic, two-column split layout.
 import Base from '../layouts/Base.astro';
 import LoginForm from '../components/LoginForm.astro';
-import ThemeToggle from '../components/ThemeToggle.astro';
+import Card from '../components/Card.astro';
+import GridPattern from '../components/GridPattern.astro';
 import { generateCsrfToken } from '../lib/csrf.js';
 
+// Generate CSRF token for the login form (kept as-is).
 const csrfToken = generateCsrfToken();
 Astro.cookies.set('csrf_token', csrfToken, {
   path: '/',
@@ -15,65 +19,154 @@ Astro.cookies.set('csrf_token', csrfToken, {
 ---
 
 <Base
-  title="Iniciar sesión — Komercia Exit MCP"
+  title="Iniciar sesión — Komercia MCP"
   description="Inicia sesión con tu cuenta Komercia para obtener tu token de exportación personal."
   noindex={true}
 >
-  <div class="min-h-screen flex flex-col">
+  <div style="min-height: 100vh; display: flex; flex-direction: column; background: var(--color-ghost-white);">
 
-    <!-- Minimal header -->
-    <header class="h-14 flex items-center px-6 lg:px-8 border-b border-subtle">
-      <a href="/" class="font-semibold text-sm" style="color:var(--text-primary)">
-        komercia<span class="text-accent-color"> exit</span>
+    <!-- Header strip -->
+    <header
+      style="height: 64px; display: flex; align-items: center; padding: 0 24px; border-bottom: 1px solid var(--color-steel-gray); flex-shrink: 0;"
+    >
+      <a
+        href="/"
+        style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none;"
+        aria-label="Komercia MCP — home"
+      >
+        <span
+          aria-hidden="true"
+          style="display: inline-block; width: 8px; height: 8px; border-radius: 2px; background: var(--color-deep-plum);"
+        ></span>
+        <span style="font-family: var(--font-sans); font-size: 16px; font-weight: 600; color: var(--color-ink-blue);">Komercia</span><span style="font-family: var(--font-sans); font-size: 16px; font-weight: 400; color: var(--color-slate-text);"> MCP</span>
       </a>
-      <div class="ml-auto"><ThemeToggle /></div>
     </header>
 
-    <!-- Main split -->
-    <main class="flex-1 grid lg:grid-cols-2">
+    <!-- Main split grid -->
+    <main style="flex: 1; display: grid;">
+      <div class="sign-in-grid">
 
-      <!-- LEFT: form area -->
-      <div class="flex items-center justify-center px-6 py-12 lg:py-0">
-        <div class="w-full max-w-sm">
-          <!-- Back link -->
-          <a href="/" class="link inline-flex items-center gap-1 text-xs mb-10">← Volver al inicio</a>
+        <!-- Left column: form -->
+        <div class="form-col">
+          <div class="form-inner">
+            <p class="section-eyebrow">Iniciar sesión</p>
+            <h1
+              style="font-family: var(--font-display); font-weight: 600; font-size: 40px; line-height: 1.1; letter-spacing: -0.8px; color: var(--color-ink-blue); margin: 12px 0 32px;"
+            >
+              Accede a los datos de tu tienda.
+            </h1>
 
-          <!-- Heading -->
-          <h1 class="text-3xl font-semibold tracking-tight mb-2" style="letter-spacing:-0.02em">Inicia sesión</h1>
-          <p class="text-sm text-muted mb-8">Con tu cuenta de Komercia</p>
+            <LoginForm />
 
-          <!-- Form -->
-          <LoginForm />
+            <p
+              style="font-family: var(--font-sans); font-size: 12px; font-weight: 400; color: var(--color-slate-text); line-height: 1.6; margin-top: 24px;"
+            >
+              Tus credenciales se usan solo para verificar tu identidad y nunca se almacenan en texto plano.
+            </p>
 
-          <!-- Footer note -->
-          <p class="text-[11px] text-faint text-center mt-8 leading-relaxed">
-            Tus credenciales se usan solo para autenticarte y nunca se almacenan.<br>
-            <a href="/#seguridad" class="link-accent">Lee nuestro modelo de seguridad →</a>
-          </p>
+            <p style="margin-top: 12px;">
+              <span
+                style="font-family: var(--font-sans); font-size: 13px; font-weight: 400; color: var(--color-slate-text);"
+              >¿No tienes cuenta?</span>
+              {' '}
+              <a
+                href="https://komercia.co"
+                target="_blank"
+                rel="noopener noreferrer"
+                style="font-family: var(--font-sans); font-size: 13px; font-weight: 500; color: var(--color-deep-plum); text-decoration: none;"
+              >Regístrate en Komercia →</a>
+            </p>
+          </div>
         </div>
-      </div>
 
-      <!-- RIGHT: decorative panel -->
-      <div
-        class="hidden lg:flex relative overflow-hidden items-center justify-center"
-        style="background-color: var(--bg-secondary); border-left: 1px solid var(--border);"
-      >
-        <!-- Particle field background -->
-        <div class="particle-field"></div>
-        <div class="particle-accent"></div>
-        <!-- Centered content -->
-        <div class="relative z-10 max-w-sm px-12 text-center">
-          <h2 class="text-4xl font-semibold tracking-tight mb-4" style="letter-spacing:-0.02em; line-height:1.1">
-            Tus datos,<br>
-            <span style="color: var(--accent)">siempre contigo.</span>
-          </h2>
-          <p class="text-sm text-muted leading-relaxed">
-            Exporta todo de tu tienda Komercia conversando con Claude.ai.
-          </p>
+        <!-- Right column: decorative (hidden on mobile) -->
+        <div class="deco-col">
+          <GridPattern variant="subtle" />
+          <div class="deco-inner">
+
+            <Card variant="callout-plum" padding="lg">
+              <h2
+                style="font-family: 'Inter', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.1; letter-spacing: -0.64px; color: var(--color-ghost-white); margin: 0; text-align: center;"
+              >
+                Tu tienda. Con la inteligencia de Claude.
+              </h2>
+              <p
+                style="font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 400; color: rgba(255, 255, 255, 0.75); line-height: 1.6; margin: 16px 0 0; text-align: center;"
+              >
+                Pregúntale a tu tienda lo que sea. Claude responde con tus datos reales.
+              </p>
+            </Card>
+
+            <div style="margin-top: 24px;">
+              <Card variant="callout-orange" padding="md">
+                <p
+                  style="font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; color: var(--color-ghost-white); margin: 0; text-align: center;"
+                >
+                  11 herramientas MCP listas para usar
+                </p>
+              </Card>
+            </div>
+
+          </div>
         </div>
+
       </div>
     </main>
   </div>
 </Base>
-</content>
-</invoke>
+
+<style>
+  .sign-in-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    flex: 1;
+    min-height: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .sign-in-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .form-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 24px;
+  }
+
+  .form-inner {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  /* Right decorative column — hidden on mobile, lg:flex */
+  .deco-col {
+    display: none;
+    background: var(--color-fog-gray);
+    border-left: 1px solid var(--color-steel-gray);
+    position: relative;
+    overflow: hidden;
+  }
+
+  @media (min-width: 1024px) {
+    .deco-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 64px;
+    }
+  }
+
+  .deco-inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 480px;
+    text-align: center;
+  }
+</style>

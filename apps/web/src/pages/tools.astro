@@ -1,12 +1,25 @@
 ---
+// tools.astro — Redirect page that bounces visitors to /#tools.
 import Base from '../layouts/Base.astro';
+import Container from '../components/Container.astro';
+import Button from '../components/Button.astro';
 ---
-<Base title="Tools — Komercia Exit MCP">
-  <div class="min-h-screen flex items-center justify-center">
-    <div class="text-center">
-      <p class="text-muted mb-4">Redirigiendo a catálogo de tools...</p>
-      <a href="/#tools" class="btn-primary">Ver herramientas</a>
-    </div>
-  </div>
+
+<Base
+  title="Tools — Komercia MCP"
+  description="Catálogo de herramientas MCP disponibles en Komercia MCP."
+>
+  <main style="min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+    <Container size="narrow">
+      <p
+        style="text-align: center; font-family: var(--font-sans); font-size: 14px; color: var(--color-slate-text); margin-bottom: 16px;"
+      >
+        Redirigiendo al catálogo de herramientas…
+      </p>
+      <div style="text-align: center;">
+        <Button variant="primary" href="/#tools">Ver herramientas</Button>
+      </div>
+    </Container>
+  </main>
   <script>window.location.replace('/#tools');</script>
 </Base>

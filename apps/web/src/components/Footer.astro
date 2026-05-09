@@ -1,16 +1,19 @@
 ---
+// Footer.astro — Site footer aligned with the Column design system.
+// Light fog-gray background, steel-gray border-top, plum brand mark, charcoal links.
+import Badge from './Badge.astro';
+
 const productLinks = [
   { label: 'Cómo funciona', href: '/#como-funciona' },
+  { label: 'Cómo usarlo', href: '/uso' },
   { label: 'Tools', href: '/#tools' },
   { label: 'FAQ', href: '/#faq' },
-  { label: 'Roadmap', href: '#' },
 ];
 
 const docsLinks = [
   { label: 'Guía rápida', href: '/sign-in' },
   { label: 'Catálogo de tools', href: '/#tools' },
   { label: 'Seguridad', href: '/#seguridad' },
-  { label: 'Status', href: '#' },
 ];
 
 const resourceLinks = [
@@ -27,30 +30,39 @@ const legalLinks = [
 ];
 ---
 
-<footer class="border-t border-subtle bg-surface">
-  <div class="container py-16">
-    <!-- Top grid: brand + 4 link columns -->
-    <div class="grid grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8">
+<footer style="background: var(--color-fog-gray); border-top: 1px solid var(--color-steel-gray);">
+  <div style="max-width: 1200px; margin: 0 auto; padding: 64px 24px 48px;">
+    <!-- Top grid: brand col (span 2 on lg) + 4 link columns -->
+    <div class="footer-grid">
 
-      <!-- Col 1: Brand -->
-      <div class="col-span-2 lg:col-span-1">
-        <!-- TODO: replace with SVG logo -->
-        <a href="/" class="font-sans font-semibold text-sm inline-flex items-center mb-3">
-          komercia<span class="text-accent-color"> exit</span>
+      <!-- Col 1 (span 2 on lg): Brand -->
+      <div class="footer-brand">
+        <a
+          href="/"
+          style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; margin-bottom: 16px;"
+          aria-label="Komercia MCP — home"
+        >
+          <span
+            aria-hidden="true"
+            style="display: inline-block; width: 8px; height: 8px; border-radius: 2px; background: var(--color-deep-plum);"
+          ></span>
+          <span style="font-family: 'Inter', sans-serif; font-size: 16px; color: var(--color-ink-blue); font-weight: 600;">Komercia</span><span style="font-family: 'Inter', sans-serif; font-size: 16px; color: var(--color-slate-text); font-weight: 400;"> MCP</span>
         </a>
-        <p class="text-sm text-muted leading-relaxed mb-4">
-          Exporta tu tienda Komercia con Claude.ai
+        <p style="font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 400; color: var(--color-slate-text); margin: 0 0 12px; line-height: 1.6;">
+          El MCP oficial de Komercia para Claude.ai.
         </p>
-        <p class="text-xs text-faint">Open source · MIT License</p>
+        <p style="font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 400; color: var(--color-slate-text); margin: 0;">
+          Open source · MIT License
+        </p>
       </div>
 
       <!-- Col 2: Producto -->
       <div>
-        <p class="text-xs uppercase tracking-widest text-faint font-semibold mb-4">Producto</p>
-        <ul class="space-y-0">
+        <p class="footer-group-heading">Producto</p>
+        <ul style="list-style: none; margin: 0; padding: 0;">
           {productLinks.map((link) => (
             <li>
-              <a href={link.href} class="text-sm text-muted hover:text-primary transition-colors block py-1">
+              <a href={link.href} class="footer-link">
                 {link.label}
               </a>
             </li>
@@ -60,11 +72,11 @@ const legalLinks = [
 
       <!-- Col 3: Documentación -->
       <div>
-        <p class="text-xs uppercase tracking-widest text-faint font-semibold mb-4">Documentación</p>
-        <ul class="space-y-0">
+        <p class="footer-group-heading">Documentación</p>
+        <ul style="list-style: none; margin: 0; padding: 0;">
           {docsLinks.map((link) => (
             <li>
-              <a href={link.href} class="text-sm text-muted hover:text-primary transition-colors block py-1">
+              <a href={link.href} class="footer-link">
                 {link.label}
               </a>
             </li>
@@ -74,13 +86,13 @@ const legalLinks = [
 
       <!-- Col 4: Recursos -->
       <div>
-        <p class="text-xs uppercase tracking-widest text-faint font-semibold mb-4">Recursos</p>
-        <ul class="space-y-0">
+        <p class="footer-group-heading">Recursos</p>
+        <ul style="list-style: none; margin: 0; padding: 0;">
           {resourceLinks.map((link) => (
             <li>
               <a
                 href={link.href}
-                class="text-sm text-muted hover:text-primary transition-colors block py-1"
+                class="footer-link"
                 {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
               >
                 {link.label}
@@ -92,13 +104,13 @@ const legalLinks = [
 
       <!-- Col 5: Legal -->
       <div>
-        <p class="text-xs uppercase tracking-widest text-faint font-semibold mb-4">Legal</p>
-        <ul class="space-y-0">
+        <p class="footer-group-heading">Legal</p>
+        <ul style="list-style: none; margin: 0; padding: 0;">
           {legalLinks.map((link) => (
             <li>
               <a
                 href={link.href}
-                class="text-sm text-muted hover:text-primary transition-colors block py-1"
+                class="footer-link"
                 {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
               >
                 {link.label}
@@ -111,14 +123,63 @@ const legalLinks = [
     </div>
 
     <!-- Bottom row -->
-    <div class="border-t border-subtle pt-8 mt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-      <p class="text-xs text-faint">
-        © 2026 Komercia Exit MCP · Hecho con ❤️ en Colombia · MIT License
+    <div
+      style="border-top: 1px solid var(--color-steel-gray); padding-top: 32px; margin-top: 32px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;"
+    >
+      <p style="font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 400; color: var(--color-slate-text); margin: 0;">
+        © 2026 Komercia MCP · Hecho en Colombia · MIT License
       </p>
-      <div class="flex items-center gap-2">
-        <span class="pill">Powered by Claude</span>
-        <span class="pill">Built with Astro</span>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <Badge variant="default">Powered by Claude</Badge>
+        <Badge variant="default">Built with Astro</Badge>
       </div>
     </div>
   </div>
 </footer>
+
+<style>
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px 32px;
+  }
+
+  .footer-brand {
+    grid-column: span 2;
+  }
+
+  @media (min-width: 1024px) {
+    .footer-grid {
+      grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+      gap: 32px;
+    }
+    .footer-brand {
+      grid-column: span 1;
+    }
+  }
+
+  .footer-group-heading {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-deep-plum);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin: 0 0 16px;
+  }
+
+  .footer-link {
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--color-charcoal-text);
+    text-decoration: none;
+    padding: 4px 0;
+    transition: color 0.15s ease;
+  }
+
+  .footer-link:hover {
+    color: var(--color-ink-blue);
+  }
+</style>

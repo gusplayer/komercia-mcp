@@ -1,14 +1,18 @@
 ---
-// LoginForm.astro
-// Renders email + password form. On success, replaces itself with the token display inline.
+// LoginForm.astro — Email + password form. On success, swaps inline with the token display.
+// Aligned with the Column design system (light-only, fintech aesthetic).
+import Button from './Button.astro';
 ---
 
 <div id="login-section">
   <form id="login-form" novalidate>
-    <div class="space-y-5">
+    <div style="display: flex; flex-direction: column; gap: 20px;">
       <!-- Email -->
       <div>
-        <label for="email" class="block text-xs font-medium mb-2" style="color: var(--text-secondary)">
+        <label
+          for="email"
+          style="display: block; margin-bottom: 8px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 400; color: var(--color-charcoal-text);"
+        >
           Correo electrónico
         </label>
         <input
@@ -24,7 +28,10 @@
 
       <!-- Password -->
       <div>
-        <label for="password" class="block text-xs font-medium mb-2" style="color: var(--text-secondary)">
+        <label
+          for="password"
+          style="display: block; margin-bottom: 8px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 400; color: var(--color-charcoal-text);"
+        >
           Contraseña
         </label>
         <input
@@ -38,141 +45,169 @@
         />
       </div>
 
-      <!-- Error message -->
+      <!-- Error alert -->
       <div
         id="form-error"
         role="alert"
         aria-live="polite"
-        class="hidden rounded-lg px-4 py-3 text-sm"
-        style="background-color: color-mix(in srgb, var(--danger) 8%, transparent); border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent); color: var(--danger);"
+        class="hidden alert-error"
       ></div>
 
       <!-- Submit -->
-      <button
-        id="submit-btn"
-        type="submit"
-        class="btn-primary w-full"
-      >
+      <Button variant="primary" type="submit" fullWidth id="submit-btn">
         <span id="btn-label">Obtener mi token</span>
         <svg
           id="btn-spinner"
-          class="hidden animate-spin h-4 w-4"
+          class="hidden animate-spin"
+          width="16"
+          height="16"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           aria-hidden="true"
+          style="margin-left: 8px;"
         >
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+          <circle style="opacity: 0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path style="opacity: 0.75;" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
         </svg>
-      </button>
+      </Button>
     </div>
   </form>
 </div>
 
-<!-- Token display (hidden until login succeeds) -->
-<div id="token-section" class="hidden space-y-6">
+<!-- Token section — hidden until login succeeds -->
+<div id="token-section" class="hidden" style="display: none; flex-direction: column; gap: 24px;">
+
   <!-- Success header -->
   <div>
-    <div class="flex items-center gap-2 mb-3">
-      <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background: color-mix(in srgb, var(--accent) 12%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent)">
-          <polyline points="20 6 9 17 4 12"/>
-        </svg>
-      </div>
-      <span class="text-sm font-medium" style="color: var(--accent)">Token listo</span>
-    </div>
-    <div class="flex items-start gap-2 rounded-lg px-4 py-3" style="background: color-mix(in srgb, var(--warning) 8%, transparent); border: 1px solid color-mix(in srgb, var(--warning) 25%, transparent);">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5" style="color: var(--warning)">
-        <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
-        <path d="M12 9v4M12 17h.01"/>
-      </svg>
-      <p class="text-sm font-medium" style="color: var(--text-primary)">
-        Este es tu token de exportación. Cópialo ahora — no se mostrará de nuevo si sales de esta página.
-      </p>
+    <p style="font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500; color: var(--color-success-moss); margin: 0 0 12px;">
+      Token listo
+    </p>
+
+    <!-- Warning alert -->
+    <div class="alert-warning" role="note">
+      Este es tu token MCP. Cópialo ahora — no se mostrará de nuevo si sales de esta página.
     </div>
   </div>
 
-  <!-- Masked token display -->
+  <!-- Token display -->
   <div>
-    <p class="text-[10px] font-medium mb-2 uppercase tracking-[0.18em]" style="color: var(--text-tertiary)">JWT Token</p>
-    <div
+    <p style="
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--color-slate-text);
+      margin: 0 0 8px;
+    ">JWT Token</p>
+    <pre
       id="token-box"
-      class="rounded-lg p-4 font-mono text-sm break-all select-all"
-      style="background-color: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary);"
+      class="code-block"
       aria-label="JWT token (enmascarado)"
-    >
-      <span id="token-masked"></span>
-    </div>
+      style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; word-break: break-all; user-select: all; white-space: pre-wrap;"
+    ><span id="token-masked"></span></pre>
   </div>
 
   <!-- Copy button -->
-  <button
-    id="copy-btn"
-    type="button"
-    class="btn-primary w-full"
-  >
-    <span id="copy-label" class="inline-flex items-center gap-2">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <Button variant="primary" fullWidth id="copy-btn">
+    <span id="copy-label" class="inline-flex items-center" style="gap: 8px;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
         <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
       </svg>
       Copiar token al portapapeles
     </span>
-    <span id="copy-success" class="hidden items-center gap-2">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <span id="copy-success" class="hidden items-center" style="gap: 8px;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <polyline points="20 6 9 17 4 12"/>
       </svg>
       ¡Copiado!
     </span>
-  </button>
+  </Button>
 
-  <!-- Instructions -->
-  <div class="rounded-xl p-5 space-y-4 !mt-6" style="background-color: var(--bg-tertiary); border: 1px solid var(--border);">
-    <h3 class="text-xs font-semibold uppercase tracking-[0.18em]" style="color: var(--text-secondary)">Cómo usar tu token en Claude.ai</h3>
-    <ol class="space-y-3">
-      <li class="flex items-start gap-3">
-        <span class="step-number !w-6 !h-6 !text-xs">1</span>
-        <div class="text-sm" style="color: var(--text-secondary)">
-          <p class="font-medium mb-0.5" style="color: var(--text-primary)">Abre la configuración de Claude.ai</p>
-          <p>Ve a <strong>Configuración → Conectores</strong> y agrega un conector personalizado.</p>
+  <!-- Instructions — top divider only -->
+  <div style="border-top: 1px solid var(--color-steel-gray); margin-top: 24px; padding-top: 24px;">
+    <p style="
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--color-deep-plum);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin: 0 0 16px;
+    ">Cómo conectar tu tienda a Claude.ai</p>
+    <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px;">
+      <li style="display: flex; align-items: flex-start; gap: 12px;">
+        <span class="step-number">1</span>
+        <div style="font-family: 'Inter', sans-serif; font-size: 13px; color: var(--color-charcoal-text);">
+          <p style="font-weight: 500; color: var(--color-ink-blue); margin: 0 0 2px;">Abre la configuración de Claude.ai</p>
+          <p style="margin: 0;">Ve a <strong>Configuración → Conectores</strong> y agrega un conector personalizado.</p>
         </div>
       </li>
-      <li class="flex items-start gap-3">
-        <span class="step-number !w-6 !h-6 !text-xs">2</span>
-        <div class="text-sm" style="color: var(--text-secondary)">
-          <p class="font-medium mb-0.5" style="color: var(--text-primary)">Introduce la URL del servidor</p>
-          <p>Usa <code class="code-chip">https://mcp.komercia-exit.com</code> y pega tu token en Authorization.</p>
+      <li style="display: flex; align-items: flex-start; gap: 12px;">
+        <span class="step-number">2</span>
+        <div style="font-family: 'Inter', sans-serif; font-size: 13px; color: var(--color-charcoal-text);">
+          <p style="font-weight: 500; color: var(--color-ink-blue); margin: 0 0 2px;">Introduce la URL del servidor</p>
+          <p style="margin: 0;">Usa <code class="code-chip">https://mcp.komercia.co</code> y pega tu token en Authorization.</p>
         </div>
       </li>
-      <li class="flex items-start gap-3">
-        <span class="step-number !w-6 !h-6 !text-xs">3</span>
-        <div class="text-sm" style="color: var(--text-secondary)">
-          <p class="font-medium mb-0.5" style="color: var(--text-primary)">Empieza a conversar</p>
-          <p>Pídele a Claude: <em>"Exporta todos mis productos en formato Shopify"</em>.</p>
+      <li style="display: flex; align-items: flex-start; gap: 12px;">
+        <span class="step-number">3</span>
+        <div style="font-family: 'Inter', sans-serif; font-size: 13px; color: var(--color-charcoal-text);">
+          <p style="font-weight: 500; color: var(--color-ink-blue); margin: 0 0 2px;">Empieza a conversar</p>
+          <p style="margin: 0;">Pídele a Claude: <em>"¿Cuál fue mi producto más vendido este mes?"</em>.</p>
         </div>
       </li>
     </ol>
-    <p class="text-xs pt-3 border-t" style="color: var(--text-tertiary); border-color: var(--border);">
-      Token válido por 6 meses. Para renovarlo, <a href="/" class="link-accent">vuelve a iniciar sesión</a>.
+    <p style="font-family: 'Inter', sans-serif; font-size: 12px; color: var(--color-slate-text); margin-top: 16px;">
+      Token válido por 6 meses. Para renovarlo, <a href="/" class="instructions-renew-link">vuelve a iniciar sesión</a>.
     </p>
   </div>
 
   <!-- Revoke / start over -->
-  <div class="text-center pt-2">
-    <button
-      id="revoke-btn"
-      type="button"
-      class="text-xs underline transition-colors duration-150"
-      style="color: var(--text-tertiary)"
-      onmouseover="this.style.color='var(--danger)'"
-      onmouseout="this.style.color='var(--text-tertiary)'"
-    >
+  <div style="text-align: center; padding-top: 8px;">
+    <button id="revoke-btn" type="button" class="revoke-btn">
       Revocar este token y empezar de nuevo
     </button>
-    <p id="revoke-status" class="hidden mt-2 text-xs"></p>
+    <p id="revoke-status" class="hidden" style="margin-top: 8px; font-family: 'Inter', sans-serif; font-size: 12px;"></p>
   </div>
 </div>
+
+<style>
+  /* Renew link inside instructions */
+  .instructions-renew-link {
+    color: var(--color-charcoal-text);
+    text-decoration: underline;
+    transition: color 150ms ease;
+  }
+  .instructions-renew-link:hover {
+    color: var(--color-ink-blue);
+  }
+
+  /* Revoke button — plain text style, hover reveals danger color */
+  .revoke-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--color-slate-text);
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 150ms ease, text-decoration-color 150ms ease;
+  }
+  .revoke-btn:hover {
+    color: var(--color-danger);
+    text-decoration: underline;
+  }
+
+  /* Token section uses flex when not hidden */
+  #token-section:not(.hidden) {
+    display: flex !important;
+  }
+</style>
 
 <script>
   // Read the CSRF token from cookie so we can send it in the header
@@ -193,34 +228,34 @@
 
   function setInputError(input: HTMLInputElement, hasError: boolean): void {
     if (hasError) {
-      input.style.borderColor = 'var(--danger)';
-      input.style.boxShadow = '0 0 0 3px rgb(239 68 68 / 0.12)';
+      input.style.borderColor = 'var(--color-danger)';
+      input.style.boxShadow = '0 0 0 3px rgba(220, 38, 38, 0.12)';
     } else {
       input.style.borderColor = '';
       input.style.boxShadow = '';
     }
   }
 
-  const form = document.getElementById('login-form') as HTMLFormElement;
-  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
-  const btnLabel = document.getElementById('btn-label') as HTMLSpanElement;
-  const btnSpinner = document.getElementById('btn-spinner') as HTMLElement;
-  const formError = document.getElementById('form-error') as HTMLDivElement;
+  const form         = document.getElementById('login-form')    as HTMLFormElement;
+  const submitBtn    = document.getElementById('submit-btn')    as HTMLButtonElement;
+  const btnLabel     = document.getElementById('btn-label')     as HTMLSpanElement;
+  const btnSpinner   = document.getElementById('btn-spinner')   as HTMLElement;
+  const formError    = document.getElementById('form-error')    as HTMLDivElement;
   const loginSection = document.getElementById('login-section') as HTMLDivElement;
   const tokenSection = document.getElementById('token-section') as HTMLDivElement;
-  const tokenMasked = document.getElementById('token-masked') as HTMLSpanElement;
-  const copyBtn = document.getElementById('copy-btn') as HTMLButtonElement;
-  const copyLabel = document.getElementById('copy-label') as HTMLSpanElement;
-  const copySuccess = document.getElementById('copy-success') as HTMLSpanElement;
-  const emailInput = document.getElementById('email') as HTMLInputElement;
-  const passwordInput = document.getElementById('password') as HTMLInputElement;
+  const tokenMasked  = document.getElementById('token-masked')  as HTMLSpanElement;
+  const copyBtn      = document.getElementById('copy-btn')      as HTMLButtonElement;
+  const copyLabel    = document.getElementById('copy-label')    as HTMLSpanElement;
+  const copySuccess  = document.getElementById('copy-success')  as HTMLSpanElement;
+  const emailInput   = document.getElementById('email')         as HTMLInputElement;
+  const passwordInput = document.getElementById('password')     as HTMLInputElement;
 
   let storedToken = '';
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const email = emailInput.value.trim();
+    const email    = emailInput.value.trim();
     const password = passwordInput.value;
 
     // Client-side validation
@@ -296,6 +331,7 @@
     try {
       await navigator.clipboard.writeText(storedToken);
     } catch {
+      // Fallback for older browsers
       const textarea = document.createElement('textarea');
       textarea.value = storedToken;
       textarea.style.position = 'fixed';
@@ -317,37 +353,44 @@
     }, 3000);
   });
 
-  // Revoke button — invalidates the stored session in the DB.
-  const revokeBtn = document.getElementById('revoke-btn') as HTMLButtonElement | null;
+  // Revoke button — uses CSS class for hover, no inline event handlers
+  const revokeBtn    = document.getElementById('revoke-btn')    as HTMLButtonElement | null;
   const revokeStatus = document.getElementById('revoke-status') as HTMLParagraphElement | null;
+
   if (revokeBtn && revokeStatus) {
     revokeBtn.addEventListener('click', async () => {
       if (!storedToken) return;
       if (!window.confirm('¿Revocar este token? Cualquiera que lo esté usando perderá acceso de inmediato.')) return;
+
       revokeBtn.disabled = true;
       revokeStatus.textContent = 'Revocando…';
-      revokeStatus.className = 'mt-2 text-xs';
-      revokeStatus.style.color = 'var(--text-tertiary)';
+      revokeStatus.style.color = 'var(--color-slate-text)';
       revokeStatus.classList.remove('hidden');
+
       try {
         const res = await fetch('/api/sessions/revoke', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': getCsrfToken(),
+          },
           body: JSON.stringify({ token: storedToken }),
         });
+
         const data = (await res.json()) as { revoked?: boolean; error?: string };
+
         if (res.ok && data.revoked) {
           revokeStatus.textContent = 'Token revocado. Redirigiendo al inicio…';
-          revokeStatus.style.color = 'var(--accent)';
+          revokeStatus.style.color = 'var(--color-charcoal-text)';
           setTimeout(() => { window.location.href = '/'; }, 1500);
         } else {
           revokeStatus.textContent = data.error ?? 'No se pudo revocar. Inténtalo de nuevo.';
-          revokeStatus.style.color = 'var(--danger)';
+          revokeStatus.style.color = 'var(--color-danger)';
           revokeBtn.disabled = false;
         }
       } catch {
         revokeStatus.textContent = 'Error de red. Por favor inténtalo de nuevo.';
-        revokeStatus.style.color = 'var(--danger)';
+        revokeStatus.style.color = 'var(--color-danger)';
         revokeBtn.disabled = false;
       }
     });
