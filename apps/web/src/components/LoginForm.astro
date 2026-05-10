@@ -126,42 +126,68 @@ import Button from './Button.astro';
     </span>
   </Button>
 
-  <!-- Instructions — top divider only -->
-  <div style="border-top: 1px solid var(--color-steel-gray); margin-top: 24px; padding-top: 24px;">
-    <p style="
-      font-family: 'Inter', sans-serif;
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--color-deep-plum);
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      margin: 0 0 16px;
-    ">Cómo conectar tu tienda a Claude.ai</p>
-    <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px;">
-      <li style="display: flex; align-items: flex-start; gap: 12px;">
-        <span class="step-number">1</span>
-        <div style="font-family: 'Inter', sans-serif; font-size: 13px; color: var(--color-charcoal-text);">
-          <p style="font-weight: 500; color: var(--color-ink-blue); margin: 0 0 2px;">Abre la configuración de Claude.ai</p>
-          <p style="margin: 0;">Ve a <strong>Configuración → Conectores</strong> y agrega un conector personalizado.</p>
+  <!-- Quick connect snippets -->
+  <div style="border-top: 1px solid var(--color-steel-gray); padding-top: 24px; display: flex; flex-direction: column; gap: 20px;">
+    <p class="snippet-section-label">Conecta en un clic</p>
+
+    <!-- Claude Code -->
+    <div class="snippet-block">
+      <div class="snippet-meta">
+        <span class="snippet-client">Claude Code</span>
+        <span class="snippet-where">Terminal · un solo comando</span>
+      </div>
+      <div class="snippet-row">
+        <code id="cmd-claude-code" class="snippet-code">claude mcp add --transport sse komercia https://api-mcp.komercia.co/sse --header "Authorization: Bearer …"</code>
+        <button class="snippet-copy-btn" data-target="cmd-claude-code" aria-label="Copiar comando Claude Code">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Claude.ai -->
+    <div class="snippet-block">
+      <div class="snippet-meta">
+        <span class="snippet-client">Claude.ai</span>
+        <span class="snippet-where">Settings → Integrations → Add MCP Server</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div>
+          <p class="snippet-field-label">Server URL</p>
+          <div class="snippet-row">
+            <code id="cmd-claudeai-url" class="snippet-code">https://api-mcp.komercia.co/sse</code>
+            <button class="snippet-copy-btn" data-target="cmd-claudeai-url" aria-label="Copiar URL">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            </button>
+          </div>
         </div>
-      </li>
-      <li style="display: flex; align-items: flex-start; gap: 12px;">
-        <span class="step-number">2</span>
-        <div style="font-family: 'Inter', sans-serif; font-size: 13px; color: var(--color-charcoal-text);">
-          <p style="font-weight: 500; color: var(--color-ink-blue); margin: 0 0 2px;">Introduce la URL del servidor</p>
-          <p style="margin: 0;">Usa <code class="code-chip">https://mcp.komercia.co</code> y pega tu token en Authorization.</p>
+        <div>
+          <p class="snippet-field-label">Authorization header</p>
+          <div class="snippet-row">
+            <code id="cmd-claudeai-auth" class="snippet-code">Bearer …</code>
+            <button class="snippet-copy-btn" data-target="cmd-claudeai-auth" aria-label="Copiar header">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            </button>
+          </div>
         </div>
-      </li>
-      <li style="display: flex; align-items: flex-start; gap: 12px;">
-        <span class="step-number">3</span>
-        <div style="font-family: 'Inter', sans-serif; font-size: 13px; color: var(--color-charcoal-text);">
-          <p style="font-weight: 500; color: var(--color-ink-blue); margin: 0 0 2px;">Empieza a conversar</p>
-          <p style="margin: 0;">Pídele a Claude: <em>"¿Cuál fue mi producto más vendido este mes?"</em>.</p>
-        </div>
-      </li>
-    </ol>
-    <p style="font-family: 'Inter', sans-serif; font-size: 12px; color: var(--color-slate-text); margin-top: 16px;">
-      Token válido por 6 meses. Para renovarlo, <a href="/" class="instructions-renew-link">vuelve a iniciar sesión</a>.
+      </div>
+    </div>
+
+    <!-- Claude Desktop -->
+    <div class="snippet-block">
+      <div class="snippet-meta">
+        <span class="snippet-client">Claude Desktop</span>
+        <span class="snippet-where">claude_desktop_config.json</span>
+      </div>
+      <div class="snippet-row" style="align-items: flex-start;">
+        <code id="cmd-desktop" class="snippet-code" style="white-space: pre; font-size: 11px; line-height: 1.5;"></code>
+        <button class="snippet-copy-btn" data-target="cmd-desktop" aria-label="Copiar JSON" style="margin-top: 2px; flex-shrink: 0;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <p style="font-family: 'Inter', sans-serif; font-size: 12px; color: var(--color-slate-text); margin: 0;">
+      Token válido por 6 meses · <a href="/uso" class="instructions-renew-link">Ver guía completa →</a>
     </p>
   </div>
 
@@ -175,15 +201,91 @@ import Button from './Button.astro';
 </div>
 
 <style>
-  /* Renew link inside instructions */
   .instructions-renew-link {
     color: var(--color-charcoal-text);
     text-decoration: underline;
     transition: color 150ms ease;
   }
-  .instructions-renew-link:hover {
+  .instructions-renew-link:hover { color: var(--color-ink-blue); }
+
+  /* Snippet blocks */
+  .snippet-section-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-deep-plum);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin: 0;
+  }
+  .snippet-block {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .snippet-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .snippet-client {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
     color: var(--color-ink-blue);
   }
+  .snippet-where {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    color: var(--color-slate-text);
+  }
+  .snippet-field-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    color: var(--color-slate-text);
+    margin: 0 0 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+  }
+  .snippet-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--color-fog-gray);
+    border: 1px solid var(--color-steel-gray);
+    border-radius: 6px;
+    padding: 8px 10px;
+  }
+  .snippet-code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--color-ink-blue);
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background: none;
+    border: none;
+    padding: 0;
+    user-select: all;
+  }
+  .snippet-copy-btn {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--color-slate-text);
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: color 0.15s, background 0.15s;
+  }
+  .snippet-copy-btn:hover { color: var(--color-ink-blue); background: var(--color-steel-gray); }
+  .snippet-copy-btn.copied { color: var(--color-success-moss); }
 
   /* Revoke button — plain text style, hover reveals danger color */
   .revoke-btn {
@@ -301,6 +403,24 @@ import Button from './Button.astro';
         storedToken = data.token;
         tokenMasked.textContent = maskToken(storedToken);
 
+        // Populate command snippets with real token
+        const mcpUrl = 'https://api-mcp.komercia.co/sse';
+        function setSnippet(id: string, val: string) {
+          const el = document.getElementById(id);
+          if (el) el.textContent = val;
+        }
+        setSnippet('cmd-claude-code', `claude mcp add --transport sse komercia ${mcpUrl} --header "Authorization: Bearer ${storedToken}"`);
+        setSnippet('cmd-claudeai-url', mcpUrl);
+        setSnippet('cmd-claudeai-auth', `Bearer ${storedToken}`);
+        setSnippet('cmd-desktop', JSON.stringify({
+          mcpServers: {
+            komercia: {
+              command: 'mcp-remote',
+              args: [mcpUrl, '--header', `Authorization: Bearer ${storedToken}`],
+            },
+          },
+        }, null, 2));
+
         // Swap login form for token display
         loginSection.classList.add('hidden');
         tokenSection.classList.remove('hidden');
@@ -351,6 +471,33 @@ import Button from './Button.astro';
       copySuccess.classList.add('hidden');
       copySuccess.classList.remove('inline-flex');
     }, 3000);
+  });
+
+  // Generic copy handler for all snippet copy buttons
+  document.querySelectorAll<HTMLButtonElement>('.snippet-copy-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const targetId = btn.getAttribute('data-target');
+      if (!targetId) return;
+      const el = document.getElementById(targetId);
+      if (!el) return;
+      const text = el.textContent ?? '';
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      btn.classList.add('copied');
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>';
+      setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2000);
+    });
   });
 
   // Revoke button — uses CSS class for hover, no inline event handlers
