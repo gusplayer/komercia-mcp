@@ -85,16 +85,28 @@ Restart Claude Desktop. The **komercia** server will appear as active.
 
 ---
 
-#### Option C · Claude Code / Cursor (terminal & IDE)
+#### Option C · Claude Code (terminal)
 
-**Claude Code:**
+Claude Code runs locally, so it connects directly to the MCP server — no browser, no config file.
 
 ```bash
-claude mcp add --transport http komercia https://api-mcp.komercia.co \
+claude mcp add --transport sse komercia https://api-mcp.komercia.co/sse \
   --header "Authorization: Bearer YOUR_TOKEN"
 ```
 
-**Cursor / Windsurf / other MCP clients:**
+Verify it registered:
+
+```bash
+claude mcp list
+```
+
+That's it. The server is available in every Claude Code session from any directory. Ask Claude anything about your store directly in the terminal.
+
+> **Local testing:** replace the URL with `http://localhost:3001/sse` to test against a local dev instance before deploying.
+
+---
+
+#### Option D · Cursor / Windsurf / other IDEs
 
 ```json
 {
