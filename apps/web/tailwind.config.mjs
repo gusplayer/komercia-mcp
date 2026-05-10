@@ -3,7 +3,7 @@ import defaultTheme from 'tailwindcss/defaultTheme';
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{astro,html,js,jsx,ts,tsx}'],
-  // No darkMode — Column-inspired system is light-only.
+  darkMode: 'class',
   theme: {
     extend: {
       /* ── Color palette ─────────────────────────────────────────────

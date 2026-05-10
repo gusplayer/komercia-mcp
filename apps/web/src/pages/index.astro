@@ -8,7 +8,6 @@ import ScrollAnimate from '../components/ScrollAnimate.astro';
 import Button from '../components/Button.astro';
 import Card from '../components/Card.astro';
 import Badge from '../components/Badge.astro';
-import SectionHeading from '../components/SectionHeading.astro';
 import Container from '../components/Container.astro';
 import Section from '../components/Section.astro';
 import GridPattern from '../components/GridPattern.astro';
@@ -73,24 +72,26 @@ const groupDescStyle  = 'font-family: var(--font-sans); font-size: 14px; color: 
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="20 6 9 17 4 12"/>
             </svg>
-            MCP OFICIAL DE KOMERCIA
+            <span data-t-es="MCP OFICIAL DE KOMERCIA" data-t-en="OFFICIAL KOMERCIA MCP">MCP OFICIAL DE KOMERCIA</span>
           </div>
 
           <h1 class="heading-bicolor lg" data-animate data-animate-delay="100" style="margin-top: 24px;">
-            Tu tienda Komercia, <span class="muted">en lenguaje natural.</span>
+            <span data-t-es="Tu tienda Komercia, " data-t-en="Your Komercia store, ">Tu tienda Komercia, </span><span class="muted" data-t-es="en lenguaje natural." data-t-en="in natural language.">en lenguaje natural.</span>
           </h1>
 
           <p
             style="font-family: var(--font-sans); font-weight: 400; font-size: 18px; line-height: 1.5; color: var(--color-slate-text); max-width: 32rem; margin-top: 24px;"
             data-animate
             data-animate-delay="200"
+            data-t-es="El conector oficial de Komercia para Claude.ai. Consulta ventas, automatiza reportes y conversa con tus datos — sin escribir una línea de código."
+            data-t-en="The official Komercia connector for Claude.ai. Query sales, automate reports and chat with your data — no code required."
           >
             El conector oficial de Komercia para Claude.ai. Consulta ventas, automatiza reportes y conversa con tus datos — sin escribir una línea de código.
           </p>
 
           <div class="flex flex-wrap" style="gap: 12px; margin-top: 32px;" data-animate data-animate-delay="300">
-            <Button variant="primary" size="lg" href="/sign-in">Obtener mi token gratis</Button>
-            <Button variant="secondary" size="lg" href="/uso">Ver cómo funciona →</Button>
+            <a href="/sign-in" class="btn-primary" style="font-size:15px; padding:14px 24px;" data-t-es="Obtener mi token gratis" data-t-en="Get my free token">Obtener mi token gratis</a>
+            <a href="/uso" class="btn-secondary" style="font-size:15px; padding:14px 24px;" data-t-es="Ver cómo funciona →" data-t-en="See how it works →">Ver cómo funciona →</a>
           </div>
 
           <!-- Trust line under CTAs -->
@@ -104,13 +105,13 @@ const groupDescStyle  = 'font-family: var(--font-sans); font-size: 14px; color: 
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-success-moss); flex-shrink: 0;">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
-              <span style="font-family: var(--font-sans); font-weight: 400; font-size: 13px; color: var(--color-slate-text);">Sin tarjeta de crédito</span>
+              <span style="font-family: var(--font-sans); font-weight: 400; font-size: 13px; color: var(--color-slate-text);" data-t-es="Sin tarjeta de crédito" data-t-en="No credit card">Sin tarjeta de crédito</span>
             </div>
             <div class="flex items-center" style="gap: 6px;">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-success-moss); flex-shrink: 0;">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
-              <span style="font-family: var(--font-sans); font-weight: 400; font-size: 13px; color: var(--color-slate-text);">Solo lectura</span>
+              <span style="font-family: var(--font-sans); font-weight: 400; font-size: 13px; color: var(--color-slate-text);" data-t-es="Solo lectura" data-t-en="Read-only">Solo lectura</span>
             </div>
             <div class="flex items-center" style="gap: 6px;">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-success-moss); flex-shrink: 0;">

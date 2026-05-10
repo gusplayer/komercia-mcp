@@ -142,6 +142,87 @@
   --color-success-subtle: rgba(68, 180, 139, 0.08);
 }
 
+/* ─── Dark mode — toggled via html.dark class ──────────────────────────── */
+html.dark {
+  --color-ghost-white: #0d1117;
+  --color-fog-gray: #161b22;
+  --color-steel-gray: #30363d;
+  --color-ink-blue: #e6edf3;
+  --color-charcoal-text: #c9d1d9;
+  --color-slate-text: #8b949e;
+  --color-deep-plum: #a5b0f8;
+  --color-faded-grid-blue: rgba(165, 176, 248, 0.06);
+
+  --bg-page: #0d1117;
+  --bg-section: #161b22;
+  --bg-card: #161b22;
+  --text-primary: #e6edf3;
+  --text-secondary: #c9d1d9;
+  --text-tertiary: #8b949e;
+  --border: #30363d;
+
+  --shadow-card: rgba(0,0,0,0.5) 0px 0px 0px 1px, rgba(0,0,0,0.4) 0px 1px 2px 0px;
+  --shadow-subtle: rgba(0,0,0,0.4) 0px 1px 3px 0px, rgba(0,0,0,0.2) 0px 1px 0px 0px;
+  --shadow-subtle-3: rgba(255,255,255,0.03) 0px 0px 0px 1px inset;
+  --shadow-subtle-5: rgba(0,0,0,0.4) 0px 1px 2px 0px;
+  --shadow-sm: rgba(0,0,0,0.5) 0px 4px 8px 0px, rgba(0,0,0,0.4) 0px 2px 4px 0px;
+  --shadow-xl: rgba(0,0,0,0.5) 0px 40px 32px 0px;
+  --shadow-focus: 0 0 0 3px rgba(165, 176, 248, 0.3);
+
+  --color-danger-subtle: rgba(220, 38, 38, 0.12);
+  --color-warning-subtle: rgba(217, 119, 6, 0.12);
+  --color-success-subtle: rgba(68, 180, 139, 0.12);
+
+  color-scheme: dark;
+}
+
+html.dark .navbar {
+  background: rgba(13, 17, 23, 0.9);
+}
+
+html.dark .grid-pattern {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(165, 176, 248, 0.07) 1px,
+    transparent 0
+  );
+}
+
+html.dark .grid-pattern-strong {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(165, 176, 248, 0.12) 1px,
+    transparent 0
+  );
+}
+
+html.dark .eyebrow-badge {
+  background: rgba(165, 176, 248, 0.08);
+  border-color: rgba(165, 176, 248, 0.2);
+}
+
+html.dark .feature-card {
+  background: #161b22;
+}
+
+html.dark .card-flat {
+  background: #161b22;
+  border-color: #30363d;
+}
+
+html.dark ::-webkit-scrollbar-track {
+  background: #161b22;
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: #30363d;
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #484f58;
+}
+html.dark {
+  scrollbar-color: #30363d #161b22;
+}
+
 /* ─── Base ──────────────────────────────────────────────────── */
 @layer base {
   html {

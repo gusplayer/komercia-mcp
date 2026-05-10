@@ -60,6 +60,18 @@ Astro.response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(),
     <meta name="twitter:image" content={ogImageUrl} />
 
     <title>{title}</title>
+
+    <!-- Dark mode: initialize before first paint to prevent flash -->
+    <script is:inline>
+      (function () {
+        try {
+          var saved = localStorage.getItem('theme');
+          if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <slot />
