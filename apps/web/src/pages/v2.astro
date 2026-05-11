@@ -1,0 +1,543 @@
+---
+// v2.astro — Alternative landing page in 099 / terminal aesthetic.
+// Pairs with /sign-in-v2 for full A/B variant. Brief, no fluff.
+import Base from '../layouts/Base.astro';
+
+const tools = [
+  { name: 'get_store_info',              desc: 'store name, plan, domain' },
+  { name: 'export_products',             desc: 'csv · json · shopify · woo' },
+  { name: 'export_orders',               desc: 'full sales history' },
+  { name: 'export_customers',            desc: 'contacts + addresses' },
+  { name: 'export_categories',           desc: 'hierarchy tree' },
+  { name: 'list_payment_gateways',       desc: 'configured methods' },
+];
+
+const examples = [
+  'how many active products do i have?',
+  'show me last month\'s revenue with totals',
+  'export my full customer list as csv',
+  'which products are running low on stock?',
+  'export my catalog in shopify format',
+  'what payment methods are configured?',
+];
+---
+
+<Base
+  title="komercia/mcp — store data in natural language"
+  description="The official Komercia MCP server. Ask Claude anything about your store — products, orders, customers, inventory. Read-only, open source."
+>
+  <div class="page">
+
+    <!-- ── Top bar ─────────────────────────────────────── -->
+    <header class="topbar">
+      <a href="/v2" class="brand" aria-label="komercia mcp home">[komercia/mcp]</a>
+      <nav class="topnav">
+        <a href="#features" class="link-muted">features</a>
+        <a href="#install" class="link-muted">install</a>
+        <a href="#examples" class="link-muted">examples</a>
+      </nav>
+      <a href="/sign-in-v2" class="btn-pill">get_token →</a>
+    </header>
+
+    <main class="main">
+
+      <!-- ── Hero ──────────────────────────────────────── -->
+      <section class="hero">
+        <div class="prompt">
+          <span class="muted">user@komercia ~$</span>
+          <span class="cmd">./mcp.connect</span><span class="caret">_</span>
+        </div>
+
+        <h1 class="h1">
+          your store data,<br />
+          <span class="muted">in natural language.</span>
+        </h1>
+
+        <p class="lede">
+          the official mcp server for komercia. ask claude anything about
+          your store — products, orders, customers, inventory — without
+          writing a line of code.
+        </p>
+
+        <div class="cta-row">
+          <a href="/sign-in-v2" class="btn-primary">get_token →</a>
+          <a href="#install" class="btn-ghost">how_it_works</a>
+        </div>
+
+        <ul class="trust">
+          <li><span class="dot">●</span> 11 tools</li>
+          <li><span class="dot">●</span> read-only</li>
+          <li><span class="dot">●</span> open source</li>
+          <li><span class="dot">●</span> no credit card</li>
+        </ul>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- ── Features ──────────────────────────────────── -->
+      <section id="features" class="block">
+        <div class="block-header">
+          <h2 class="h2">&gt; features</h2>
+          <p class="block-hint">6 of 11 mcp tools shown. all read-only.</p>
+        </div>
+
+        <div class="grid">
+          {tools.map((t) => (
+            <article class="tool-card">
+              <code class="tool-name">{t.name}</code>
+              <p class="tool-desc">{t.desc}</p>
+            </article>
+          ))}
+        </div>
+
+        <a href="/#tools" class="link-arrow">see all 11 tools →</a>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- ── Install ───────────────────────────────────── -->
+      <section id="install" class="block">
+        <div class="block-header">
+          <h2 class="h2">&gt; install</h2>
+          <p class="block-hint">three steps. five minutes. no code.</p>
+        </div>
+
+        <ol class="steps">
+          <li class="step">
+            <span class="step-num">[01]</span>
+            <div class="step-body">
+              <strong>get_token</strong>
+              <p class="step-desc">log in with your komercia credentials. token is read-only, valid 6 months.</p>
+              <a href="/sign-in-v2" class="link-arrow">/sign-in-v2 →</a>
+            </div>
+          </li>
+
+          <li class="step">
+            <span class="step-num">[02]</span>
+            <div class="step-body">
+              <strong>connect_client</strong>
+              <p class="step-desc">pick one. claude code is the simplest — single command.</p>
+              <div class="code-line">
+                <code>claude mcp add --transport sse komercia https://api-mcp.komercia.co/sse --header "Authorization: Bearer &lt;TOKEN&gt;"</code>
+              </div>
+              <p class="step-desc-sm">also works with claude.ai integrations, claude desktop, cursor.</p>
+            </div>
+          </li>
+
+          <li class="step">
+            <span class="step-num">[03]</span>
+            <div class="step-body">
+              <strong>ask_anything</strong>
+              <p class="step-desc">open a claude chat. ask in plain english. claude calls the mcp tools and answers with your real data.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- ── Examples ──────────────────────────────────── -->
+      <section id="examples" class="block">
+        <div class="block-header">
+          <h2 class="h2">&gt; examples</h2>
+          <p class="block-hint">prompts that work today. paste into claude.</p>
+        </div>
+
+        <ul class="examples">
+          {examples.map((q) => (
+            <li class="example">
+              <span class="prompt-mark">&gt;</span>
+              <span>{q}</span>
+            </li>
+          ))}
+        </ul>
+
+        <a href="/recetas" class="link-arrow">18 more prompts at /recetas →</a>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- ── Final CTA ─────────────────────────────────── -->
+      <section class="block final">
+        <p class="ready">ready?</p>
+        <a href="/sign-in-v2" class="btn-primary btn-primary-lg">get_token →</a>
+        <p class="muted small">it's free. 30 seconds. you keep the token.</p>
+      </section>
+
+    </main>
+
+    <!-- ── Footer ────────────────────────────────────── -->
+    <footer class="bottom-bar">
+      <span class="muted">komercia/mcp v0.1</span>
+      <span class="dot-sep">·</span>
+      <a href="/uso" class="link-muted">/uso</a>
+      <span class="dot-sep">·</span>
+      <a href="/recetas" class="link-muted">/recetas</a>
+      <span class="dot-sep">·</span>
+      <a href="https://github.com/gusplayer/komercia-mcp" target="_blank" rel="noopener noreferrer" class="link-muted">source</a>
+      <span class="dot-sep">·</span>
+      <a href="/" class="link-muted">classic ui</a>
+    </footer>
+  </div>
+</Base>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+
+  .page {
+    --c-bg: #000000;
+    --c-fg: #ffffff;
+    --c-surface: #1d1d1d;
+    --c-border: #383838;
+    --c-muted: #888888;
+    --r: 10px;
+
+    min-height: 100vh;
+    background: var(--c-bg);
+    color: var(--c-fg);
+    font-family: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 16px;
+    line-height: 1.4;
+    letter-spacing: 0.24px;
+    font-feature-settings: 'zero';
+    display: flex;
+    flex-direction: column;
+  }
+  :global(body:has(.page)) { background: #000000; }
+
+  /* ── Top bar ─────────────────────────────────────────── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    padding: 19px 32px;
+    border-bottom: 1px solid var(--c-border);
+    position: sticky;
+    top: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 10;
+  }
+  .brand {
+    color: var(--c-fg);
+    text-decoration: none;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .brand:hover { color: var(--c-muted); }
+  .topnav {
+    display: flex;
+    gap: 24px;
+    flex: 1;
+  }
+  .link-muted {
+    color: var(--c-muted);
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 150ms;
+  }
+  .link-muted:hover { color: var(--c-fg); }
+  .btn-pill {
+    background: var(--c-fg);
+    color: var(--c-bg);
+    text-decoration: none;
+    border-radius: var(--r);
+    padding: 8px 16px;
+    font-size: 16px;
+    transition: background 150ms;
+  }
+  .btn-pill:hover { background: var(--c-muted); }
+
+  /* ── Main ────────────────────────────────────────────── */
+  .main {
+    flex: 1;
+    width: 100%;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 48px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  /* ── Prompt + caret ──────────────────────────────────── */
+  .prompt {
+    font-size: 16px;
+    color: var(--c-fg);
+    margin: 0;
+  }
+  .prompt .muted { color: var(--c-muted); }
+  .prompt .cmd { color: var(--c-fg); margin-left: 8px; }
+  .caret {
+    color: var(--c-fg);
+    margin-left: 2px;
+    animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ── Hero ────────────────────────────────────────────── */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    padding: 32px 0;
+  }
+  .h1 {
+    font-size: 32px;
+    line-height: 1.2;
+    font-weight: 400;
+    letter-spacing: 0.24px;
+    color: var(--c-fg);
+    margin: 0;
+  }
+  .h1 .muted { color: var(--c-muted); }
+  .lede {
+    font-size: 16px;
+    color: var(--c-muted);
+    line-height: 1.5;
+    margin: 0;
+    max-width: 560px;
+  }
+  .cta-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .trust {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 26px;
+    font-size: 16px;
+    color: var(--c-muted);
+  }
+  .trust li { display: flex; align-items: center; gap: 8px; }
+  .trust .dot { color: var(--c-fg); }
+
+  /* ── Buttons ─────────────────────────────────────────── */
+  .btn-primary {
+    background: var(--c-fg);
+    color: var(--c-bg);
+    border: none;
+    border-radius: var(--r);
+    font-family: inherit;
+    font-size: 16px;
+    padding: 16px 26px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 150ms;
+  }
+  .btn-primary:hover { background: var(--c-muted); }
+  .btn-primary-lg { padding: 19px 32px; }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--c-fg);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r);
+    font-family: inherit;
+    font-size: 16px;
+    padding: 16px 26px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: border-color 150ms;
+  }
+  .btn-ghost:hover { border-color: var(--c-fg); }
+
+  /* ── Dividers ────────────────────────────────────────── */
+  .divider {
+    height: 1px;
+    background: var(--c-border);
+  }
+
+  /* ── Block (section) ─────────────────────────────────── */
+  .block {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+  .block-header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .h2 {
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--c-fg);
+    margin: 0;
+    letter-spacing: 0.24px;
+  }
+  .block-hint {
+    font-size: 16px;
+    color: var(--c-muted);
+    margin: 0;
+  }
+
+  /* ── Tools grid ──────────────────────────────────────── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+  @media (min-width: 768px) {
+    .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  .tool-card {
+    background: var(--c-surface);
+    border-radius: var(--r);
+    padding: 19px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: outline-color 150ms;
+    outline: 1px solid transparent;
+  }
+  .tool-card:hover {
+    outline-color: var(--c-border);
+  }
+  .tool-name {
+    color: var(--c-fg);
+    font-size: 16px;
+    font-family: inherit;
+  }
+  .tool-desc {
+    color: var(--c-muted);
+    font-size: 16px;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  /* ── Steps (install) ─────────────────────────────────── */
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+  .step {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .step-num {
+    color: var(--c-muted);
+    font-size: 16px;
+    padding-top: 1px;
+  }
+  .step-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .step-body strong {
+    color: var(--c-fg);
+    font-weight: 400;
+    font-size: 16px;
+  }
+  .step-desc {
+    color: var(--c-muted);
+    font-size: 16px;
+    margin: 0;
+    line-height: 1.5;
+  }
+  .step-desc-sm {
+    color: var(--c-muted);
+    font-size: 16px;
+    margin: 0;
+  }
+  .code-line {
+    background: var(--c-surface);
+    border-radius: var(--r);
+    padding: 16px 19px;
+    overflow-x: auto;
+  }
+  .code-line code {
+    color: var(--c-fg);
+    font-size: 16px;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+
+  /* ── Examples list ───────────────────────────────────── */
+  .examples {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: var(--c-surface);
+    border-radius: var(--r);
+    padding: 19px;
+  }
+  .example {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    color: var(--c-fg);
+    font-size: 16px;
+    line-height: 1.4;
+  }
+  .prompt-mark {
+    color: var(--c-muted);
+    flex-shrink: 0;
+  }
+
+  /* ── Final CTA ───────────────────────────────────────── */
+  .final {
+    align-items: flex-start;
+    padding: 32px 0;
+  }
+  .ready {
+    font-size: 16px;
+    color: var(--c-muted);
+    margin: 0;
+  }
+  .small { font-size: 16px; }
+
+  /* ── Link with arrow ─────────────────────────────────── */
+  .link-arrow {
+    color: var(--c-fg);
+    text-decoration: none;
+    font-size: 16px;
+    border-bottom: 1px solid var(--c-border);
+    padding-bottom: 2px;
+    align-self: flex-start;
+    transition: border-color 150ms;
+  }
+  .link-arrow:hover { border-color: var(--c-fg); }
+
+  /* ── Helpers ─────────────────────────────────────────── */
+  .muted { color: var(--c-muted); }
+
+  /* ── Bottom bar ──────────────────────────────────────── */
+  .bottom-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 19px 32px;
+    border-top: 1px solid var(--c-border);
+    font-size: 16px;
+    flex-wrap: wrap;
+  }
+  .bottom-bar .dot-sep { color: var(--c-border); }
+
+  /* ── Responsive ──────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .topbar { padding: 16px; gap: 16px; }
+    .topnav { display: none; }
+    .main { padding: 32px 16px; }
+    .h1 { font-size: 26px; }
+    .bottom-bar { padding: 16px; }
+    .trust { gap: 16px; }
+  }
+</style>
