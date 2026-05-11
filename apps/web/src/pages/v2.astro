@@ -1,42 +1,54 @@
 ---
-// v2.astro — Alternative landing page in 099 / terminal aesthetic.
-// Pairs with /sign-in-v2 for full A/B variant. Brief, no fluff.
+// v2.astro — Alternative landing in 099 / terminal aesthetic.
+// Bilingual ES (default) / EN with localStorage-persisted toggle.
 import Base from '../layouts/Base.astro';
 
 const tools = [
-  { name: 'get_store_info',              desc: 'store name, plan, domain' },
-  { name: 'export_products',             desc: 'csv · json · shopify · woo' },
-  { name: 'export_orders',               desc: 'full sales history' },
-  { name: 'export_customers',            desc: 'contacts + addresses' },
-  { name: 'export_categories',           desc: 'hierarchy tree' },
-  { name: 'list_payment_gateways',       desc: 'configured methods' },
+  { name: 'get_store_info',        descEs: 'nombre, plan, dominio',          descEn: 'store name, plan, domain' },
+  { name: 'export_products',       descEs: 'csv · json · shopify · woo',     descEn: 'csv · json · shopify · woo' },
+  { name: 'export_orders',         descEs: 'historial completo de ventas',   descEn: 'full sales history' },
+  { name: 'export_customers',      descEs: 'contactos + direcciones',        descEn: 'contacts + addresses' },
+  { name: 'export_categories',     descEs: 'árbol de jerarquía',             descEn: 'hierarchy tree' },
+  { name: 'list_payment_gateways', descEs: 'métodos configurados',           descEn: 'configured methods' },
 ];
 
 const examples = [
-  'how many active products do i have?',
-  'show me last month\'s revenue with totals',
-  'export my full customer list as csv',
-  'which products are running low on stock?',
-  'export my catalog in shopify format',
-  'what payment methods are configured?',
+  { es: '¿cuántos productos activos tengo?',                       en: 'how many active products do i have?' },
+  { es: 'muéstrame los ingresos del último mes con totales',       en: 'show me last month\'s revenue with totals' },
+  { es: 'exporta toda mi lista de clientes en csv',                en: 'export my full customer list as csv' },
+  { es: '¿qué productos tienen poco stock?',                       en: 'which products are running low on stock?' },
+  { es: 'exporta mi catálogo en formato shopify',                  en: 'export my catalog in shopify format' },
+  { es: '¿qué métodos de pago tengo configurados?',                en: 'what payment methods are configured?' },
 ];
 ---
 
 <Base
-  title="komercia/mcp — store data in natural language"
-  description="The official Komercia MCP server. Ask Claude anything about your store — products, orders, customers, inventory. Read-only, open source."
+  title="komercia/mcp — los datos de tu tienda, en lenguaje natural"
+  description="Servidor MCP oficial de Komercia. Pregúntale a Claude sobre tu tienda — productos, ventas, clientes, inventario. Solo lectura, open source."
 >
   <div class="page">
 
     <!-- ── Top bar ─────────────────────────────────────── -->
     <header class="topbar">
       <a href="/v2" class="brand" aria-label="komercia mcp home">[komercia/mcp]</a>
+
       <nav class="topnav">
-        <a href="#features" class="link-muted">features</a>
-        <a href="#install" class="link-muted">install</a>
-        <a href="#examples" class="link-muted">examples</a>
+        <a href="#features" class="link-muted" data-t-es="herramientas" data-t-en="features">herramientas</a>
+        <a href="#install" class="link-muted" data-t-es="instalación" data-t-en="install">instalación</a>
+        <a href="#examples" class="link-muted" data-t-es="ejemplos" data-t-en="examples">ejemplos</a>
       </nav>
-      <a href="/sign-in-v2" class="btn-pill">get_token →</a>
+
+      <div class="topbar-actions">
+        <button id="lang-toggle" class="btn-lang" aria-label="Cambiar idioma" title="Cambiar idioma / Toggle language">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M2 12h20"/>
+            <path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10 15 15 0 0 1 4-10z"/>
+          </svg>
+          <span id="lang-label">eng</span>
+        </button>
+        <a href="/sign-in-v2" class="btn-pill" data-t-es="obtener_token →" data-t-en="get_token →">obtener_token →</a>
+      </div>
     </header>
 
     <main class="main">
@@ -49,26 +61,24 @@ const examples = [
         </div>
 
         <h1 class="h1">
-          your store data,<br />
-          <span class="muted">in natural language.</span>
+          <span data-t-es="los datos de tu tienda," data-t-en="your store data,">los datos de tu tienda,</span><br />
+          <span class="muted" data-t-es="en lenguaje natural." data-t-en="in natural language.">en lenguaje natural.</span>
         </h1>
 
-        <p class="lede">
-          the official mcp server for komercia. ask claude anything about
-          your store — products, orders, customers, inventory — without
-          writing a line of code.
+        <p class="lede" data-t-es="el servidor mcp oficial para komercia. pregúntale a claude lo que sea sobre tu tienda — productos, ventas, clientes, inventario — sin escribir una línea de código." data-t-en="the official mcp server for komercia. ask claude anything about your store — products, orders, customers, inventory — without writing a line of code.">
+          el servidor mcp oficial para komercia. pregúntale a claude lo que sea sobre tu tienda — productos, ventas, clientes, inventario — sin escribir una línea de código.
         </p>
 
         <div class="cta-row">
-          <a href="/sign-in-v2" class="btn-primary">get_token →</a>
-          <a href="#install" class="btn-ghost">how_it_works</a>
+          <a href="/sign-in-v2" class="btn-primary" data-t-es="obtener_token →" data-t-en="get_token →">obtener_token →</a>
+          <a href="#install" class="btn-ghost" data-t-es="cómo_funciona" data-t-en="how_it_works">cómo_funciona</a>
         </div>
 
         <ul class="trust">
-          <li><span class="dot">●</span> 11 tools</li>
-          <li><span class="dot">●</span> read-only</li>
-          <li><span class="dot">●</span> open source</li>
-          <li><span class="dot">●</span> no credit card</li>
+          <li><span class="dot">●</span> <span data-t-es="11 herramientas" data-t-en="11 tools">11 herramientas</span></li>
+          <li><span class="dot">●</span> <span data-t-es="solo lectura" data-t-en="read-only">solo lectura</span></li>
+          <li><span class="dot">●</span> <span>open source</span></li>
+          <li><span class="dot">●</span> <span data-t-es="sin tarjeta" data-t-en="no credit card">sin tarjeta</span></li>
         </ul>
       </section>
 
@@ -77,20 +87,20 @@ const examples = [
       <!-- ── Features ──────────────────────────────────── -->
       <section id="features" class="block">
         <div class="block-header">
-          <h2 class="h2">&gt; features</h2>
-          <p class="block-hint">6 of 11 mcp tools shown. all read-only.</p>
+          <h2 class="h2" data-t-es="&gt; herramientas" data-t-en="&gt; features">&gt; herramientas</h2>
+          <p class="block-hint" data-t-es="6 de 11 herramientas mcp. todas de solo lectura." data-t-en="6 of 11 mcp tools shown. all read-only.">6 de 11 herramientas mcp. todas de solo lectura.</p>
         </div>
 
         <div class="grid">
           {tools.map((t) => (
             <article class="tool-card">
               <code class="tool-name">{t.name}</code>
-              <p class="tool-desc">{t.desc}</p>
+              <p class="tool-desc" data-t-es={t.descEs} data-t-en={t.descEn}>{t.descEs}</p>
             </article>
           ))}
         </div>
 
-        <a href="/#tools" class="link-arrow">see all 11 tools →</a>
+        <a href="/#tools" class="link-arrow" data-t-es="ver las 11 herramientas →" data-t-en="see all 11 tools →">ver las 11 herramientas →</a>
       </section>
 
       <div class="divider"></div>
@@ -98,8 +108,8 @@ const examples = [
       <!-- ── Install ───────────────────────────────────── -->
       <section id="install" class="block">
         <div class="block-header">
-          <h2 class="h2">&gt; install</h2>
-          <p class="block-hint">three steps. five minutes. no code.</p>
+          <h2 class="h2" data-t-es="&gt; instalación" data-t-en="&gt; install">&gt; instalación</h2>
+          <p class="block-hint" data-t-es="tres pasos. cinco minutos. sin código." data-t-en="three steps. five minutes. no code.">tres pasos. cinco minutos. sin código.</p>
         </div>
 
         <ol class="steps">
@@ -107,7 +117,7 @@ const examples = [
             <span class="step-num">[01]</span>
             <div class="step-body">
               <strong>get_token</strong>
-              <p class="step-desc">log in with your komercia credentials. token is read-only, valid 6 months.</p>
+              <p class="step-desc" data-t-es="inicia sesión con tus credenciales de komercia. token de solo lectura, válido 6 meses." data-t-en="log in with your komercia credentials. token is read-only, valid 6 months.">inicia sesión con tus credenciales de komercia. token de solo lectura, válido 6 meses.</p>
               <a href="/sign-in-v2" class="link-arrow">/sign-in-v2 →</a>
             </div>
           </li>
@@ -116,11 +126,11 @@ const examples = [
             <span class="step-num">[02]</span>
             <div class="step-body">
               <strong>connect_client</strong>
-              <p class="step-desc">pick one. claude code is the simplest — single command.</p>
+              <p class="step-desc" data-t-es="elige uno. claude code es el más simple — un solo comando." data-t-en="pick one. claude code is the simplest — single command.">elige uno. claude code es el más simple — un solo comando.</p>
               <div class="code-line">
                 <code>claude mcp add --transport sse komercia https://api-mcp.komercia.co/sse --header "Authorization: Bearer &lt;TOKEN&gt;"</code>
               </div>
-              <p class="step-desc-sm">also works with claude.ai integrations, claude desktop, cursor.</p>
+              <p class="step-desc-sm" data-t-es="también funciona con claude.ai integrations, claude desktop, cursor." data-t-en="also works with claude.ai integrations, claude desktop, cursor.">también funciona con claude.ai integrations, claude desktop, cursor.</p>
             </div>
           </li>
 
@@ -128,7 +138,7 @@ const examples = [
             <span class="step-num">[03]</span>
             <div class="step-body">
               <strong>ask_anything</strong>
-              <p class="step-desc">open a claude chat. ask in plain english. claude calls the mcp tools and answers with your real data.</p>
+              <p class="step-desc" data-t-es="abre un chat de claude. pregunta en lenguaje natural. claude llama a las herramientas mcp y responde con tus datos reales." data-t-en="open a claude chat. ask in plain english. claude calls the mcp tools and answers with your real data.">abre un chat de claude. pregunta en lenguaje natural. claude llama a las herramientas mcp y responde con tus datos reales.</p>
             </div>
           </li>
         </ol>
@@ -139,29 +149,29 @@ const examples = [
       <!-- ── Examples ──────────────────────────────────── -->
       <section id="examples" class="block">
         <div class="block-header">
-          <h2 class="h2">&gt; examples</h2>
-          <p class="block-hint">prompts that work today. paste into claude.</p>
+          <h2 class="h2" data-t-es="&gt; ejemplos" data-t-en="&gt; examples">&gt; ejemplos</h2>
+          <p class="block-hint" data-t-es="prompts que funcionan hoy. pega en claude." data-t-en="prompts that work today. paste into claude.">prompts que funcionan hoy. pega en claude.</p>
         </div>
 
         <ul class="examples">
           {examples.map((q) => (
             <li class="example">
               <span class="prompt-mark">&gt;</span>
-              <span>{q}</span>
+              <span data-t-es={q.es} data-t-en={q.en}>{q.es}</span>
             </li>
           ))}
         </ul>
 
-        <a href="/recetas" class="link-arrow">18 more prompts at /recetas →</a>
+        <a href="/recetas" class="link-arrow" data-t-es="18 prompts más en /recetas →" data-t-en="18 more prompts at /recetas →">18 prompts más en /recetas →</a>
       </section>
 
       <div class="divider"></div>
 
       <!-- ── Final CTA ─────────────────────────────────── -->
       <section class="block final">
-        <p class="ready">ready?</p>
-        <a href="/sign-in-v2" class="btn-primary btn-primary-lg">get_token →</a>
-        <p class="muted small">it's free. 30 seconds. you keep the token.</p>
+        <p class="ready" data-t-es="¿listo?" data-t-en="ready?">¿listo?</p>
+        <a href="/sign-in-v2" class="btn-primary btn-primary-lg" data-t-es="obtener_token →" data-t-en="get_token →">obtener_token →</a>
+        <p class="muted small" data-t-es="es gratis. 30 segundos. tú guardas el token." data-t-en="it's free. 30 seconds. you keep the token.">es gratis. 30 segundos. tú guardas el token.</p>
       </section>
 
     </main>
@@ -176,7 +186,7 @@ const examples = [
       <span class="dot-sep">·</span>
       <a href="https://github.com/gusplayer/komercia-mcp" target="_blank" rel="noopener noreferrer" class="link-muted">source</a>
       <span class="dot-sep">·</span>
-      <a href="/" class="link-muted">classic ui</a>
+      <a href="/" class="link-muted" data-t-es="ui clásica" data-t-en="classic ui">ui clásica</a>
     </footer>
   </div>
 </Base>
@@ -209,7 +219,7 @@ const examples = [
   .topbar {
     display: flex;
     align-items: center;
-    gap: 32px;
+    gap: 24px;
     padding: 19px 32px;
     border-bottom: 1px solid var(--c-border);
     position: sticky;
@@ -231,6 +241,12 @@ const examples = [
     gap: 24px;
     flex: 1;
   }
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
   .link-muted {
     color: var(--c-muted);
     text-decoration: none;
@@ -246,8 +262,27 @@ const examples = [
     padding: 8px 16px;
     font-size: 16px;
     transition: background 150ms;
+    white-space: nowrap;
   }
   .btn-pill:hover { background: var(--c-muted); }
+
+  /* ── Lang toggle ─────────────────────────────────────── */
+  .btn-lang {
+    background: transparent;
+    color: var(--c-muted);
+    border: none;
+    padding: 0;
+    font-family: inherit;
+    font-size: 16px;
+    letter-spacing: 0.24px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 150ms;
+  }
+  .btn-lang:hover { color: var(--c-fg); }
+  .btn-lang svg { display: block; flex-shrink: 0; }
 
   /* ── Main ────────────────────────────────────────────── */
   .main {
@@ -297,7 +332,7 @@ const examples = [
     color: var(--c-muted);
     line-height: 1.5;
     margin: 0;
-    max-width: 560px;
+    max-width: 580px;
   }
   .cta-row {
     display: flex;
@@ -330,6 +365,7 @@ const examples = [
     text-decoration: none;
     display: inline-block;
     transition: background 150ms;
+    white-space: nowrap;
   }
   .btn-primary:hover { background: var(--c-muted); }
   .btn-primary-lg { padding: 19px 32px; }
@@ -346,6 +382,7 @@ const examples = [
     text-decoration: none;
     display: inline-block;
     transition: border-color 150ms;
+    white-space: nowrap;
   }
   .btn-ghost:hover { border-color: var(--c-fg); }
 
@@ -398,13 +435,12 @@ const examples = [
     transition: outline-color 150ms;
     outline: 1px solid transparent;
   }
-  .tool-card:hover {
-    outline-color: var(--c-border);
-  }
+  .tool-card:hover { outline-color: var(--c-border); }
   .tool-name {
     color: var(--c-fg);
     font-size: 16px;
     font-family: inherit;
+    overflow-wrap: anywhere;
   }
   .tool-desc {
     color: var(--c-muted);
@@ -437,6 +473,7 @@ const examples = [
     display: flex;
     flex-direction: column;
     gap: 8px;
+    min-width: 0;
   }
   .step-body strong {
     color: var(--c-fg);
@@ -459,6 +496,7 @@ const examples = [
     border-radius: var(--r);
     padding: 16px 19px;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .code-line code {
     color: var(--c-fg);
@@ -533,11 +571,60 @@ const examples = [
 
   /* ── Responsive ──────────────────────────────────────── */
   @media (max-width: 768px) {
-    .topbar { padding: 16px; gap: 16px; }
+    .topbar { padding: 14px 16px; gap: 12px; }
     .topnav { display: none; }
-    .main { padding: 32px 16px; }
+    .topbar-actions { gap: 12px; }
+    .main { padding: 32px 16px; gap: 26px; }
+    .hero { padding: 16px 0; gap: 19px; }
     .h1 { font-size: 26px; }
-    .bottom-bar { padding: 16px; }
     .trust { gap: 16px; }
+    .bottom-bar { padding: 14px 16px; }
+    .step { grid-template-columns: 40px 1fr; gap: 12px; }
+  }
+
+  @media (max-width: 480px) {
+    .topbar { padding: 12px 14px; gap: 8px; }
+    .brand { font-size: 14px; }
+    .btn-pill { padding: 8px 12px; font-size: 14px; }
+    .btn-lang { font-size: 14px; }
+    .topbar-actions { gap: 8px; }
+    .main { padding: 24px 14px; }
+    .h1 { font-size: 22px; line-height: 1.25; }
+    .lede { font-size: 15px; }
+    .grid { grid-template-columns: 1fr; }
+    .btn-primary, .btn-ghost { padding: 14px 22px; font-size: 15px; }
+    .btn-primary-lg { padding: 16px 26px; }
+    .cta-row { gap: 12px; }
+    .cta-row .btn-primary, .cta-row .btn-ghost { flex: 1; text-align: center; min-width: 0; }
+    .bottom-bar { padding: 14px; row-gap: 8px; }
   }
 </style>
+
+<script is:inline>
+  (function () {
+    function applyLang(lang) {
+      document.documentElement.lang = lang;
+      var els = document.querySelectorAll('[data-t-es]');
+      for (var i = 0; i < els.length; i++) {
+        var el = els[i];
+        var text = lang === 'en' ? el.getAttribute('data-t-en') : el.getAttribute('data-t-es');
+        if (text !== null) el.textContent = text;
+      }
+      var label = document.getElementById('lang-label');
+      if (label) label.textContent = lang === 'en' ? 'esp' : 'eng';
+    }
+
+    var saved = localStorage.getItem('lang');
+    var current = saved === 'en' ? 'en' : 'es';
+    applyLang(current);
+
+    var btn = document.getElementById('lang-toggle');
+    if (btn) {
+      btn.addEventListener('click', function () {
+        current = current === 'es' ? 'en' : 'es';
+        try { localStorage.setItem('lang', current); } catch (e) {}
+        applyLang(current);
+      });
+    }
+  })();
+</script>
