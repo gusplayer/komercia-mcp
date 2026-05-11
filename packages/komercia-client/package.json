@@ -31,7 +31,7 @@
     "@types/node": "^20.0.0",
     "@vitest/coverage-v8": "^2.1.0",
     "eslint": "^9.14.0",
-    "msw": "^2.6.0",
+    "msw": "^2.14.6",
     "typescript": "^5.5.0",
     "vitest": "^2.1.0"
   }
