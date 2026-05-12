@@ -136,8 +136,8 @@ Astro.cookies.set('csrf_token', csrfToken, {
             Tres formas de usarlo — todas funcionan con el mismo token. Elige una.
           </p>
 
-          <!-- Opción A · Claude Code (most prominent — single command) -->
-          <article class="option-card option-recommended">
+          <!-- Opción A · Claude Code (simplest — single command) -->
+          <article class="option-card">
             <header class="option-header">
               <span class="option-label">A</span>
               <div class="option-meta">
@@ -166,14 +166,16 @@ Astro.cookies.set('csrf_token', csrfToken, {
             <p class="option-desc" data-t-es="En claude.ai abre Settings → Integrations → Add MCP Server, y pega estos dos valores." data-t-en="In claude.ai open Settings → Integrations → Add MCP Server, then paste these two values.">
               En claude.ai abre Settings → Integrations → Add MCP Server, y pega estos dos valores.
             </p>
-            <div class="kv">
-              <span class="kv-k">server_url</span>
-              <code id="cmd-claudeai-url" class="kv-v"></code>
+
+            <div class="snippet-block-wrap">
+              <p class="snippet-field-label">server_url</p>
+              <pre class="snippet-pre"><code id="cmd-claudeai-url"></code></pre>
               <button class="btn-mini snippet-copy" data-target="cmd-claudeai-url" data-t-es="[ copiar ]" data-t-en="[ copy ]" aria-label="copiar url">[ copiar ]</button>
             </div>
-            <div class="kv">
-              <span class="kv-k">authorization</span>
-              <code id="cmd-claudeai-auth" class="kv-v"></code>
+
+            <div class="snippet-block-wrap">
+              <p class="snippet-field-label">authorization</p>
+              <pre class="snippet-pre"><code id="cmd-claudeai-auth"></code></pre>
               <button class="btn-mini snippet-copy" data-target="cmd-claudeai-auth" data-t-es="[ copiar ]" data-t-en="[ copy ]" aria-label="copiar header">[ copiar ]</button>
             </div>
           </article>
@@ -539,10 +541,9 @@ Astro.cookies.set('csrf_token', csrfToken, {
     display: flex;
     flex-direction: column;
     gap: 14px;
+    margin-bottom: 5px;
   }
-  .option-card.option-recommended {
-    border-color: var(--c-fg);
-  }
+  .option-card:last-of-type { margin-bottom: 0; }
   .option-header {
     display: flex;
     align-items: flex-start;
@@ -592,6 +593,13 @@ Astro.cookies.set('csrf_token', csrfToken, {
     border: 1px solid var(--c-border);
     border-radius: var(--r);
     padding: 14px 56px 14px 16px;
+  }
+  .snippet-field-label {
+    margin: 0 0 8px;
+    font-size: 12px;
+    color: var(--c-muted);
+    letter-spacing: 0.04em;
+    text-transform: lowercase;
   }
   .snippet-pre {
     margin: 0;
