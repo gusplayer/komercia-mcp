@@ -442,8 +442,19 @@ const examples = [
             <div class="step-body">
               <strong>connect_client</strong>
               <p class="step-desc" data-t-es="elige uno. claude code es el más simple — un solo comando." data-t-en="pick one. claude code is the simplest — single command.">elige uno. claude code es el más simple — un solo comando.</p>
-              <div class="code-line">
-                <code>claude mcp add --transport sse komercia https://api-mcp.komercia.co/sse --header "Authorization: Bearer &lt;TOKEN&gt;"</code>
+              <div class="code-block">
+                <pre class="code-block-content"><code id="install-cmd">claude mcp add --transport sse komercia \
+  https://api-mcp.komercia.co/sse \
+  --header "Authorization: Bearer &lt;TOKEN&gt;"</code></pre>
+                <button type="button" class="code-copy" data-copy-target="install-cmd" aria-label="Copiar comando" title="Copiar comando">
+                  <svg class="copy-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">
+                    <rect x="9" y="9" width="13" height="13" rx="1" ry="1"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                  <svg class="copy-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true" style="display:none;">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                </button>
               </div>
               <p class="step-desc-sm" data-t-es="también funciona con claude.ai integrations, claude desktop, cursor." data-t-en="also works with claude.ai integrations, claude desktop, cursor.">también funciona con claude.ai integrations, claude desktop, cursor.</p>
             </div>
@@ -930,19 +941,53 @@ const examples = [
     font-size: 16px;
     margin: 0;
   }
-  .code-line {
+  /* Multi-line code block with line numbers + copy button */
+  .code-block {
+    position: relative;
     background: var(--c-surface);
+    border: 1px solid var(--c-border);
     border-radius: var(--r);
-    padding: 16px 19px;
+    overflow: hidden;
+  }
+  .code-block-content {
+    margin: 0;
+    padding: 16px 56px 16px 19px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    counter-reset: line;
   }
-  .code-line code {
+  .code-block-content code {
     color: var(--c-fg);
-    font-size: 16px;
+    font-size: 14px;
     font-family: inherit;
-    white-space: nowrap;
+    line-height: 1.6;
+    display: block;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
   }
+  .code-copy {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: 6px;
+    color: var(--c-muted);
+    cursor: pointer;
+    padding: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 150ms, border-color 150ms;
+    line-height: 0;
+  }
+  .code-copy:hover { color: var(--c-fg); border-color: var(--c-fg); }
+  .code-copy.copied {
+    color: var(--c-fg);
+    border-color: var(--c-fg);
+  }
+  .code-copy.copied .copy-icon { display: none; }
+  .code-copy.copied .copy-check { display: block !important; }
 
   /* ── Examples list ───────────────────────────────────── */
   .examples {
@@ -1339,6 +1384,36 @@ const examples = [
     }
 
     runIntro();
+
+    // ── Code block copy buttons ───────────────────────────
+    var codeCopyBtns = document.querySelectorAll('.code-copy');
+    for (var ki = 0; ki < codeCopyBtns.length; ki++) {
+      (function (btn) {
+        btn.addEventListener('click', function () {
+          var targetId = btn.getAttribute('data-copy-target');
+          if (!targetId) return;
+          var el = document.getElementById(targetId);
+          if (!el) return;
+          var text = el.textContent || '';
+          var doCopy = navigator.clipboard
+            ? navigator.clipboard.writeText(text)
+            : Promise.resolve().then(function () {
+                var ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+              });
+          doCopy.then(function () {
+            btn.classList.add('copied');
+            setTimeout(function () { btn.classList.remove('copied'); }, 1800);
+          });
+        });
+      })(codeCopyBtns[ki]);
+    }
 
     // ── Prompt library modal ──────────────────────────────
     var modal = document.getElementById('recetas-modal');
