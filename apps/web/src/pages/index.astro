@@ -194,8 +194,8 @@ const examples = [
 
       <nav class="topnav">
         <a href="#features" class="link-muted" data-t-es="herramientas" data-t-en="features">herramientas</a>
+        <a href="#como-funciona" class="link-muted" data-t-es="cómo funciona" data-t-en="how it works">cómo funciona</a>
         <a href="#install" class="link-muted" data-t-es="instalación" data-t-en="install">instalación</a>
-        <a href="#examples" class="link-muted" data-t-es="ejemplos" data-t-en="examples">ejemplos</a>
       </nav>
 
       <div class="topbar-actions">
@@ -236,7 +236,7 @@ const examples = [
 
         <div class="cta-row">
           <a href="/sign-in" class="btn-primary" data-t-es="obtener_token →" data-t-en="get_token →">obtener_token →</a>
-          <a href="#install" class="btn-ghost" data-t-es="cómo_funciona" data-t-en="how_it_works">cómo_funciona</a>
+          <a href="#como-funciona" class="btn-ghost" data-t-es="cómo_funciona" data-t-en="how_it_works">cómo_funciona</a>
         </div>
 
         <ul class="trust">
@@ -266,6 +266,27 @@ const examples = [
         </div>
 
         <button type="button" id="toggle-tools" class="link-arrow-btn" aria-expanded="false" aria-controls="tools-grid" data-t-es="ver las 5 restantes →" data-t-en="see the remaining 5 →">ver las 5 restantes →</button>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- ── Examples ──────────────────────────────────── -->
+      <section id="como-funciona" class="block">
+        <div class="block-header">
+          <h2 class="h2" data-t-es="&gt; cómo funciona" data-t-en="&gt; how it works">&gt; cómo funciona</h2>
+          <p class="block-hint" data-scramble data-t-es="Estos prompts funcionan hoy. Pega cualquiera en Claude." data-t-en="These prompts work today. Paste any of them into Claude.">Estos prompts funcionan hoy. Pega cualquiera en Claude.</p>
+        </div>
+
+        <ul class="examples">
+          {examples.map((q) => (
+            <li class="example">
+              <span class="prompt-mark">&gt;</span>
+              <span data-t-es={q.es} data-t-en={q.en}>{q.es}</span>
+            </li>
+          ))}
+        </ul>
+
+        <button type="button" data-open-recetas class="link-arrow-btn" data-t-es="Ver los 18 prompts curados →" data-t-en="See all 18 curated prompts →">Ver los 18 prompts curados →</button>
       </section>
 
       <div class="divider"></div>
@@ -321,27 +342,6 @@ const examples = [
             ))}
           </div>
         </div>
-      </section>
-
-      <div class="divider"></div>
-
-      <!-- ── Examples ──────────────────────────────────── -->
-      <section id="examples" class="block">
-        <div class="block-header">
-          <h2 class="h2" data-t-es="&gt; ejemplos" data-t-en="&gt; examples">&gt; ejemplos</h2>
-          <p class="block-hint" data-scramble data-t-es="Prompts que funcionan hoy. Pega en Claude." data-t-en="Prompts that work today. Paste into Claude.">Prompts que funcionan hoy. Pega en Claude.</p>
-        </div>
-
-        <ul class="examples">
-          {examples.map((q) => (
-            <li class="example">
-              <span class="prompt-mark">&gt;</span>
-              <span data-t-es={q.es} data-t-en={q.en}>{q.es}</span>
-            </li>
-          ))}
-        </ul>
-
-        <button type="button" data-open-recetas class="link-arrow-btn" data-t-es="Ver los 18 prompts curados →" data-t-en="See all 18 curated prompts →">Ver los 18 prompts curados →</button>
       </section>
 
       <div class="divider"></div>
@@ -695,8 +695,8 @@ const examples = [
   }
   /* Anchor-scroll offset so sticky topbar doesn't cover section titles */
   #features,
-  #install,
-  #examples {
+  #como-funciona,
+  #install {
     scroll-margin-top: 90px;
   }
   .block-header {
@@ -950,7 +950,7 @@ const examples = [
     .trust { gap: 16px; }
     .bottom-bar { padding: 14px 16px; }
     .step { grid-template-columns: 40px 1fr; gap: 12px; }
-    #features, #install, #examples { scroll-margin-top: 80px; }
+    #features, #como-funciona, #install { scroll-margin-top: 80px; }
   }
 
   @media (max-width: 480px) {
