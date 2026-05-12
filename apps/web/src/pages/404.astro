@@ -1,61 +1,102 @@
 ---
-// 404.astro — Custom not-found page styled to match the editorial design system.
-// Renders a centered eyebrow + bicolor heading + sub + dual CTA on a "narrow" container.
+// 404.astro — Not found page, terminal aesthetic.
 import Base from '../layouts/Base.astro';
-import Navbar from '../components/Navbar.astro';
-import Footer from '../components/Footer.astro';
-import Container from '../components/Container.astro';
-import Button from '../components/Button.astro';
 ---
 
 <Base
-  title="404 — Página no encontrada · Komercia MCP"
-  description="La página que buscas no existe. Tal vez se movió, o nunca existió."
+  title="404 — komercia/mcp"
+  description="Página no encontrada."
   noindex={true}
 >
-  <Navbar />
-
-  <main>
-    <Container size="narrow">
-      <div style="padding: 144px 0 96px; text-align: center;">
-        <div class="eyebrow-badge" style="margin-inline: auto;">
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="8" x2="12" y2="12" />
-            <line x1="12" y1="16" x2="12.01" y2="16" />
-          </svg>
-          ERROR 404
+  <div class="page">
+    <main class="main">
+      <div class="terminal">
+        <div class="prompt">
+          <span class="muted">user@komercia ~$</span>
+          <span class="cmd">cd {Astro.url.pathname}</span><span class="caret">_</span>
         </div>
 
-        <h1 class="heading-bicolor lg" style="margin-top: 24px;">
-          Esta página no existe. <span class="muted">Pero tu tienda sí.</span>
-        </h1>
+        <p class="error-line">bash: no such file or directory · <span class="muted">404</span></p>
 
-        <p
-          style="font-family: 'Inter', sans-serif; font-weight: 400; font-size: 16px; line-height: 1.6; color: var(--color-slate-text); max-width: 28rem; margin: 24px auto 0;"
-        >
-          La URL que buscas no está disponible. Tal vez se movió, o nunca existió.
-        </p>
+        <p class="hint">la ruta que buscas no existe. tal vez se movió o nunca existió.</p>
 
-        <div
-          style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 32px;"
-        >
-          <Button variant="primary" href="/">Volver al inicio</Button>
-          <Button variant="secondary" href="/sign-in">Obtener token</Button>
+        <div class="actions">
+          <a href="/" class="btn-pill">volver al inicio →</a>
+          <a href="/sign-in" class="btn-ghost-pill">obtener_token</a>
         </div>
       </div>
-    </Container>
-  </main>
-
-  <Footer />
+    </main>
+  </div>
 </Base>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+
+  .page {
+    --c-bg: #000000;
+    --c-fg: #ffffff;
+    --c-surface: #1d1d1d;
+    --c-border: #383838;
+    --c-muted: #888888;
+    --r: 10px;
+
+    min-height: 100vh;
+    background: var(--c-bg);
+    color: var(--c-fg);
+    font-family: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 16px;
+    line-height: 1.4;
+    letter-spacing: 0.24px;
+    font-feature-settings: 'zero';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  :global(body:has(.page)) { background: #000000; }
+
+  .main { padding: 48px 24px; }
+  .terminal { max-width: 640px; }
+
+  .prompt { font-size: 16px; }
+  .prompt .muted { color: var(--c-muted); }
+  .prompt .cmd { color: var(--c-fg); margin-left: 8px; }
+  .caret { margin-left: 2px; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .error-line { margin: 26px 0 8px; font-size: 16px; color: var(--c-fg); }
+  .error-line .muted { color: var(--c-muted); }
+
+  .hint { margin: 0 0 32px; font-size: 16px; color: var(--c-muted); line-height: 1.5; }
+
+  .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  .btn-pill, .btn-ghost-pill {
+    height: 36px;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    border-radius: var(--r);
+    font-family: inherit;
+    letter-spacing: 0.24px;
+    text-decoration: none;
+    line-height: 1;
+    padding: 0 16px;
+    font-size: 14px;
+    transition: background 150ms, border-color 150ms;
+  }
+  .btn-pill {
+    background: var(--c-fg);
+    color: var(--c-bg);
+    border: 1px solid var(--c-fg);
+  }
+  .btn-pill:hover { background: var(--c-muted); border-color: var(--c-muted); }
+  .btn-ghost-pill {
+    background: transparent;
+    color: var(--c-fg);
+    border: 1px solid var(--c-border);
+    padding: 0 12px;
+  }
+  .btn-ghost-pill:hover { border-color: var(--c-fg); background: var(--c-surface); }
+
+  .muted { color: var(--c-muted); }
+</style>

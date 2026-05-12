@@ -111,6 +111,11 @@ Astro.response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(),
     <!-- Structured data (Schema.org) -->
     <script type="application/ld+json" set:html={JSON.stringify(softwareSchema)} />
 
+    <!-- Mark JS-enabled so CSS can hide [data-scramble] until JS animates them -->
+    <script is:inline>
+      document.documentElement.classList.add('js-enabled');
+    </script>
+
     <title>{title}</title>
   </head>
   <body>

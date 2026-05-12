@@ -51,9 +51,9 @@ Astro.cookies.set('csrf_token', csrfToken, {
 
         <!-- ── Login section ──────────────────────────────────── -->
         <section id="login-section">
-          <h1 class="title" data-t-es="acceder a los datos de la tienda" data-t-en="access store data">acceder a los datos de la tienda</h1>
-          <p class="subtitle" data-t-es="inicia sesión con tus credenciales de komercia para emitir un token mcp de solo lectura." data-t-en="log in with your komercia credentials to issue a read-only mcp token.">
-            inicia sesión con tus credenciales de komercia para emitir un token mcp de solo lectura.
+          <h1 class="title" data-scramble data-t-es="Acceder a los datos de tu tienda" data-t-en="Access your store data">Acceder a los datos de tu tienda</h1>
+          <p class="subtitle" data-scramble data-t-es="Inicia sesión con tus credenciales de Komercia para emitir un token MCP de solo lectura." data-t-en="Log in with your Komercia credentials to issue a read-only MCP token.">
+            Inicia sesión con tus credenciales de Komercia para emitir un token MCP de solo lectura.
           </p>
 
           <form id="login-form" novalidate>
@@ -91,13 +91,13 @@ Astro.cookies.set('csrf_token', csrfToken, {
           </form>
 
           <p class="footer-line">
-            <span data-t-es="¿sin cuenta?" data-t-en="no account?">¿sin cuenta?</span>
-            <a href="https://komercia.co" target="_blank" rel="noopener noreferrer" data-t-es="regístrate en komercia.co →" data-t-en="register at komercia.co →">regístrate en komercia.co →</a>
+            <span data-t-es="¿Sin cuenta?" data-t-en="No account?">¿Sin cuenta?</span>
+            <a href="https://komercia.co" target="_blank" rel="noopener noreferrer" data-t-es="Regístrate en komercia.co →" data-t-en="Register at komercia.co →">Regístrate en komercia.co →</a>
           </p>
 
           <div class="login-note" role="note">
             <span class="login-note-label">[ importante ]</span>
-            <span data-t-es="necesitas tener una tienda activa en komercia con datos. el token solo da acceso de lectura a tu tienda existente — no crea ni modifica nada." data-t-en="you must have an active komercia store with data. the token only grants read access to your existing store — it never creates or modifies anything.">necesitas tener una tienda activa en komercia con datos. el token solo da acceso de lectura a tu tienda existente — no crea ni modifica nada.</span>
+            <span data-t-es="Necesitas tener una tienda activa en Komercia con datos. El token solo da acceso de lectura a tu tienda existente — no crea ni modifica nada." data-t-en="You must have an active Komercia store with data. The token only grants read access to your existing store — it never creates or modifies anything.">Necesitas tener una tienda activa en Komercia con datos. El token solo da acceso de lectura a tu tienda existente — no crea ni modifica nada.</span>
           </div>
         </section>
 
@@ -299,6 +299,20 @@ Astro.cookies.set('csrf_token', csrfToken, {
     animation: blink 1s steps(1) infinite;
   }
   @keyframes blink { 50% { opacity: 0; } }
+
+  /* Text-scramble (terminal decryption) — hide target text until JS animates it */
+  .scramble-dud {
+    color: var(--c-muted);
+    opacity: 0.65;
+  }
+  :global(html.js-enabled) [data-scramble]:not(.scramble-active) {
+    visibility: hidden;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(html.js-enabled) [data-scramble]:not(.scramble-active) {
+      visibility: visible;
+    }
+  }
 
   /* ── Dividers ────────────────────────────────────────── */
   .divider {
@@ -602,7 +616,13 @@ Astro.cookies.set('csrf_token', csrfToken, {
     document.documentElement.lang = lang;
     document.querySelectorAll<HTMLElement>('[data-t-es]').forEach((el) => {
       const text = lang === 'en' ? el.getAttribute('data-t-en') : el.getAttribute('data-t-es');
-      if (text !== null) el.textContent = text;
+      if (text === null) return;
+      if (el.hasAttribute('data-scramble')) {
+        const se = el as ScrambleEl;
+        se._scrambleTarget = text;
+        se._scrambling = false;
+      }
+      el.textContent = text;
     });
     const label = document.getElementById('lang-current');
     if (label) label.textContent = lang.toUpperCase();
@@ -622,6 +642,86 @@ Astro.cookies.set('csrf_token', csrfToken, {
       try { localStorage.setItem('lang', next); } catch { /* noop */ }
       applyLang(next);
     });
+  }
+
+  // ── Text scramble (terminal decryption effect) ──────────────
+  const SCRAMBLE_CHARS = '!<>-_/[]{}—=+*^?#$%&0123456789ABCDEFGHIJKLMNOPQR';
+  function escapeHtmlChar(c: string): string {
+    return c === '<' ? '&lt;' : c === '>' ? '&gt;' : c === '&' ? '&amp;' : c;
+  }
+
+  interface ScrambleEl extends HTMLElement {
+    _scrambleTarget?: string;
+    _scrambling?: boolean;
+  }
+  interface ScrambleQ {
+    to: string;
+    start: number;
+    end: number;
+    char: string;
+    locked: boolean;
+  }
+
+  function scrambleText(el: ScrambleEl): void {
+    if (el._scrambling) return;
+    const target = (el._scrambleTarget ?? el.textContent ?? '').trim();
+    if (!target) {
+      el.classList.add('scramble-active');
+      return;
+    }
+    el._scrambleTarget = target;
+    el._scrambling = true;
+    el.classList.add('scramble-active');
+
+    const queue: ScrambleQ[] = [];
+    const chars = target.split('');
+    for (let i = 0; i < chars.length; i++) {
+      const to = chars[i] ?? '';
+      const isSpace = to === ' ' || to === '\n';
+      queue.push({
+        to,
+        locked: isSpace,
+        start: isSpace ? 0 : i * 0.5,
+        end: isSpace ? 0 : i * 0.5 + 14 + Math.random() * 22,
+        char: SCRAMBLE_CHARS.charAt(Math.floor(Math.random() * SCRAMBLE_CHARS.length)),
+      });
+    }
+    let frame = 0;
+    const tick = (): void => {
+      let html = '';
+      let complete = 0;
+      for (const q of queue) {
+        if (q.locked || frame >= q.end) {
+          html += escapeHtmlChar(q.to);
+          complete++;
+        } else {
+          if (frame >= q.start && Math.random() < 0.4) {
+            q.char = SCRAMBLE_CHARS.charAt(Math.floor(Math.random() * SCRAMBLE_CHARS.length));
+          }
+          html += '<span class="scramble-dud">' + escapeHtmlChar(q.char) + '</span>';
+        }
+      }
+      el.innerHTML = html;
+      if (complete === queue.length) {
+        el.textContent = target;
+        el._scrambling = false;
+      } else {
+        frame++;
+        requestAnimationFrame(tick);
+      }
+    };
+    tick();
+  }
+
+  const scrambleEls = document.querySelectorAll<ScrambleEl>('[data-scramble]');
+  if (scrambleEls.length) {
+    scrambleEls.forEach((el) => { el._scrambleTarget = el.textContent ?? ''; });
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) {
+      scrambleEls.forEach((el) => el.classList.add('scramble-active'));
+    } else {
+      requestAnimationFrame(() => scrambleEls.forEach((el) => scrambleText(el)));
+    }
   }
 
   // ── CSRF helper ─────────────────────────────────────────────

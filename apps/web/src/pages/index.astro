@@ -479,18 +479,6 @@ const examples = [
 >
   <div class="page">
 
-    <!-- Pre-script: hide hero text on first session load so the typewriter
-         animation can reveal it character-by-character without a flash. -->
-    <script is:inline>
-      (function () {
-        try {
-          if (sessionStorage.getItem('intro-seen') === '1') return;
-        } catch (e) { return; }
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-        document.documentElement.classList.add('intro-pending');
-      })();
-    </script>
-
     <!-- ── Top bar ─────────────────────────────────────── -->
     <header class="topbar">
       <a href="/" class="brand" aria-label="komercia mcp home">[komercia/mcp]</a>
@@ -529,12 +517,12 @@ const examples = [
         </div>
 
         <h1 class="h1">
-          <span id="h1-main" data-t-es="los datos de tu tienda," data-t-en="your store data,">los datos de tu tienda,</span><br />
-          <span id="h1-muted" class="muted" data-t-es="en lenguaje natural." data-t-en="in natural language.">en lenguaje natural.</span>
+          <span id="h1-main" data-scramble data-t-es="Los datos de tu tienda," data-t-en="Your store data,">Los datos de tu tienda,</span><br />
+          <span id="h1-muted" class="muted" data-scramble data-t-es="en lenguaje natural." data-t-en="in natural language.">en lenguaje natural.</span>
         </h1>
 
-        <p id="hero-lede" class="lede" data-t-es="el servidor mcp oficial para komercia. pregúntale a claude lo que sea sobre tu tienda — productos, ventas, clientes, inventario — sin escribir una línea de código." data-t-en="the official mcp server for komercia. ask claude anything about your store — products, orders, customers, inventory — without writing a line of code.">
-          el servidor mcp oficial para komercia. pregúntale a claude lo que sea sobre tu tienda — productos, ventas, clientes, inventario — sin escribir una línea de código.
+        <p id="hero-lede" class="lede" data-scramble data-t-es="El servidor MCP oficial para Komercia. Pregúntale a Claude lo que sea sobre tu tienda — productos, ventas, clientes, inventario — sin escribir una línea de código." data-t-en="The official MCP server for Komercia. Ask Claude anything about your store — products, orders, customers, inventory — without writing a line of code.">
+          El servidor MCP oficial para Komercia. Pregúntale a Claude lo que sea sobre tu tienda — productos, ventas, clientes, inventario — sin escribir una línea de código.
         </p>
 
         <div class="cta-row">
@@ -544,9 +532,9 @@ const examples = [
 
         <ul class="trust">
           <li><span class="dot">●</span> <span data-t-es="11 herramientas" data-t-en="11 tools">11 herramientas</span></li>
-          <li><span class="dot">●</span> <span data-t-es="solo lectura" data-t-en="read-only">solo lectura</span></li>
-          <li><span class="dot">●</span> <span>open source</span></li>
-          <li><span class="dot">●</span> <span data-t-es="gratis" data-t-en="free">gratis</span></li>
+          <li><span class="dot">●</span> <span data-t-es="Solo lectura" data-t-en="Read-only">Solo lectura</span></li>
+          <li><span class="dot">●</span> <span data-t-es="Open source" data-t-en="Open source">Open source</span></li>
+          <li><span class="dot">●</span> <span data-t-es="Gratis" data-t-en="Free">Gratis</span></li>
         </ul>
       </section>
 
@@ -556,7 +544,7 @@ const examples = [
       <section id="features" class="block">
         <div class="block-header">
           <h2 class="h2" data-t-es="&gt; herramientas" data-t-en="&gt; features">&gt; herramientas</h2>
-          <p class="block-hint" data-t-es="11 herramientas mcp. todas de solo lectura." data-t-en="11 mcp tools. all read-only.">11 herramientas mcp. todas de solo lectura.</p>
+          <p class="block-hint" data-scramble data-t-es="11 herramientas MCP. Todas de solo lectura." data-t-en="11 MCP tools. All read-only.">11 herramientas MCP. Todas de solo lectura.</p>
         </div>
 
         <div class="grid" id="tools-grid">
@@ -578,7 +566,7 @@ const examples = [
       <section id="install" class="block">
         <div class="block-header">
           <h2 class="h2" data-t-es="&gt; instalación" data-t-en="&gt; install">&gt; instalación</h2>
-          <p class="block-hint" data-t-es="tres pasos. cinco minutos. sin código." data-t-en="three steps. five minutes. no code.">tres pasos. cinco minutos. sin código.</p>
+          <p class="block-hint" data-scramble data-t-es="Tres pasos. Cinco minutos. Sin código." data-t-en="Three steps. Five minutes. No code.">Tres pasos. Cinco minutos. Sin código.</p>
         </div>
 
         <ol class="steps">
@@ -586,7 +574,7 @@ const examples = [
             <span class="step-num">[01]</span>
             <div class="step-body">
               <strong>get_token</strong>
-              <p class="step-desc" data-t-es="inicia sesión con tus credenciales de komercia. token de solo lectura, válido 6 meses." data-t-en="log in with your komercia credentials. token is read-only, valid 6 months.">inicia sesión con tus credenciales de komercia. token de solo lectura, válido 6 meses.</p>
+              <p class="step-desc" data-t-es="Inicia sesión con tus credenciales de Komercia. Token de solo lectura, válido 6 meses." data-t-en="Log in with your Komercia credentials. Token is read-only, valid for 6 months.">Inicia sesión con tus credenciales de Komercia. Token de solo lectura, válido 6 meses.</p>
               <a href="/sign-in" class="link-arrow">/sign-in →</a>
             </div>
           </li>
@@ -595,7 +583,7 @@ const examples = [
             <span class="step-num">[02]</span>
             <div class="step-body">
               <strong>connect_client</strong>
-              <p class="step-desc" data-t-es="elige uno. claude code es el más simple — un solo comando." data-t-en="pick one. claude code is the simplest — single command.">elige uno. claude code es el más simple — un solo comando.</p>
+              <p class="step-desc" data-t-es="Elige uno. Claude Code es el más simple — un solo comando." data-t-en="Pick one. Claude Code is the simplest — single command.">Elige uno. Claude Code es el más simple — un solo comando.</p>
               <div class="code-block">
                 <pre class="code-block-content"><code id="install-cmd">claude mcp add --transport sse komercia \
   https://api-mcp.komercia.co/sse \
@@ -610,7 +598,7 @@ const examples = [
                   </svg>
                 </button>
               </div>
-              <p class="step-desc-sm" data-t-es="también funciona con claude.ai integrations, claude desktop, cursor." data-t-en="also works with claude.ai integrations, claude desktop, cursor.">también funciona con claude.ai integrations, claude desktop, cursor.</p>
+              <p class="step-desc-sm" data-t-es="También funciona con Claude.ai, Claude Desktop, Cursor y ChatGPT." data-t-en="Also works with Claude.ai, Claude Desktop, Cursor, and ChatGPT.">También funciona con Claude.ai, Claude Desktop, Cursor y ChatGPT.</p>
             </div>
           </li>
 
@@ -618,19 +606,19 @@ const examples = [
             <span class="step-num">[03]</span>
             <div class="step-body">
               <strong>ask_anything</strong>
-              <p class="step-desc" data-t-es="abre un chat de claude. pregunta en lenguaje natural. claude llama a las herramientas mcp y responde con tus datos reales." data-t-en="open a claude chat. ask in plain english. claude calls the mcp tools and answers with your real data.">abre un chat de claude. pregunta en lenguaje natural. claude llama a las herramientas mcp y responde con tus datos reales.</p>
+              <p class="step-desc" data-t-es="Abre un chat de Claude. Pregunta en lenguaje natural. Claude llama a las herramientas MCP y responde con tus datos reales." data-t-en="Open a Claude chat. Ask in plain English. Claude calls the MCP tools and answers with your real data.">Abre un chat de Claude. Pregunta en lenguaje natural. Claude llama a las herramientas MCP y responde con tus datos reales.</p>
             </div>
           </li>
         </ol>
 
         <div class="install-clients">
-          <p class="clients-label" data-t-es="¿usas otro cliente? mcp funciona en:" data-t-en="using a different client? mcp works in:">¿usas otro cliente? mcp funciona en:</p>
+          <p class="clients-label" data-t-es="¿Usas otro cliente? MCP funciona en:" data-t-en="Using a different client? MCP works in:">¿Usas otro cliente? MCP funciona en:</p>
           <div class="clients-row">
             {installMethods.map((m) => (
               <button type="button" class="client-chip" data-install-target={m.id}>{m.name}</button>
             ))}
           </div>
-          <button type="button" id="open-install-modal" class="link-arrow-btn" data-install-target="all" data-t-es={`ver guía para los ${installMethods.length} clientes →`} data-t-en={`see setup guide for all ${installMethods.length} clients →`}>{`ver guía para los ${installMethods.length} clientes →`}</button>
+          <button type="button" id="open-install-modal" class="link-arrow-btn" data-install-target="all" data-t-es={`Ver guía para los ${installMethods.length} clientes →`} data-t-en={`See setup guide for all ${installMethods.length} clients →`}>{`Ver guía para los ${installMethods.length} clientes →`}</button>
         </div>
       </section>
 
@@ -640,7 +628,7 @@ const examples = [
       <section id="examples" class="block">
         <div class="block-header">
           <h2 class="h2" data-t-es="&gt; ejemplos" data-t-en="&gt; examples">&gt; ejemplos</h2>
-          <p class="block-hint" data-t-es="prompts que funcionan hoy. pega en claude." data-t-en="prompts that work today. paste into claude.">prompts que funcionan hoy. pega en claude.</p>
+          <p class="block-hint" data-scramble data-t-es="Prompts que funcionan hoy. Pega en Claude." data-t-en="Prompts that work today. Paste into Claude.">Prompts que funcionan hoy. Pega en Claude.</p>
         </div>
 
         <ul class="examples">
@@ -652,16 +640,16 @@ const examples = [
           ))}
         </ul>
 
-        <button type="button" id="open-recetas" class="link-arrow-btn" data-t-es="ver los 18 prompts curados →" data-t-en="see all 18 curated prompts →">ver los 18 prompts curados →</button>
+        <button type="button" id="open-recetas" class="link-arrow-btn" data-t-es="Ver los 18 prompts curados →" data-t-en="See all 18 curated prompts →">Ver los 18 prompts curados →</button>
       </section>
 
       <div class="divider"></div>
 
       <!-- ── Final CTA ─────────────────────────────────── -->
       <section class="block final">
-        <p class="ready" data-t-es="¿listo?" data-t-en="ready?">¿listo?</p>
+        <p class="ready" data-scramble data-t-es="¿Listo?" data-t-en="Ready?">¿Listo?</p>
         <a href="/sign-in" class="btn-primary btn-primary-lg" data-t-es="obtener_token →" data-t-en="get_token →">obtener_token →</a>
-        <p class="muted small" data-t-es="es gratis. 30 segundos. tú guardas el token." data-t-en="it's free. 30 seconds. you keep the token.">es gratis. 30 segundos. tú guardas el token.</p>
+        <p class="muted small" data-scramble data-t-es="Es gratis. 30 segundos. Tú guardas el token." data-t-en="It's free. 30 seconds. You keep the token.">Es gratis. 30 segundos. Tú guardas el token.</p>
       </section>
 
     </main>
@@ -955,21 +943,23 @@ const examples = [
   }
   @keyframes blink { 50% { opacity: 0; } }
 
-  /* Typewriter cursor — shown on the element currently being typed */
-  .is-typing::after {
-    content: '_';
-    color: currentColor;
-    animation: blink 1s steps(1) infinite;
-    display: inline-block;
-    margin-left: 2px;
-    font-weight: inherit;
+  /* Text-scramble decryption effect — random glyphs shown during the
+     "loading" phase before each character locks to its final form. */
+  .scramble-dud {
+    color: var(--c-muted);
+    opacity: 0.65;
   }
-  /* Pre-animation state: hide hero text but keep full layout so there's
-     no flash or layout shift when JS captures and re-types it. */
-  :global(html.intro-pending) #h1-main,
-  :global(html.intro-pending) #h1-muted,
-  :global(html.intro-pending) #hero-lede {
-    color: transparent;
+  /* When JS is enabled, hide scramble elements until the observer kicks
+     in. They become visible the moment their scramble animation starts,
+     so there is no flash of the final text. */
+  :global(html.js-enabled) [data-scramble]:not(.scramble-active) {
+    visibility: hidden;
+  }
+  /* Respect users who prefer reduced motion — show text immediately. */
+  @media (prefers-reduced-motion: reduce) {
+    :global(html.js-enabled) [data-scramble]:not(.scramble-active) {
+      visibility: visible;
+    }
   }
 
   /* ── Hero ────────────────────────────────────────────── */
@@ -1663,7 +1653,13 @@ const examples = [
       for (var i = 0; i < els.length; i++) {
         var el = els[i];
         var text = lang === 'en' ? el.getAttribute('data-t-en') : el.getAttribute('data-t-es');
-        if (text !== null) el.textContent = text;
+        if (text === null) continue;
+        // Keep scramble target in sync; cancel any in-flight scramble.
+        if (el.hasAttribute('data-scramble')) {
+          el._scrambleTarget = text;
+          el._scrambling = false;
+        }
+        el.textContent = text;
       }
       var label = document.getElementById('lang-current');
       if (label) label.textContent = lang.toUpperCase();
@@ -1704,52 +1700,92 @@ const examples = [
       });
     }
 
-    // ── Typewriter intro animation ────────────────────────
-    function typeText(el, text, speed) {
-      return new Promise(function (resolve) {
-        el.classList.add('is-typing');
-        var i = 0;
-        el.textContent = '';
-        function tick() {
-          if (i >= text.length) {
-            el.classList.remove('is-typing');
-            resolve();
-            return;
-          }
-          el.textContent += text.charAt(i);
-          i++;
-          setTimeout(tick, speed);
-        }
-        tick();
-      });
+    // ── Text scramble (terminal decryption effect) ────────
+    var SCRAMBLE_CHARS = '!<>-_/[]{}—=+*^?#$%&0123456789ABCDEFGHIJKLMNOPQR';
+
+    function escapeHtml(c) {
+      return c === '<' ? '&lt;' : c === '>' ? '&gt;' : c === '&' ? '&amp;' : c;
     }
 
-    function runIntro() {
-      if (!document.documentElement.classList.contains('intro-pending')) return;
-      var ids = ['h1-main', 'h1-muted', 'hero-lede'];
-      var els = [];
-      for (var i = 0; i < ids.length; i++) {
-        var e = document.getElementById(ids[i]);
-        if (!e) { document.documentElement.classList.remove('intro-pending'); return; }
-        els.push(e);
-      }
-      var texts = els.map(function (e) { return e.textContent; });
-      els.forEach(function (e) { e.textContent = ''; });
-      document.documentElement.classList.remove('intro-pending');
+    function scrambleText(el) {
+      if (!el || el._scrambling) return;
+      var target = (el._scrambleTarget || el.textContent || '').trim();
+      if (!target) { el.classList.add('scramble-active'); return; }
+      el._scrambleTarget = target;
+      el._scrambling = true;
+      el.classList.add('scramble-active');
 
-      setTimeout(function () {
-        typeText(els[0], texts[0], 25)
-          .then(function () { return new Promise(function (r) { setTimeout(r, 120); }); })
-          .then(function () { return typeText(els[1], texts[1], 25); })
-          .then(function () { return new Promise(function (r) { setTimeout(r, 200); }); })
-          .then(function () { return typeText(els[2], texts[2], 12); })
-          .then(function () {
-            try { sessionStorage.setItem('intro-seen', '1'); } catch (e) {}
+      var queue = [];
+      for (var i = 0; i < target.length; i++) {
+        var to = target[i];
+        if (to === ' ' || to === '\n' || to === ' ') {
+          queue.push({ to: to, locked: true });
+        } else {
+          var start = i * 0.5;
+          var end = start + 14 + Math.random() * 22;
+          queue.push({
+            to: to,
+            start: start,
+            end: end,
+            char: SCRAMBLE_CHARS.charAt(Math.floor(Math.random() * SCRAMBLE_CHARS.length)),
           });
-      }, 250);
+        }
+      }
+
+      var frame = 0;
+      function tick() {
+        var html = '';
+        var complete = 0;
+        for (var i = 0; i < queue.length; i++) {
+          var q = queue[i];
+          if (q.locked || frame >= q.end) {
+            html += escapeHtml(q.to);
+            complete++;
+          } else if (frame >= q.start) {
+            if (Math.random() < 0.4) {
+              q.char = SCRAMBLE_CHARS.charAt(Math.floor(Math.random() * SCRAMBLE_CHARS.length));
+            }
+            html += '<span class="scramble-dud">' + escapeHtml(q.char) + '</span>';
+          } else {
+            html += '<span class="scramble-dud">' + escapeHtml(q.char) + '</span>';
+          }
+        }
+        el.innerHTML = html;
+        if (complete === queue.length) {
+          el.textContent = target;
+          el._scrambling = false;
+        } else {
+          frame++;
+          requestAnimationFrame(tick);
+        }
+      }
+      tick();
     }
 
-    runIntro();
+    // Trigger scramble on viewport entry (or immediately for hero)
+    var scrambleEls = document.querySelectorAll('[data-scramble]');
+    if (scrambleEls.length) {
+      // Cache the initial target so applyLang doesn't break the source of truth
+      for (var si = 0; si < scrambleEls.length; si++) {
+        scrambleEls[si]._scrambleTarget = scrambleEls[si].textContent;
+      }
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduceMotion) {
+        for (var ri = 0; ri < scrambleEls.length; ri++) scrambleEls[ri].classList.add('scramble-active');
+      } else if (typeof IntersectionObserver !== 'undefined') {
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              io.unobserve(entry.target);
+              scrambleText(entry.target);
+            }
+          });
+        }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+        for (var ii = 0; ii < scrambleEls.length; ii++) io.observe(scrambleEls[ii]);
+      } else {
+        for (var fi = 0; fi < scrambleEls.length; fi++) scrambleText(scrambleEls[fi]);
+      }
+    }
 
     // ── Code block copy buttons ───────────────────────────
     var codeCopyBtns = document.querySelectorAll('.code-copy');
