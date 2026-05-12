@@ -25,12 +25,9 @@ Astro.cookies.set('csrf_token', csrfToken, {
 
       <div class="topbar-actions">
         <button id="lang-toggle" class="btn-lang" aria-label="Cambiar idioma" title="Cambiar idioma / Toggle language">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M2 12h20"/>
-            <path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10 15 15 0 0 1 4-10z"/>
-          </svg>
-          <span id="lang-label">eng</span>
+          <span class="lang-opt" data-lang="es">ES</span>
+          <span class="lang-sep" aria-hidden="true">⇄</span>
+          <span class="lang-opt" data-lang="en">EN</span>
         </button>
         <a href="/v2" class="link-muted" data-t-es="← volver" data-t-en="← back">← volver</a>
       </div>
@@ -237,20 +234,34 @@ Astro.cookies.set('csrf_token', csrfToken, {
   /* ── Lang toggle ─────────────────────────────────────── */
   .btn-lang {
     background: transparent;
-    color: var(--c-muted);
-    border: none;
-    padding: 0;
+    border: 1px solid var(--c-border);
+    border-radius: var(--r);
+    padding: 6px 12px;
     font-family: inherit;
-    font-size: 16px;
+    font-size: 14px;
     letter-spacing: 0.24px;
     cursor: pointer;
     display: inline-flex;
+    flex-direction: row;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    white-space: nowrap;
+    line-height: 1;
+    transition: border-color 150ms;
+  }
+  .btn-lang:hover { border-color: var(--c-fg); }
+  .btn-lang .lang-opt {
+    color: var(--c-muted);
     transition: color 150ms;
   }
-  .btn-lang:hover { color: var(--c-fg); }
-  .btn-lang svg { display: block; flex-shrink: 0; }
+  .btn-lang .lang-opt.active {
+    color: var(--c-fg);
+  }
+  .btn-lang .lang-sep {
+    color: var(--c-border);
+    font-size: 12px;
+  }
+  .btn-lang:hover .lang-sep { color: var(--c-muted); }
 
   /* ── Main ────────────────────────────────────────────── */
   .main {
@@ -544,7 +555,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
     .topbar { padding: 12px 14px; }
     .brand { font-size: 14px; }
     .topbar-actions { gap: 10px; }
-    .btn-lang { font-size: 14px; }
+    .btn-lang { padding: 5px 10px; font-size: 13px; gap: 6px; }
     .link-muted { font-size: 14px; }
     .main { padding: 24px 14px; }
     .token-row { flex-direction: column; }
@@ -564,8 +575,10 @@ Astro.cookies.set('csrf_token', csrfToken, {
       const text = lang === 'en' ? el.getAttribute('data-t-en') : el.getAttribute('data-t-es');
       if (text !== null) el.textContent = text;
     });
-    const label = document.getElementById('lang-label');
-    if (label) label.textContent = lang === 'en' ? 'esp' : 'eng';
+    document.querySelectorAll<HTMLElement>('.lang-opt').forEach((opt) => {
+      if (opt.getAttribute('data-lang') === lang) opt.classList.add('active');
+      else opt.classList.remove('active');
+    });
   }
 
   function t(es: string, en: string): string {
