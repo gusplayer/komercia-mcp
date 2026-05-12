@@ -838,8 +838,24 @@ Astro.cookies.set('csrf_token', csrfToken, {
     return currentLang === 'en' ? en : es;
   }
 
-  const savedLang = localStorage.getItem('lang');
-  applyLang(savedLang === 'en' ? 'en' : 'es');
+  // Detect initial language: saved preference wins, else infer from
+  // the browser's preferred locales, else fall back to Spanish.
+  function detectLang(): 'es' | 'en' {
+    try {
+      const saved = localStorage.getItem('lang');
+      if (saved === 'en' || saved === 'es') return saved;
+    } catch { /* localStorage unavailable */ }
+    const navLangs = (navigator.languages && navigator.languages.length)
+      ? navigator.languages
+      : [navigator.language || ''];
+    for (const raw of navLangs) {
+      const l = (raw || '').toLowerCase();
+      if (l.startsWith('en')) return 'en';
+      if (l.startsWith('es')) return 'es';
+    }
+    return 'es';
+  }
+  applyLang(detectLang());
 
   const langToggle = document.getElementById('lang-toggle');
   if (langToggle) {

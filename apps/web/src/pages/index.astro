@@ -1322,8 +1322,27 @@ const examples = [
       if (label) label.textContent = lang.toUpperCase();
     }
 
-    var saved = localStorage.getItem('lang');
-    var current = saved === 'en' ? 'en' : 'es';
+    // Detect initial language:
+    //   1. localStorage.lang (user's previous toggle, if any) wins
+    //   2. otherwise, walk navigator.languages and pick the first
+    //      browser preference that matches a locale we support
+    //   3. fallback to Spanish (primary locale)
+    function detectLang() {
+      try {
+        var saved = localStorage.getItem('lang');
+        if (saved === 'en' || saved === 'es') return saved;
+      } catch (e) {}
+      var langs = (navigator.languages && navigator.languages.length)
+        ? navigator.languages
+        : [navigator.language || ''];
+      for (var i = 0; i < langs.length; i++) {
+        var l = (langs[i] || '').toLowerCase();
+        if (l.indexOf('en') === 0) return 'en';
+        if (l.indexOf('es') === 0) return 'es';
+      }
+      return 'es';
+    }
+    var current = detectLang();
     applyLang(current);
 
     var btn = document.getElementById('lang-toggle');
