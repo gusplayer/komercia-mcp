@@ -32,8 +32,6 @@ const tools = [
 ];
 
 const visibleCount = 6;
-const toolsCore = tools.slice(0, visibleCount);
-const toolsExtra = tools.slice(visibleCount);
 
 // ── Prompt library (modal content). Each prompt has a bilingual user
 // message and a short simulated Claude response (Spanish only — the
@@ -395,9 +393,9 @@ const examples = [
           <p class="block-hint" data-t-es="11 herramientas mcp. todas de solo lectura." data-t-en="11 mcp tools. all read-only.">11 herramientas mcp. todas de solo lectura.</p>
         </div>
 
-        <div class="grid">
-          {toolsCore.map((t) => (
-            <article class="tool-card">
+        <div class="grid" id="tools-grid">
+          {tools.map((t, i) => (
+            <article class={i < visibleCount ? 'tool-card' : 'tool-card tool-extra'} aria-hidden={i < visibleCount ? 'false' : 'true'}>
               <svg class="tool-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true" set:html={icons[t.name]} />
               <code class="tool-name">{t.name}</code>
               <p class="tool-desc" data-t-es={t.descEs} data-t-en={t.descEn}>{t.descEs}</p>
@@ -405,17 +403,7 @@ const examples = [
           ))}
         </div>
 
-        <div class="grid grid-extra" id="tools-extra" aria-hidden="true">
-          {toolsExtra.map((t) => (
-            <article class="tool-card">
-              <svg class="tool-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true" set:html={icons[t.name]} />
-              <code class="tool-name">{t.name}</code>
-              <p class="tool-desc" data-t-es={t.descEs} data-t-en={t.descEn}>{t.descEs}</p>
-            </article>
-          ))}
-        </div>
-
-        <button type="button" id="toggle-tools" class="link-arrow-btn" aria-expanded="false" aria-controls="tools-extra" data-t-es="ver las 5 restantes →" data-t-en="see the remaining 5 →">ver las 5 restantes →</button>
+        <button type="button" id="toggle-tools" class="link-arrow-btn" aria-expanded="false" aria-controls="tools-grid" data-t-es="ver las 5 restantes →" data-t-en="see the remaining 5 →">ver las 5 restantes →</button>
       </section>
 
       <div class="divider"></div>
@@ -883,9 +871,9 @@ const examples = [
     line-height: 1.4;
   }
 
-  /* Expandable grid for extra tools */
-  .grid-extra { display: none; margin-top: 16px; }
-  .grid-extra.expanded { display: grid; }
+  /* Extra tools hidden by default; revealed when grid.expanded */
+  .tool-extra { display: none; }
+  .grid.expanded .tool-extra { display: flex; }
 
   /* Toggle button styled like .link-arrow */
   .link-arrow-btn {
@@ -1327,12 +1315,15 @@ const examples = [
 
     // Tools expand/collapse
     var toolsToggle = document.getElementById('toggle-tools');
-    var toolsExtra = document.getElementById('tools-extra');
-    if (toolsToggle && toolsExtra) {
+    var toolsGrid = document.getElementById('tools-grid');
+    if (toolsToggle && toolsGrid) {
       toolsToggle.addEventListener('click', function () {
-        var expanded = toolsExtra.classList.toggle('expanded');
+        var expanded = toolsGrid.classList.toggle('expanded');
         toolsToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-        toolsExtra.setAttribute('aria-hidden', expanded ? 'false' : 'true');
+        var extras = toolsGrid.querySelectorAll('.tool-extra');
+        for (var i = 0; i < extras.length; i++) {
+          extras[i].setAttribute('aria-hidden', expanded ? 'false' : 'true');
+        }
         if (expanded) {
           toolsToggle.setAttribute('data-t-es', 'ocultar herramientas ↑');
           toolsToggle.setAttribute('data-t-en', 'hide tools ↑');
