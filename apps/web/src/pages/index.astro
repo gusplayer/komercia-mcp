@@ -646,7 +646,7 @@ const examples = [
     position: absolute;
     top: 32px;
     bottom: 32px;
-    right: -24px;
+    right: 0;
     width: 52%;
     pointer-events: none;
     user-select: none;
@@ -654,19 +654,6 @@ const examples = [
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    /* Bright on the left edge (the content reads almost full), gradually
-       dims toward the right edge — but never fades completely so the
-       silhouette stays appreciable across the whole panel */
-    mask-image: linear-gradient(90deg,
-      rgba(0, 0, 0, 1) 0%,
-      rgba(0, 0, 0, 0.95) 30%,
-      rgba(0, 0, 0, 0.75) 65%,
-      rgba(0, 0, 0, 0.45) 100%);
-    -webkit-mask-image: linear-gradient(90deg,
-      rgba(0, 0, 0, 1) 0%,
-      rgba(0, 0, 0, 0.95) 30%,
-      rgba(0, 0, 0, 0.75) 65%,
-      rgba(0, 0, 0, 0.45) 100%);
   }
   .deco-frame {
     margin: 0;
@@ -676,16 +663,21 @@ const examples = [
     font-family: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     font-size: 11px;
     line-height: 1.5;
-    color: var(--c-muted);
     white-space: pre;
     display: block;
-    /* CRT illumination — brightest near the left edge, mild dim on right */
+    /* True color gradient on the text: bright white near the left edge,
+       fading through muted gray, then almost merging with the bg on the
+       right — the "screen dimming out" effect requested. */
     background: linear-gradient(90deg,
-      rgba(255, 255, 255, 0.08) 0%,
-      rgba(255, 255, 255, 0.03) 60%,
-      transparent 100%);
+      #ffffff 0%,
+      #d0d0d0 22%,
+      #888888 50%,
+      #4a4a4a 78%,
+      #1d1d1d 100%);
     background-clip: text;
     -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
   }
 
   @media (max-width: 1024px) {
