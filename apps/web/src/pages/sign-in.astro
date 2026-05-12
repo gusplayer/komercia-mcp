@@ -94,6 +94,11 @@ Astro.cookies.set('csrf_token', csrfToken, {
             <span data-t-es="¿sin cuenta?" data-t-en="no account?">¿sin cuenta?</span>
             <a href="https://komercia.co" target="_blank" rel="noopener noreferrer" data-t-es="regístrate en komercia.co →" data-t-en="register at komercia.co →">regístrate en komercia.co →</a>
           </p>
+
+          <div class="login-note" role="note">
+            <span class="login-note-label">[ importante ]</span>
+            <span data-t-es="necesitas tener una tienda activa en komercia con datos. el token solo da acceso de lectura a tu tienda existente — no crea ni modifica nada." data-t-en="you must have an active komercia store with data. the token only grants read access to your existing store — it never creates or modifies anything.">necesitas tener una tienda activa en komercia con datos. el token solo da acceso de lectura a tu tienda existente — no crea ni modifica nada.</span>
+          </div>
         </section>
 
         <!-- ── Token section ──────────────────────────────────── -->
@@ -522,6 +527,26 @@ Astro.cookies.set('csrf_token', csrfToken, {
     margin-left: 6px;
   }
   .footer-line a:hover { color: var(--c-muted); }
+
+  /* Important note at the bottom of the login section */
+  .login-note {
+    margin-top: 32px;
+    padding: 14px 16px;
+    border: 1px solid var(--c-border);
+    border-radius: var(--r);
+    background: var(--c-surface);
+    font-size: 14px;
+    color: var(--c-muted);
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .login-note-label {
+    color: var(--c-fg);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+  }
 
   .revoke-row {
     display: flex;
