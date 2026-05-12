@@ -17,7 +17,7 @@ const {
 
 const siteOrigin = Astro.site ?? new URL('https://mcp.komercia.co');
 const canonicalUrl = new URL(Astro.url.pathname, siteOrigin);
-const ogImageUrl = new URL(ogImage ?? '/og-image.svg', siteOrigin).toString();
+const ogImageUrl = new URL(ogImage ?? '/og-image.png', siteOrigin).toString();
 
 // JSON-LD structured data (SoftwareApplication + Organization)
 const softwareSchema = {

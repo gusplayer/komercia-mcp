@@ -5,7 +5,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "astro build",
+    "build": "node scripts/generate-og.mjs && astro build",
     "dev": "node --env-file=../../.env node_modules/astro/astro.js dev --port 4321",
     "preview": "astro preview",
     "test": "vitest run",
@@ -13,7 +13,8 @@
     "test:e2e": "playwright test",
     "lint": "eslint src",
     "typecheck": "astro check && tsc --noEmit",
-    "clean": "rm -rf dist .astro tsconfig.tsbuildinfo"
+    "clean": "rm -rf dist .astro tsconfig.tsbuildinfo",
+    "og:generate": "node scripts/generate-og.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.4.2",
@@ -32,6 +33,7 @@
     "@astrojs/check": "^0.9.9",
     "@komercia-mcp/eslint-config": "workspace:*",
     "@playwright/test": "^1.48.0",
+    "@resvg/resvg-js": "^2.6.2",
     "@types/node": "^20.0.0",
     "@vitest/coverage-v8": "^2.1.0",
     "eslint": "^9.14.0",
