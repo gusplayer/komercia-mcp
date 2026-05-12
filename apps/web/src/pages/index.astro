@@ -1,1041 +1,642 @@
 ---
+// index.astro — Landing page. 099 / terminal aesthetic, bilingual ES/EN.
 import Base from '../layouts/Base.astro';
-import AnnouncementBanner from '../components/AnnouncementBanner.astro';
-import Navbar from '../components/Navbar.astro';
-import Footer from '../components/Footer.astro';
-import ChatMock from '../components/ChatMock.astro';
-import ScrollAnimate from '../components/ScrollAnimate.astro';
-import Button from '../components/Button.astro';
-import Card from '../components/Card.astro';
-import Badge from '../components/Badge.astro';
-import Container from '../components/Container.astro';
-import Section from '../components/Section.astro';
-import GridPattern from '../components/GridPattern.astro';
-import IconBox from '../components/IconBox.astro';
 
-// Tools catalog data — keeps JSX clean and lets us stagger animations.
 const tools = [
-  { code: 'get_store_info',              desc: 'Info general: nombre, plan, dominio y estado de tu tienda',         prompt: '"¿Cuáles son los datos de mi tienda?"' },
-  { code: 'validate_komercia_apis',      desc: 'Verifica que las APIs de Komercia estén disponibles',                prompt: '"¿Puedo conectarme a mi tienda?"' },
-  { code: 'export_products',             desc: 'Catálogo en CSV, JSON, formato Shopify o WooCommerce',               prompt: '"Exporta mis productos a Shopify"' },
-  { code: 'export_orders',               desc: 'Historial completo de ventas en CSV',                                prompt: '"Dame mis ventas del último año"' },
-  { code: 'export_customers',            desc: 'Lista de clientes con direcciones e historial',                      prompt: '"Exporta todos mis clientes"' },
-  { code: 'export_categories',           desc: 'Árbol de categorías de tu catálogo',                                 prompt: '"Muéstrame mis categorías"' },
-  { code: 'export_inventory_movements',  desc: 'Historial de movimientos de stock',                                  prompt: '"¿Cómo cambió mi inventario este mes?"' },
-  { code: 'export_theme_config',         desc: 'Configuración de diseño: colores, fuentes, tema',                    prompt: '"Guarda la config de mi tema"' },
-  { code: 'list_payment_gateways',       desc: 'Pasarelas de pago activas y métodos configurados',                   prompt: '"¿Qué métodos de pago tengo?"' },
-  { code: 'download_media_archive',      desc: 'ZIP con todas las imágenes de tu tienda',                            prompt: '"Descarga todas mis fotos de productos"' },
-  { code: 'suggest_alternative_platforms', desc: 'Análisis de qué plataforma conviene para migrar',                  prompt: '"¿A qué plataforma me mudo?"' },
+  { name: 'get_store_info',        descEs: 'nombre, plan, dominio',          descEn: 'store name, plan, domain' },
+  { name: 'export_products',       descEs: 'csv · json · shopify · woo',     descEn: 'csv · json · shopify · woo' },
+  { name: 'export_orders',         descEs: 'historial completo de ventas',   descEn: 'full sales history' },
+  { name: 'export_customers',      descEs: 'contactos + direcciones',        descEn: 'contacts + addresses' },
+  { name: 'export_categories',     descEs: 'árbol de jerarquía',             descEn: 'hierarchy tree' },
+  { name: 'list_payment_gateways', descEs: 'métodos configurados',           descEn: 'configured methods' },
 ];
 
-// FAQ data — same approach for staggered reveals.
-// Updated: replaced the "Komercia closing" question and the programming-skill answer
-// to reflect the new positioning (AI integration, not survival migration).
-const faqs = [
-  { q: '¿Qué es exactamente este MCP?',                       a: 'Es el conector oficial de Komercia para Claude.ai. Te permite exportar y consultar todos los datos de tu tienda conversando en lenguaje natural, sin escribir código.' },
-  { q: '¿Es gratis?',                                          a: 'Sí, completamente gratis. Solo necesitas una cuenta activa de Komercia y una cuenta de Claude.ai.' },
-  { q: '¿Es seguro? ¿Qué hacen con mi contraseña?',            a: 'Tu contraseña se usa una sola vez para autenticarte y nunca se almacena. Generamos un token JWT de solo lectura. El código es open source y auditable en GitHub.' },
-  { q: '¿Qué datos puedo exportar?',                           a: 'Productos con variantes e imágenes, órdenes históricas, clientes con direcciones, categorías, configuración de tema, métodos de pago, movimientos de inventario y más.' },
-  { q: '¿En qué formatos puedo exportar?',                     a: 'CSV genérico, JSON estructurado, formato Shopify y formato WooCommerce. Claude puede transformar los datos a cualquier otro formato que necesites.' },
-  { q: '¿Puedo migrar a otra plataforma con esto?',            a: 'Sí, es uno de sus usos principales. Genera exports listos para Shopify, Tiendanube, WooCommerce, VTEX y otras plataformas.' },
-  { q: '¿Necesito saber programar?',                           a: 'No. Si sabes hacer login y copiar/pegar un token, puedes usarlo. Toda la interacción con Claude es en español natural — no escribes queries, no usas formularios.' },
-  { q: '¿Cuánto dura mi token de acceso?',                     a: '6 meses. Después puedes generar uno nuevo desde esta misma página.' },
-  { q: '¿Komercia tiene acceso a mis datos cuando uso Claude?', a: 'No. Komercia MCP es un puente de solo lectura: cuando le pides algo a Claude, el MCP consulta los endpoints estándar de Komercia con tu token, y devuelve el resultado a Claude. No almacenamos copia de tus datos en ningún momento.' },
-  { q: '¿Dónde reporto bugs o sugiero mejoras?',               a: 'En GitHub: abre un issue en el repositorio. Es open source y bienvenidas las contribuciones.' },
+const examples = [
+  { es: '¿cuántos productos activos tengo?',                       en: 'how many active products do i have?' },
+  { es: 'muéstrame los ingresos del último mes con totales',       en: 'show me last month\'s revenue with totals' },
+  { es: 'exporta toda mi lista de clientes en csv',                en: 'export my full customer list as csv' },
+  { es: '¿qué productos tienen poco stock?',                       en: 'which products are running low on stock?' },
+  { es: 'exporta mi catálogo en formato shopify',                  en: 'export my catalog in shopify format' },
+  { es: '¿qué métodos de pago tengo configurados?',                en: 'what payment methods are configured?' },
 ];
-
-// Reusable left-label inline styles for the categorized "what you export" / tools sections.
-const groupTitleStyle = 'font-family: var(--font-sans); font-size: 20px; font-weight: 600; color: var(--color-ink-blue); line-height: 1.3; letter-spacing: -0.36px; margin: 0;';
-const groupDescStyle  = 'font-family: var(--font-sans); font-size: 14px; color: var(--color-slate-text); line-height: 1.5; margin-top: 8px;';
 ---
 
 <Base
-  title="Komercia MCP — Tu tienda Komercia, en lenguaje natural"
-  description="El conector oficial de Komercia para Claude.ai. Consulta ventas, automatiza reportes y conversa con tus datos sin escribir código."
+  title="komercia/mcp — los datos de tu tienda, en lenguaje natural"
+  description="Servidor MCP oficial de Komercia. Pregúntale a Claude sobre tu tienda — productos, ventas, clientes, inventario. Solo lectura, open source."
 >
-  <!-- ─── Section 1: Announcement Banner ─────────────────────────── -->
-  <AnnouncementBanner />
+  <div class="page">
 
-  <!-- ─── Section 2: Navbar ──────────────────────────────────────── -->
-  <Navbar />
+    <!-- ── Top bar ─────────────────────────────────────── -->
+    <header class="topbar">
+      <a href="/" class="brand" aria-label="komercia mcp home">[komercia/mcp]</a>
 
-  <!-- ─── Section 3: Hero (white + grid pattern, Column-faithful) ─ -->
-  <section style="position: relative; padding: 96px 0 64px; background: var(--color-ghost-white); overflow: hidden;">
-    <GridPattern variant="subtle" />
+      <nav class="topnav">
+        <a href="#features" class="link-muted" data-t-es="herramientas" data-t-en="features">herramientas</a>
+        <a href="#install" class="link-muted" data-t-es="instalación" data-t-en="install">instalación</a>
+        <a href="#examples" class="link-muted" data-t-es="ejemplos" data-t-en="examples">ejemplos</a>
+      </nav>
 
-    <Container>
-      <div class="grid lg:grid-cols-12 items-start" style="gap: 48px; position: relative; z-index: 1;">
-
-        <!-- Left col-span-7 — copy + CTAs -->
-        <div class="lg:col-span-7">
-          <div class="eyebrow-badge" data-animate>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-            <span data-t-es="MCP OFICIAL DE KOMERCIA" data-t-en="OFFICIAL KOMERCIA MCP">MCP OFICIAL DE KOMERCIA</span>
-          </div>
-
-          <h1 class="heading-bicolor lg" data-animate data-animate-delay="100" style="margin-top: 24px;">
-            <span data-t-es="Tu tienda Komercia, " data-t-en="Your Komercia store, ">Tu tienda Komercia, </span><span class="muted" data-t-es="en lenguaje natural." data-t-en="in natural language.">en lenguaje natural.</span>
-          </h1>
-
-          <p
-            style="font-family: var(--font-sans); font-weight: 400; font-size: 18px; line-height: 1.5; color: var(--color-slate-text); max-width: 32rem; margin-top: 24px;"
-            data-animate
-            data-animate-delay="200"
-            data-t-es="El conector oficial de Komercia para Claude.ai. Consulta ventas, automatiza reportes y conversa con tus datos — sin escribir una línea de código."
-            data-t-en="The official Komercia connector for Claude.ai. Query sales, automate reports and chat with your data — no code required."
-          >
-            El conector oficial de Komercia para Claude.ai. Consulta ventas, automatiza reportes y conversa con tus datos — sin escribir una línea de código.
-          </p>
-
-          <div class="flex flex-wrap" style="gap: 12px; margin-top: 32px;" data-animate data-animate-delay="300">
-            <a href="/sign-in" class="btn-primary" style="font-size:15px; padding:14px 24px;" data-t-es="Obtener mi token gratis" data-t-en="Get my free token">Obtener mi token gratis</a>
-            <a href="/uso" class="btn-secondary" style="font-size:15px; padding:14px 24px;" data-t-es="Ver cómo funciona →" data-t-en="See how it works →">Ver cómo funciona →</a>
-          </div>
-
-          <!-- Trust line under CTAs -->
-          <div
-            class="flex flex-wrap items-center"
-            style="gap: 20px; margin-top: 32px;"
-            data-animate
-            data-animate-delay="400"
-          >
-            <div class="flex items-center" style="gap: 6px;">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-success-moss); flex-shrink: 0;">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
-              <span style="font-family: var(--font-sans); font-weight: 400; font-size: 13px; color: var(--color-slate-text);" data-t-es="Sin tarjeta de crédito" data-t-en="No credit card">Sin tarjeta de crédito</span>
-            </div>
-            <div class="flex items-center" style="gap: 6px;">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-success-moss); flex-shrink: 0;">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
-              <span style="font-family: var(--font-sans); font-weight: 400; font-size: 13px; color: var(--color-slate-text);" data-t-es="Solo lectura" data-t-en="Read-only">Solo lectura</span>
-            </div>
-            <div class="flex items-center" style="gap: 6px;">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-success-moss); flex-shrink: 0;">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
-              <span style="font-family: var(--font-sans); font-weight: 400; font-size: 13px; color: var(--color-slate-text);">Open source</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right col-span-5 — chat preview -->
-        <div class="lg:col-span-5 flex justify-center" data-animate data-animate-delay="400">
-          <ChatMock />
-        </div>
-
+      <div class="topbar-actions">
+        <a href="/sign-in" class="btn-pill" data-t-es="obtener_token →" data-t-en="get_token →">obtener_token →</a>
+        <button id="lang-toggle" class="btn-pill btn-lang" aria-label="Cambiar idioma" title="Cambiar idioma / Toggle language">
+          <span class="lang-opt" data-lang="es">ES</span>
+          <span class="lang-sep" aria-hidden="true">⇄</span>
+          <span class="lang-opt" data-lang="en">EN</span>
+        </button>
       </div>
-    </Container>
-  </section>
+    </header>
 
-  <!-- ─── Section 4: Stats row (fog-gray, Column-style) ──────────── -->
-  <section style="background: var(--color-fog-gray); border-top: 1px solid var(--color-steel-gray); border-bottom: 1px solid var(--color-steel-gray); padding: 64px 0;">
-    <Container>
-      <div class="grid grid-cols-2 md:grid-cols-4" style="gap: 32px;">
-        <div data-animate>
-          <p class="stat-number">{tools.length}</p>
-          <p class="stat-label">Herramientas MCP listas para usar con Claude</p>
+    <main class="main">
+
+      <!-- ── Hero ──────────────────────────────────────── -->
+      <section class="hero">
+        <div class="prompt">
+          <span class="muted">user@komercia ~$</span>
+          <span class="cmd">./mcp.connect</span><span class="caret">_</span>
         </div>
-        <div data-animate data-animate-delay="100">
-          <p class="stat-number">100%</p>
-          <p class="stat-label">Código open source y auditable en GitHub</p>
+
+        <h1 class="h1">
+          <span data-t-es="los datos de tu tienda," data-t-en="your store data,">los datos de tu tienda,</span><br />
+          <span class="muted" data-t-es="en lenguaje natural." data-t-en="in natural language.">en lenguaje natural.</span>
+        </h1>
+
+        <p class="lede" data-t-es="el servidor mcp oficial para komercia. pregúntale a claude lo que sea sobre tu tienda — productos, ventas, clientes, inventario — sin escribir una línea de código." data-t-en="the official mcp server for komercia. ask claude anything about your store — products, orders, customers, inventory — without writing a line of code.">
+          el servidor mcp oficial para komercia. pregúntale a claude lo que sea sobre tu tienda — productos, ventas, clientes, inventario — sin escribir una línea de código.
+        </p>
+
+        <div class="cta-row">
+          <a href="/sign-in" class="btn-primary" data-t-es="obtener_token →" data-t-en="get_token →">obtener_token →</a>
+          <a href="#install" class="btn-ghost" data-t-es="cómo_funciona" data-t-en="how_it_works">cómo_funciona</a>
         </div>
-        <div data-animate data-animate-delay="200">
-          <p class="stat-number">3 min</p>
-          <p class="stat-label">Tiempo de instalación, sin código</p>
+
+        <ul class="trust">
+          <li><span class="dot">●</span> <span data-t-es="11 herramientas" data-t-en="11 tools">11 herramientas</span></li>
+          <li><span class="dot">●</span> <span data-t-es="solo lectura" data-t-en="read-only">solo lectura</span></li>
+          <li><span class="dot">●</span> <span>open source</span></li>
+          <li><span class="dot">●</span> <span data-t-es="sin tarjeta" data-t-en="no credit card">sin tarjeta</span></li>
+        </ul>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- ── Features ──────────────────────────────────── -->
+      <section id="features" class="block">
+        <div class="block-header">
+          <h2 class="h2" data-t-es="&gt; herramientas" data-t-en="&gt; features">&gt; herramientas</h2>
+          <p class="block-hint" data-t-es="6 de 11 herramientas mcp. todas de solo lectura." data-t-en="6 of 11 mcp tools shown. all read-only.">6 de 11 herramientas mcp. todas de solo lectura.</p>
         </div>
-        <div data-animate data-animate-delay="300">
-          <p class="stat-number">0</p>
-          <p class="stat-label">Credenciales almacenadas en texto plano</p>
+
+        <div class="grid">
+          {tools.map((t) => (
+            <article class="tool-card">
+              <code class="tool-name">{t.name}</code>
+              <p class="tool-desc" data-t-es={t.descEs} data-t-en={t.descEn}>{t.descEs}</p>
+            </article>
+          ))}
         </div>
-      </div>
-    </Container>
-  </section>
 
-  <!-- ─── Section 5: Dark Plum Punch (full-width, raw section) ───── -->
-  <section style="background: var(--color-deep-plum); padding: 96px 0;">
-    <Container>
-      <div class="grid lg:grid-cols-12" style="gap: 48px; align-items: center;">
+        <a href="/#features" class="link-arrow" data-t-es="ver las 11 herramientas →" data-t-en="see all 11 tools →">ver las 11 herramientas →</a>
+      </section>
 
-        <!-- Left col: copy + mini-feature pills -->
-        <div class="lg:col-span-5">
-          <span
-            class="eyebrow-badge"
-            style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.8);"
-            data-animate
-          >
-            INTEGRACIÓN OFICIAL
-          </span>
+      <div class="divider"></div>
 
-          <h2
-            class="heading-bicolor"
-            style="color: var(--color-ghost-white); margin-top: 16px;"
-            data-animate
-            data-animate-delay="100"
-          >
-            Una integración. <span style="color: rgba(255,255,255,0.6);">Todo el poder de Claude.</span>
-          </h2>
+      <!-- ── Install ───────────────────────────────────── -->
+      <section id="install" class="block">
+        <div class="block-header">
+          <h2 class="h2" data-t-es="&gt; instalación" data-t-en="&gt; install">&gt; instalación</h2>
+          <p class="block-hint" data-t-es="tres pasos. cinco minutos. sin código." data-t-en="three steps. five minutes. no code.">tres pasos. cinco minutos. sin código.</p>
+        </div>
 
-          <p
-            style="font-family: var(--font-sans); font-weight: 400; font-size: 16px; line-height: 1.5; color: rgba(248, 246, 240, 0.75); max-width: 28rem; margin-top: 16px;"
-            data-animate
-            data-animate-delay="200"
-          >
-            Conecta tu tienda Komercia a Claude.ai en 3 minutos. Desde ese momento, Claude tiene acceso de solo lectura a tus productos, órdenes, clientes e inventario — para responder, analizar y exportar lo que necesites.
-          </p>
-
-          <!-- Mini-feature pills 2x2 -->
-          <div class="grid grid-cols-2" style="gap: 16px; margin-top: 24px;">
-            <div data-animate data-animate-delay="300">
-              <p style="font-family: var(--font-sans); font-weight: 600; font-size: 14px; color: var(--color-ghost-white);">11 herramientas</p>
-              <p style="font-family: var(--font-sans); font-weight: 400; font-size: 12px; color: rgba(248, 246, 240, 0.6); margin-top: 4px;">Una para cada tipo de dato</p>
+        <ol class="steps">
+          <li class="step">
+            <span class="step-num">[01]</span>
+            <div class="step-body">
+              <strong>get_token</strong>
+              <p class="step-desc" data-t-es="inicia sesión con tus credenciales de komercia. token de solo lectura, válido 6 meses." data-t-en="log in with your komercia credentials. token is read-only, valid 6 months.">inicia sesión con tus credenciales de komercia. token de solo lectura, válido 6 meses.</p>
+              <a href="/sign-in" class="link-arrow">/sign-in →</a>
             </div>
-            <div data-animate data-animate-delay="350">
-              <p style="font-family: var(--font-sans); font-weight: 600; font-size: 14px; color: var(--color-ghost-white);">Solo lectura</p>
-              <p style="font-family: var(--font-sans); font-weight: 400; font-size: 12px; color: rgba(248, 246, 240, 0.6); margin-top: 4px;">Cero riesgo de modificar</p>
-            </div>
-            <div data-animate data-animate-delay="400">
-              <p style="font-family: var(--font-sans); font-weight: 600; font-size: 14px; color: var(--color-ghost-white);">Open source</p>
-              <p style="font-family: var(--font-sans); font-weight: 400; font-size: 12px; color: rgba(248, 246, 240, 0.6); margin-top: 4px;">Auditable en GitHub</p>
-            </div>
-            <div data-animate data-animate-delay="450">
-              <p style="font-family: var(--font-sans); font-weight: 600; font-size: 14px; color: var(--color-ghost-white);">Gratis</p>
-              <p style="font-family: var(--font-sans); font-weight: 400; font-size: 12px; color: rgba(248, 246, 240, 0.6); margin-top: 4px;">Sin costos ocultos</p>
-            </div>
-          </div>
-        </div>
+          </li>
 
-        <!-- Right col: chat showcase -->
-        <div class="lg:col-span-7" data-animate data-animate-delay="200">
-          <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 24px; box-shadow: var(--shadow-xl);">
-            <!-- Window chrome row -->
-            <div class="flex items-center" style="gap: 12px;">
-              <div class="flex items-center" style="gap: 6px;">
-                <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.18);"></span>
-                <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.18);"></span>
-                <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.18);"></span>
+          <li class="step">
+            <span class="step-num">[02]</span>
+            <div class="step-body">
+              <strong>connect_client</strong>
+              <p class="step-desc" data-t-es="elige uno. claude code es el más simple — un solo comando." data-t-en="pick one. claude code is the simplest — single command.">elige uno. claude code es el más simple — un solo comando.</p>
+              <div class="code-line">
+                <code>claude mcp add --transport sse komercia https://api-mcp.komercia.co/sse --header "Authorization: Bearer &lt;TOKEN&gt;"</code>
               </div>
-              <span style="font-family: var(--font-mono); font-size: 11px; color: rgba(248, 246, 240, 0.5);">claude.ai</span>
+              <p class="step-desc-sm" data-t-es="también funciona con claude.ai integrations, claude desktop, cursor." data-t-en="also works with claude.ai integrations, claude desktop, cursor.">también funciona con claude.ai integrations, claude desktop, cursor.</p>
             </div>
+          </li>
 
-            <!-- Chat content -->
-            <div class="flex flex-col" style="gap: 16px; margin-top: 16px;">
-              <!-- User message -->
-              <div class="flex" style="justify-content: flex-end;">
-                <div
-                  style="background: rgba(248, 246, 240, 0.1); padding: 10px 14px; border-radius: 8px; font-family: var(--font-sans); font-weight: 400; font-size: 13px; line-height: 1.5; color: var(--color-ghost-white); max-width: 75%;"
-                >
-                  ¿Cuál fue mi producto más vendido el mes pasado?
-                </div>
-              </div>
-
-              <!-- Tool call indicator -->
-              <div class="flex" style="justify-content: flex-start;">
-                <div
-                  class="flex items-center"
-                  style="gap: 6px; background: rgba(217, 119, 6, 0.08); border: 1px solid rgba(217, 119, 6, 0.3); border-radius: 4px; padding: 4px 10px; font-family: var(--font-mono); font-size: 11px; color: var(--color-action-orange); width: max-content;"
-                >
-                  <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--color-action-orange);"></span>
-                  <span>→ Llamando export_orders…</span>
-                </div>
-              </div>
-
-              <!-- Claude response -->
-              <div class="flex" style="justify-content: flex-start;">
-                <div
-                  style="background: rgba(248, 246, 240, 0.08); border: 1px solid rgba(248, 246, 240, 0.12); padding: 12px 16px; border-radius: 8px; font-family: var(--font-sans); font-weight: 400; font-size: 13px; line-height: 1.5; color: var(--color-ghost-white); max-width: 80%;"
-                >
-                  El más vendido fue <strong>Sticker Pack Deluxe</strong> con 47 unidades vendidas en marzo, generando <strong>$1,840,000 COP</strong> en ingresos. Representa el 18% del total. ¿Quieres que lo compare con febrero?
-                </div>
-              </div>
+          <li class="step">
+            <span class="step-num">[03]</span>
+            <div class="step-body">
+              <strong>ask_anything</strong>
+              <p class="step-desc" data-t-es="abre un chat de claude. pregunta en lenguaje natural. claude llama a las herramientas mcp y responde con tus datos reales." data-t-en="open a claude chat. ask in plain english. claude calls the mcp tools and answers with your real data.">abre un chat de claude. pregunta en lenguaje natural. claude llama a las herramientas mcp y responde con tus datos reales.</p>
             </div>
-          </div>
+          </li>
+        </ol>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- ── Examples ──────────────────────────────────── -->
+      <section id="examples" class="block">
+        <div class="block-header">
+          <h2 class="h2" data-t-es="&gt; ejemplos" data-t-en="&gt; examples">&gt; ejemplos</h2>
+          <p class="block-hint" data-t-es="prompts que funcionan hoy. pega en claude." data-t-en="prompts that work today. paste into claude.">prompts que funcionan hoy. pega en claude.</p>
         </div>
 
-      </div>
-    </Container>
-  </section>
+        <ul class="examples">
+          {examples.map((q) => (
+            <li class="example">
+              <span class="prompt-mark">&gt;</span>
+              <span data-t-es={q.es} data-t-en={q.en}>{q.es}</span>
+            </li>
+          ))}
+        </ul>
 
-  <!-- ─── Section 6: Cómo funciona (white, 3 steps with IconBox) ── -->
-  <Section background="white" id="como-funciona">
-    <Container>
-      <div style="text-align: center;">
-        <div class="eyebrow-badge" style="margin-inline: auto;" data-animate>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-          CÓMO FUNCIONA
-        </div>
-        <h2 class="heading-bicolor" style="text-align: center; margin-top: 16px;" data-animate data-animate-delay="100">
-          Listo en 3 minutos. <span class="muted">Sin instalar nada.</span>
-        </h2>
-      </div>
+        <a href="/recetas" class="link-arrow" data-t-es="18 prompts más en /recetas →" data-t-en="18 more prompts at /recetas →">18 prompts más en /recetas →</a>
+      </section>
 
-      <div class="grid md:grid-cols-3" style="gap: 24px; margin-top: 56px;">
-        <!-- Step 1 -->
-        <div data-animate data-animate-delay="100">
-          <Card variant="default" padding="lg">
-            <IconBox variant="orange" size="lg">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
-              </svg>
-            </IconBox>
-            <h3 style="font-family: var(--font-sans); font-weight: 500; font-size: 18px; color: var(--color-ink-blue); margin-top: 20px;">Genera tu token</h3>
-            <p style="font-family: var(--font-sans); font-weight: 400; font-size: 14px; color: var(--color-slate-text); line-height: 1.5; margin-top: 8px;">
-              Inicia sesión con tu cuenta Komercia y obtén tu token de exportación personal en segundos.
-            </p>
-          </Card>
-        </div>
+      <div class="divider"></div>
 
-        <!-- Step 2 -->
-        <div data-animate data-animate-delay="200">
-          <Card variant="default" padding="lg">
-            <IconBox variant="plum" size="lg">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-              </svg>
-            </IconBox>
-            <h3 style="font-family: var(--font-sans); font-weight: 500; font-size: 18px; color: var(--color-ink-blue); margin-top: 20px;">Conecta Claude</h3>
-            <p style="font-family: var(--font-sans); font-weight: 400; font-size: 14px; color: var(--color-slate-text); line-height: 1.5; margin-top: 8px;">
-              Pega el token en Claude.ai y agrega el conector MCP. Solo lo haces una vez.
-            </p>
-          </Card>
-        </div>
+      <!-- ── Final CTA ─────────────────────────────────── -->
+      <section class="block final">
+        <p class="ready" data-t-es="¿listo?" data-t-en="ready?">¿listo?</p>
+        <a href="/sign-in" class="btn-primary btn-primary-lg" data-t-es="obtener_token →" data-t-en="get_token →">obtener_token →</a>
+        <p class="muted small" data-t-es="es gratis. 30 segundos. tú guardas el token." data-t-en="it's free. 30 seconds. you keep the token.">es gratis. 30 segundos. tú guardas el token.</p>
+      </section>
 
-        <!-- Step 3 -->
-        <div data-animate data-animate-delay="300">
-          <Card variant="default" padding="lg">
-            <IconBox variant="green" size="lg">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-              </svg>
-            </IconBox>
-            <h3 style="font-family: var(--font-sans); font-weight: 500; font-size: 18px; color: var(--color-ink-blue); margin-top: 20px;">Pregúntale lo que sea</h3>
-            <p style="font-family: var(--font-sans); font-weight: 400; font-size: 14px; color: var(--color-slate-text); line-height: 1.5; margin-top: 8px;">
-              Habla con Claude en lenguaje natural. Él consulta tus datos y te responde.
-            </p>
-          </Card>
-        </div>
-      </div>
-    </Container>
-  </Section>
+    </main>
 
-  <!-- ─── Section 7: Featured use cases (fog, asymmetric grid) ──── -->
-  <Section background="fog" id="casos-uso">
-    <Container>
-      <div style="text-align: center;">
-        <div class="eyebrow-badge" style="margin-inline: auto;" data-animate>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-          CASOS DE USO
-        </div>
-        <h2 class="heading-bicolor" style="text-align: center; margin-top: 16px;" data-animate data-animate-delay="100">
-          Pregúntale a Claude <span class="muted">lo que necesites.</span>
-        </h2>
-        <p class="section-subheading" style="margin-inline: auto; text-align: center; margin-top: 16px;">
-          Tu tienda en lenguaje natural. Sin queries, sin formularios, sin esperas.
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-3" style="gap: 24px; margin-top: 48px;">
-
-        <!-- Big card: col-span-2, callout-plum -->
-        <div class="lg:col-span-2" data-animate data-animate-delay="100">
-          <Card variant="callout-plum" padding="lg">
-            <p style="font-family: var(--font-sans); font-weight: 500; font-size: 12px; color: rgba(248, 246, 240, 0.7); text-transform: uppercase; letter-spacing: 0.12em;">
-              ANALÍTICA CONVERSACIONAL
-            </p>
-            <h3 style="font-family: var(--font-sans); font-weight: 600; font-size: 28px; line-height: 1.2; color: var(--color-ghost-white); margin-top: 12px;">
-              Reportes en lenguaje natural
-            </h3>
-            <p style="font-family: var(--font-sans); font-weight: 400; font-size: 14px; line-height: 1.5; color: rgba(248, 246, 240, 0.75); max-width: 28rem; margin-top: 12px;">
-              Pídele a Claude que analice tus ventas, identifique tendencias, compare períodos, detecte productos estancados, o arme cualquier reporte que normalmente toma horas en Excel.
-            </p>
-            <div
-              style="display: inline-block; font-family: var(--font-mono); font-size: 12px; color: var(--color-ghost-white); background: rgba(248, 246, 240, 0.1); border: 1px solid rgba(248, 246, 240, 0.2); border-radius: 2px; padding: 8px 12px; margin-top: 20px; width: max-content;"
-            >
-              "¿Qué productos venden bien pero tienen poco stock?"
-            </div>
-          </Card>
-        </div>
-
-        <!-- Right column: stacked cards -->
-        <div class="lg:col-span-1 flex flex-col" style="gap: 16px;">
-          <!-- Top card: callout-orange -->
-          <div data-animate data-animate-delay="200">
-            <Card variant="callout-orange" padding="md">
-              <h3 style="font-family: var(--font-sans); font-weight: 600; font-size: 20px; color: var(--color-ghost-white);">
-                Reportes automáticos
-              </h3>
-              <p style="font-family: var(--font-sans); font-weight: 400; font-size: 13px; line-height: 1.5; color: rgba(248, 246, 240, 0.85); margin-top: 8px;">
-                Genera CSVs, JSONs y dashboards conversando. Claude formatea como necesites.
-              </p>
-            </Card>
-          </div>
-
-          <!-- Bottom card: default -->
-          <div data-animate data-animate-delay="300">
-            <Card variant="default" padding="md">
-              <h3 style="font-family: var(--font-sans); font-weight: 600; font-size: 20px; color: var(--color-ink-blue);">
-                Asistente operativo
-              </h3>
-              <p style="font-family: var(--font-sans); font-weight: 400; font-size: 13px; line-height: 1.5; color: var(--color-slate-text); margin-top: 8px;">
-                Identifica clientes recurrentes, detecta abandonos, optimiza inventario.
-              </p>
-            </Card>
-          </div>
-        </div>
-
-      </div>
-    </Container>
-  </Section>
-
-  <!-- ─── Section 8: Demo placeholder (white) ─────────────────────── -->
-  <Section background="white" padding="tight" id="demo">
-    <Container>
-      <div style="text-align: center;">
-        <div class="eyebrow-badge" style="margin-inline: auto;" data-animate>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="6 4 20 12 6 20 6 4"/>
-          </svg>
-          DEMO EN VIDEO
-        </div>
-        <h2 class="heading-bicolor sm" style="text-align: center; margin-top: 16px;" data-animate data-animate-delay="100">
-          Velo en acción.
-        </h2>
-        <p class="section-subheading" style="margin-inline: auto; text-align: center; margin-top: 16px;">
-          2 minutos para ver todo lo que Claude puede hacer con tu tienda.
-        </p>
-      </div>
-
-      <div
-        class="aspect-video"
-        style="max-width: 800px; margin: 48px auto 0;"
-        data-animate
-        data-animate-delay="300"
-      >
-        <Card variant="default" padding="lg" class="h-full">
-          <div class="flex flex-col items-center justify-center h-full" style="gap: 12px; min-height: 360px;">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style="color: var(--color-deep-plum);">
-              <polygon points="6 4 20 12 6 20 6 4"/>
-            </svg>
-            <p style="font-family: var(--font-sans); font-weight: 400; font-size: 13px; color: var(--color-slate-text);">
-              Video disponible próximamente
-            </p>
-          </div>
-        </Card>
-      </div>
-    </Container>
-  </Section>
-
-  <!-- ─── Section 9: Qué exportas (white, Column-style left-label + right-grid) ─ -->
-  <Section background="white" id="exportar">
-    <Container>
-      <!-- Section intro: centered -->
-      <div style="text-align: center; margin-bottom: 64px;">
-        <div class="eyebrow-badge" style="margin-inline: auto; margin-bottom: 16px;" data-animate>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-          </svg>
-          QUÉ EXPORTAS
-        </div>
-        <h2 class="heading-bicolor sm" style="text-align: center;" data-animate data-animate-delay="100">
-          Todo tu negocio, <span class="muted">en tus manos.</span>
-        </h2>
-        <p class="section-subheading" style="margin-inline: auto; text-align: center; margin-top: 16px;">
-          Cada dato de tu tienda, en el formato que necesites.
-        </p>
-      </div>
-
-      <!-- Group 1: Catálogo y productos (BLUE icons) -->
-      <div class="grid lg:grid-cols-12" style="gap: 32px; margin-bottom: 56px;" data-animate>
-        <div class="lg:col-span-3">
-          <h3 style={groupTitleStyle}>Catálogo y productos</h3>
-          <p style={groupDescStyle}>
-            Productos, variantes, categorías e imágenes — listos para Shopify, Tiendanube, WooCommerce o el formato que pidas.
-          </p>
-        </div>
-        <div class="lg:col-span-9 grid grid-cols-1 md:grid-cols-2" style="gap: 12px;">
-          <a class="feature-card">
-            <IconBox variant="blue" size="md">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16.5 9.4l-9-5.19"/>
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                <line x1="12" y1="22.08" x2="12" y2="12"/>
-              </svg>
-            </IconBox>
-            <div>
-              <p class="feature-card-label">Productos</p>
-              <p class="feature-card-desc">Catálogo con variantes y precios</p>
-            </div>
-          </a>
-          <a class="feature-card">
-            <IconBox variant="blue" size="md">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-              </svg>
-            </IconBox>
-            <div>
-              <p class="feature-card-label">Categorías</p>
-              <p class="feature-card-desc">Estructura jerárquica completa</p>
-            </div>
-          </a>
-          <a class="feature-card">
-            <IconBox variant="blue" size="md">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                <circle cx="8.5" cy="8.5" r="1.5"/>
-                <polyline points="21 15 16 10 5 21"/>
-              </svg>
-            </IconBox>
-            <div>
-              <p class="feature-card-label">Imágenes</p>
-              <p class="feature-card-desc">ZIP con todos los assets</p>
-            </div>
-          </a>
-          <a class="feature-card">
-            <IconBox variant="blue" size="md">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="18" y1="20" x2="18" y2="10"/>
-                <line x1="12" y1="20" x2="12" y2="4"/>
-                <line x1="6" y1="20" x2="6" y2="14"/>
-              </svg>
-            </IconBox>
-            <div>
-              <p class="feature-card-label">Inventario</p>
-              <p class="feature-card-desc">Movimientos y trazabilidad</p>
-            </div>
-          </a>
-        </div>
-      </div>
-
-      <!-- Group 2: Ventas y clientes (GREEN icons) -->
-      <div class="grid lg:grid-cols-12" style="gap: 32px; margin-bottom: 56px;" data-animate>
-        <div class="lg:col-span-3">
-          <h3 style={groupTitleStyle}>Ventas y clientes</h3>
-          <p style={groupDescStyle}>
-            Historial completo de pedidos y clientes con direcciones, totales y estado de cada compra.
-          </p>
-        </div>
-        <div class="lg:col-span-9 grid grid-cols-1 md:grid-cols-2" style="gap: 12px;">
-          <a class="feature-card">
-            <IconBox variant="green" size="md">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-                <line x1="3" y1="6" x2="21" y2="6"/>
-                <path d="M16 10a4 4 0 0 1-8 0"/>
-              </svg>
-            </IconBox>
-            <div>
-              <p class="feature-card-label">Órdenes</p>
-              <p class="feature-card-desc">Historial completo con detalle</p>
-            </div>
-          </a>
-          <a class="feature-card">
-            <IconBox variant="green" size="md">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-              </svg>
-            </IconBox>
-            <div>
-              <p class="feature-card-label">Clientes</p>
-              <p class="feature-card-desc">Direcciones e historial</p>
-            </div>
-          </a>
-          <a class="feature-card">
-            <IconBox variant="green" size="md">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-                <line x1="1" y1="10" x2="23" y2="10"/>
-              </svg>
-            </IconBox>
-            <div>
-              <p class="feature-card-label">Pagos</p>
-              <p class="feature-card-desc">Pasarelas y métodos activos</p>
-            </div>
-          </a>
-        </div>
-      </div>
-
-      <!-- Group 3: Configuración y diseño (PLUM icons) -->
-      <div class="grid lg:grid-cols-12" style="gap: 32px;" data-animate>
-        <div class="lg:col-span-3">
-          <h3 style={groupTitleStyle}>Configuración y diseño</h3>
-          <p style={groupDescStyle}>
-            Tema, colores, fuentes y configuración de tu tienda — para replicar el branding en otra plataforma.
-          </p>
-        </div>
-        <div class="lg:col-span-9 grid grid-cols-1 md:grid-cols-2" style="gap: 12px;">
-          <a class="feature-card">
-            <IconBox variant="plum" size="md">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
-                <circle cx="6.5" cy="11.5" r="1.5"/>
-                <circle cx="9.5" cy="7.5" r="1.5"/>
-                <circle cx="14.5" cy="7.5" r="1.5"/>
-                <circle cx="17.5" cy="11.5" r="1.5"/>
-              </svg>
-            </IconBox>
-            <div>
-              <p class="feature-card-label">Diseño del tema</p>
-              <p class="feature-card-desc">Colores, fuentes y estilos</p>
-            </div>
-          </a>
-          <a class="feature-card">
-            <IconBox variant="plum" size="md">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                <polyline points="9 22 9 12 15 12 15 22"/>
-              </svg>
-            </IconBox>
-            <div>
-              <p class="feature-card-label">Datos de tienda</p>
-              <p class="feature-card-desc">Plan, dominio y configuración</p>
-            </div>
-          </a>
-        </div>
-      </div>
-
-    </Container>
-  </Section>
-
-  <!-- ─── Section 10: Cómo conectar (fog, 3 cards) ─────────────────── -->
-  <Section background="fog" id="conectar">
-    <Container>
-      <div style="text-align: center;">
-        <div class="eyebrow-badge" style="margin-inline: auto;" data-animate>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-          </svg>
-          CONFIGURACIÓN
-        </div>
-        <h2 class="heading-bicolor" style="text-align: center; margin-top: 16px;" data-animate data-animate-delay="100">
-          Funciona donde <span class="muted">tú trabajas.</span>
-        </h2>
-        <p class="section-subheading" style="margin-inline: auto; text-align: center; margin-top: 16px;">
-          Claude.ai, Claude Code, Claude Desktop, Cursor, y cualquier cliente MCP.
-        </p>
-      </div>
-
-      <div class="grid md:grid-cols-3" style="gap: 24px; margin-top: 48px;">
-        <!-- Claude.ai (web) -->
-        <div data-animate data-animate-delay="100">
-          <Card variant="default" padding="lg">
-            <Badge variant="success">Recomendado</Badge>
-            <h3 style="font-family: var(--font-sans); font-weight: 500; font-size: 18px; color: var(--color-ink-blue); margin-top: 16px;">Claude.ai (web)</h3>
-            <p style="font-family: var(--font-sans); font-weight: 400; font-size: 14px; color: var(--color-slate-text); line-height: 1.5; margin-top: 8px;">
-              Sin instalar nada. Ve a Configuración → Conectores, pega la URL y tu token. Listo.
-            </p>
-            <div style="margin-top: 16px;">
-              <code class="code-chip">https://mcp.komercia.co</code>
-            </div>
-          </Card>
-        </div>
-
-        <!-- Claude Code (terminal) -->
-        <div data-animate data-animate-delay="200">
-          <Card variant="default" padding="lg">
-            <Badge variant="info">CLI</Badge>
-            <h3 style="font-family: var(--font-sans); font-weight: 500; font-size: 18px; color: var(--color-ink-blue); margin-top: 16px;">Claude Code (terminal)</h3>
-            <p style="font-family: var(--font-sans); font-weight: 400; font-size: 14px; color: var(--color-slate-text); line-height: 1.5; margin-top: 8px;">
-              Un solo comando y queda registrado permanentemente en tu entorno.
-            </p>
-            <div style="margin-top: 16px;">
-              <code class="code-chip">claude mcp add komercia …</code>
-            </div>
-          </Card>
-        </div>
-
-        <!-- Cursor y otros -->
-        <div data-animate data-animate-delay="300">
-          <Card variant="default" padding="lg">
-            <Badge variant="cyan">IDE</Badge>
-            <h3 style="font-family: var(--font-sans); font-weight: 500; font-size: 18px; color: var(--color-ink-blue); margin-top: 16px;">Cursor y otros</h3>
-            <p style="font-family: var(--font-sans); font-weight: 400; font-size: 14px; color: var(--color-slate-text); line-height: 1.5; margin-top: 8px;">
-              Cualquier cliente MCP compatible con SSE o HTTP. Configura en segundos.
-            </p>
-            <div style="margin-top: 16px;">
-              <code class="code-chip">SSE / HTTP transport</code>
-            </div>
-          </Card>
-        </div>
-      </div>
-
-      <div class="text-center" style="margin-top: 32px;" data-animate data-animate-delay="400">
-        <Button variant="secondary" size="md" href="/uso">Ver guía completa de instalación →</Button>
-      </div>
-    </Container>
-  </Section>
-
-  <!-- ─── Section 11: Tools catalog (white, categorized) ──────────── -->
-  <Section background="white" id="tools">
-    <Container>
-      <!-- Section intro: centered -->
-      <div style="text-align: center; margin-bottom: 64px;">
-        <div class="eyebrow-badge" style="margin-inline: auto; margin-bottom: 16px;" data-animate>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-          </svg>
-          11 HERRAMIENTAS
-        </div>
-        <h2 class="heading-bicolor sm" style="text-align: center;" data-animate data-animate-delay="100">
-          Todo lo que <span class="muted">puedes pedirle a Claude.</span>
-        </h2>
-        <p class="section-subheading" style="margin-inline: auto; text-align: center; margin-top: 16px;">
-          Cada tool optimizada para una tarea específica.
-        </p>
-      </div>
-
-      <!-- Group 1: Datos generales (BLUE icons) -->
-      <div class="grid lg:grid-cols-12" style="gap: 32px; margin-bottom: 56px;" data-animate>
-        <div class="lg:col-span-3">
-          <h3 style={groupTitleStyle}>Datos generales</h3>
-          <p style={groupDescStyle}>
-            Información de tu tienda, validación de APIs, pasarelas de pago y configuración del tema.
-          </p>
-        </div>
-        <div class="lg:col-span-9 grid grid-cols-1 md:grid-cols-2" style="gap: 12px;">
-          <a class="feature-card">
-            <IconBox variant="blue" size="md">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                <polyline points="9 22 9 12 15 12 15 22"/>
-              </svg>
-            </IconBox>
-            <div>
-              <p class="feature-card-label" style="font-family: var(--font-mono); font-size: 14px;">get_store_info</p>
-              <p class="feature-card-desc">Info general: nombre, plan, dominio</p>
-            </div>
-          </a>
-          <a class="feature-card">
-            <IconBox variant="blue" size="md">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-              </svg>
-            </IconBox>
-            <div>
-              <p class="feature-card-label" style="font-family: var(--font-mono); font-size: 14px;">validate_komercia_apis</p>
-              <p class="feature-card-desc">Verifica que las APIs estén disponibles</p>
-            </div>
-          </a>
-          <a class="feature-card">
-            <IconBox variant="blue" size="md">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-                <line x1="1" y1="10" x2="23" y2="10"/>
-              </svg>
-            </IconBox>
-            <div>
-              <p class="feature-card-label" style="font-family: var(--font-mono); font-size: 14px;">list_payment_gateways</p>
-              <p class="feature-card-desc">Pasarelas de pago activas</p>
-            </div>
-          </a>
-          <a class="feature-card">
-            <IconBox variant="blue" size="md">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
-              </svg>
-            </IconBox>
-            <div>
-              <p class="feature-card-label" style="font-family: var(--font-mono); font-size: 14px;">export_theme_config</p>
-              <p class="feature-card-desc">Configuración del tema</p>
-            </div>
-          </a>
-        </div>
-      </div>
-
-      <!-- Group 2: Catálogo y productos (GREEN icons) -->
-      <div class="grid lg:grid-cols-12" style="gap: 32px; margin-bottom: 56px;" data-animate>
-        <div class="lg:col-span-3">
-          <h3 style={groupTitleStyle}>Catálogo y productos</h3>
-          <p style={groupDescStyle}>
-            Productos, categorías, inventario e imágenes — listos para Shopify, WooCommerce o cualquier formato.
-          </p>
-        </div>
-        <div class="lg:col-span-9 grid grid-cols-1 md:grid-cols-2" style="gap: 12px;">
-          <a class="feature-card">
-            <IconBox variant="green" size="md">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16.5 9.4l-9-5.19"/>
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                <line x1="12" y1="22.08" x2="12" y2="12"/>
-              </svg>
-            </IconBox>
-            <div>
-              <p class="feature-card-label" style="font-family: var(--font-mono); font-size: 14px;">export_products</p>
-              <p class="feature-card-desc">Catálogo con formatos Shopify/WooCommerce</p>
-            </div>
-          </a>
-          <a class="feature-card">
-            <IconBox variant="green" size="md">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-              </svg>
-            </IconBox>
-            <div>
-              <p class="feature-card-label" style="font-family: var(--font-mono); font-size: 14px;">export_categories</p>
-              <p class="feature-card-desc">Árbol de categorías</p>
-            </div>
-          </a>
-          <a class="feature-card">
-            <IconBox variant="green" size="md">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="18" y1="20" x2="18" y2="10"/>
-                <line x1="12" y1="20" x2="12" y2="4"/>
-                <line x1="6" y1="20" x2="6" y2="14"/>
-              </svg>
-            </IconBox>
-            <div>
-              <p class="feature-card-label" style="font-family: var(--font-mono); font-size: 14px;">export_inventory_movements</p>
-              <p class="feature-card-desc">Movimientos de stock</p>
-            </div>
-          </a>
-          <a class="feature-card">
-            <IconBox variant="green" size="md">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                <circle cx="8.5" cy="8.5" r="1.5"/>
-                <polyline points="21 15 16 10 5 21"/>
-              </svg>
-            </IconBox>
-            <div>
-              <p class="feature-card-label" style="font-family: var(--font-mono); font-size: 14px;">download_media_archive</p>
-              <p class="feature-card-desc">ZIP con todas las imágenes</p>
-            </div>
-          </a>
-        </div>
-      </div>
-
-      <!-- Group 3: Ventas y operaciones (PLUM icons) -->
-      <div class="grid lg:grid-cols-12" style="gap: 32px;" data-animate>
-        <div class="lg:col-span-3">
-          <h3 style={groupTitleStyle}>Ventas y operaciones</h3>
-          <p style={groupDescStyle}>
-            Pedidos, clientes y análisis de migración hacia otras plataformas.
-          </p>
-        </div>
-        <div class="lg:col-span-9 grid grid-cols-1 md:grid-cols-2" style="gap: 12px;">
-          <a class="feature-card">
-            <IconBox variant="plum" size="md">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-                <line x1="3" y1="6" x2="21" y2="6"/>
-                <path d="M16 10a4 4 0 0 1-8 0"/>
-              </svg>
-            </IconBox>
-            <div>
-              <p class="feature-card-label" style="font-family: var(--font-mono); font-size: 14px;">export_orders</p>
-              <p class="feature-card-desc">Historial completo de ventas</p>
-            </div>
-          </a>
-          <a class="feature-card">
-            <IconBox variant="plum" size="md">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-              </svg>
-            </IconBox>
-            <div>
-              <p class="feature-card-label" style="font-family: var(--font-mono); font-size: 14px;">export_customers</p>
-              <p class="feature-card-desc">Lista de clientes con direcciones</p>
-            </div>
-          </a>
-          <a class="feature-card">
-            <IconBox variant="plum" size="md">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="22" y1="12" x2="2" y2="12"/>
-                <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
-                <line x1="6" y1="16" x2="6.01" y2="16"/>
-                <line x1="10" y1="16" x2="10.01" y2="16"/>
-              </svg>
-            </IconBox>
-            <div>
-              <p class="feature-card-label" style="font-family: var(--font-mono); font-size: 14px;">suggest_alternative_platforms</p>
-              <p class="feature-card-desc">Análisis de migración</p>
-            </div>
-          </a>
-        </div>
-      </div>
-    </Container>
-  </Section>
-
-  <!-- ─── Section 12: Seguridad (white, 3 cols with IconBox) ─────── -->
-  <Section background="white" padding="tight" id="seguridad">
-    <Container>
-      <div style="text-align: center;">
-        <div class="eyebrow-badge" style="margin-inline: auto;" data-animate>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          </svg>
-          SEGURIDAD
-        </div>
-        <h2 class="heading-bicolor" style="text-align: center; margin-top: 16px;" data-animate data-animate-delay="100">
-          Tu seguridad, <span class="muted">sin compromisos.</span>
-        </h2>
-        <p class="section-subheading" style="margin-inline: auto; text-align: center; margin-top: 16px;">
-          Diseñado desde el inicio para ser seguro y transparente.
-        </p>
-      </div>
-
-      <div class="grid md:grid-cols-3" style="gap: 32px; margin-top: 48px;">
-        <!-- No passwords stored -->
-        <div data-animate data-animate-delay="100">
-          <IconBox variant="green" size="lg">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-            </svg>
-          </IconBox>
-          <h3 style="font-family: var(--font-sans); font-weight: 500; font-size: 16px; color: var(--color-ink-blue); margin-top: 16px;">Sin almacenar contraseñas</h3>
-          <p style="font-family: var(--font-sans); font-weight: 400; font-size: 14px; color: var(--color-slate-text); line-height: 1.5; margin-top: 8px;">
-            Tu password se usa solo para autenticarte y nunca queda en nuestros servidores. Nunca.
-          </p>
-        </div>
-
-        <!-- Open source -->
-        <div data-animate data-animate-delay="200">
-          <IconBox variant="plum" size="lg">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="16 18 22 12 16 6"/>
-              <polyline points="8 6 2 12 8 18"/>
-            </svg>
-          </IconBox>
-          <h3 style="font-family: var(--font-sans); font-weight: 500; font-size: 16px; color: var(--color-ink-blue); margin-top: 16px;">Código 100% abierto</h3>
-          <p style="font-family: var(--font-sans); font-weight: 400; font-size: 14px; color: var(--color-slate-text); line-height: 1.5; margin-top: 8px;">
-            Todo el código está en GitHub. Auditado por ti, por Komercia, por la comunidad.
-          </p>
-        </div>
-
-        <!-- Read-only -->
-        <div data-animate data-animate-delay="300">
-          <IconBox variant="orange" size="lg">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
-          </IconBox>
-          <h3 style="font-family: var(--font-sans); font-weight: 500; font-size: 16px; color: var(--color-ink-blue); margin-top: 16px;">Solo lectura</h3>
-          <p style="font-family: var(--font-sans); font-weight: 400; font-size: 14px; color: var(--color-slate-text); line-height: 1.5; margin-top: 8px;">
-            Los tokens generan acceso de solo lectura. El MCP no puede modificar nada en tu tienda.
-          </p>
-        </div>
-      </div>
-
-      <div class="text-center" style="margin-top: 32px;" data-animate data-animate-delay="400">
-        <Button variant="link" href="/security">Lee nuestro modelo de seguridad completo →</Button>
-      </div>
-    </Container>
-  </Section>
-
-  <!-- ─── Section 13: FAQ (fog) ──────────────────────────────────── -->
-  <Section background="fog" id="faq">
-    <Container size="narrow">
-      <div style="text-align: center;">
-        <div class="eyebrow-badge" style="margin-inline: auto;" data-animate>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-            <line x1="12" y1="17" x2="12.01" y2="17"/>
-          </svg>
-          FAQ
-        </div>
-        <h2 class="heading-bicolor sm" style="text-align: center; margin-top: 16px;" data-animate data-animate-delay="100">
-          Preguntas <span class="muted">frecuentes.</span>
-        </h2>
-      </div>
-
-      <div style="margin-top: 48px;">
-        {faqs.map((faq, i) => (
-          <details class="faq-item" data-animate style={`transition-delay: ${i * 40}ms`}>
-            <summary>
-              {faq.q}
-              <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="6 9 12 15 18 9"/>
-              </svg>
-            </summary>
-            <div class="faq-body">{faq.a}</div>
-          </details>
-        ))}
-      </div>
-    </Container>
-  </Section>
-
-  <!-- ─── Section 14: Final Action Orange CTA (full-width punch) ── -->
-  <section style="background: var(--color-action-orange); padding: 96px 0;">
-    <Container>
-      <div class="text-center">
-        <span
-          class="eyebrow-badge"
-          style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.95);"
-          data-animate
-        >
-          EMPIEZA AHORA
-        </span>
-
-        <h2
-          class="heading-bicolor"
-          style="color: var(--color-ghost-white); text-align: center; margin-top: 16px;"
-          data-animate
-          data-animate-delay="100"
-        >
-          Conecta tu tienda <span style="color: rgba(255,255,255,0.7);">en 3 minutos.</span>
-        </h2>
-
-        <p
-          style="font-family: var(--font-sans); font-weight: 400; font-size: 18px; line-height: 1.5; color: rgba(248, 246, 240, 0.85); max-width: 42rem; margin: 16px auto 0;"
-          data-animate
-          data-animate-delay="200"
-        >
-          Es gratis. Es oficial. Es seguro. El conector MCP de Komercia para Claude.ai.
-        </p>
-
-        <div
-          class="flex flex-wrap justify-center"
-          style="gap: 16px; margin-top: 32px;"
-          data-animate
-          data-animate-delay="300"
-        >
-          <a
-            href="/sign-in"
-            style="display: inline-flex; align-items: center; gap: 8px; background: var(--color-ghost-white); color: var(--color-action-orange); border: 1px solid var(--color-ghost-white); border-radius: 8px; font-family: var(--font-sans); font-size: 15px; font-weight: 500; padding: 14px 24px; text-decoration: none; box-shadow: var(--shadow-callout);"
-          >
-            Obtener mi token gratis
-          </a>
-          <a
-            href="/uso"
-            style="display: inline-flex; align-items: center; gap: 8px; background: transparent; color: var(--color-ghost-white); border: 1px solid rgba(255,255,255,0.5); border-radius: 8px; font-family: var(--font-sans); font-size: 15px; font-weight: 500; padding: 14px 24px; text-decoration: none;"
-          >
-            Ver guía de instalación →
-          </a>
-        </div>
-
-        <p
-          style="font-family: var(--font-sans); font-weight: 400; font-size: 12px; color: rgba(248, 246, 240, 0.7); margin-top: 32px;"
-          data-animate
-          data-animate-delay="400"
-        >
-          Sin tarjeta · Sin compromiso · Open source
-        </p>
-      </div>
-    </Container>
-  </section>
-
-  <!-- ─── Section 15: Footer ─────────────────────────────────────── -->
-  <Footer />
-
-  <!-- Scroll animation observer (must render once) -->
-  <ScrollAnimate />
+    <!-- ── Footer ────────────────────────────────────── -->
+    <footer class="bottom-bar">
+      <span class="muted">komercia/mcp v0.1</span>
+      <span class="dot-sep">·</span>
+      <a href="/uso" class="link-muted">/uso</a>
+      <span class="dot-sep">·</span>
+      <a href="/recetas" class="link-muted">/recetas</a>
+      <span class="dot-sep">·</span>
+      <a href="https://github.com/gusplayer/komercia-mcp" target="_blank" rel="noopener noreferrer" class="link-muted">source</a>
+    </footer>
+  </div>
 </Base>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+
+  .page {
+    --c-bg: #000000;
+    --c-fg: #ffffff;
+    --c-surface: #1d1d1d;
+    --c-border: #383838;
+    --c-muted: #888888;
+    --r: 10px;
+
+    min-height: 100vh;
+    background: var(--c-bg);
+    color: var(--c-fg);
+    font-family: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 16px;
+    line-height: 1.4;
+    letter-spacing: 0.24px;
+    font-feature-settings: 'zero';
+    display: flex;
+    flex-direction: column;
+  }
+  :global(body:has(.page)) { background: #000000; }
+
+  /* ── Top bar ─────────────────────────────────────────── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 19px 32px;
+    border-bottom: 1px solid var(--c-border);
+    position: sticky;
+    top: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 10;
+  }
+  .brand {
+    color: var(--c-fg);
+    text-decoration: none;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .brand:hover { color: var(--c-muted); }
+  .topnav {
+    display: flex;
+    gap: 24px;
+    flex: 1;
+  }
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  .link-muted {
+    color: var(--c-muted);
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 150ms;
+  }
+  .link-muted:hover { color: var(--c-fg); }
+  .btn-pill {
+    background: var(--c-fg);
+    color: var(--c-bg);
+    text-decoration: none;
+    border-radius: var(--r);
+    padding: 8px 16px;
+    font-size: 16px;
+    transition: background 150ms;
+    white-space: nowrap;
+  }
+  .btn-pill:hover { background: var(--c-muted); }
+
+  /* ── Lang toggle — shares .btn-pill base, adds toggle state colors */
+  .btn-lang {
+    font-family: inherit;
+    letter-spacing: 0.24px;
+    cursor: pointer;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    line-height: 1;
+  }
+  .btn-lang .lang-opt {
+    color: var(--c-muted);
+    transition: color 150ms;
+  }
+  .btn-lang .lang-opt.active {
+    color: var(--c-bg);
+  }
+  .btn-lang .lang-sep {
+    color: var(--c-muted);
+    font-size: 12px;
+  }
+
+  /* ── Main ────────────────────────────────────────────── */
+  .main {
+    flex: 1;
+    width: 100%;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 48px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  /* ── Prompt + caret ──────────────────────────────────── */
+  .prompt {
+    font-size: 16px;
+    color: var(--c-fg);
+    margin: 0;
+  }
+  .prompt .muted { color: var(--c-muted); }
+  .prompt .cmd { color: var(--c-fg); margin-left: 8px; }
+  .caret {
+    color: var(--c-fg);
+    margin-left: 2px;
+    animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ── Hero ────────────────────────────────────────────── */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    padding: 32px 0;
+  }
+  .h1 {
+    font-size: 32px;
+    line-height: 1.2;
+    font-weight: 400;
+    letter-spacing: 0.24px;
+    color: var(--c-fg);
+    margin: 0;
+  }
+  .h1 .muted { color: var(--c-muted); }
+  .lede {
+    font-size: 16px;
+    color: var(--c-muted);
+    line-height: 1.5;
+    margin: 0;
+    max-width: 580px;
+  }
+  .cta-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .trust {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 26px;
+    font-size: 16px;
+    color: var(--c-muted);
+  }
+  .trust li { display: flex; align-items: center; gap: 8px; }
+  .trust .dot { color: var(--c-fg); }
+
+  /* ── Buttons ─────────────────────────────────────────── */
+  .btn-primary {
+    background: var(--c-fg);
+    color: var(--c-bg);
+    border: none;
+    border-radius: var(--r);
+    font-family: inherit;
+    font-size: 16px;
+    padding: 16px 26px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 150ms;
+    white-space: nowrap;
+  }
+  .btn-primary:hover { background: var(--c-muted); }
+  .btn-primary-lg { padding: 19px 32px; }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--c-fg);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r);
+    font-family: inherit;
+    font-size: 16px;
+    padding: 16px 26px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: border-color 150ms;
+    white-space: nowrap;
+  }
+  .btn-ghost:hover { border-color: var(--c-fg); }
+
+  /* ── Dividers ────────────────────────────────────────── */
+  .divider {
+    height: 1px;
+    background: var(--c-border);
+  }
+
+  /* ── Block (section) ─────────────────────────────────── */
+  .block {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+  /* Anchor-scroll offset so sticky topbar doesn't cover section titles */
+  #features,
+  #install,
+  #examples {
+    scroll-margin-top: 90px;
+  }
+  .block-header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .h2 {
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--c-fg);
+    margin: 0;
+    letter-spacing: 0.24px;
+  }
+  .block-hint {
+    font-size: 16px;
+    color: var(--c-muted);
+    margin: 0;
+  }
+
+  /* ── Tools grid ──────────────────────────────────────── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+  @media (min-width: 768px) {
+    .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  .tool-card {
+    background: var(--c-surface);
+    border-radius: var(--r);
+    padding: 19px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: outline-color 150ms;
+    outline: 1px solid transparent;
+  }
+  .tool-card:hover { outline-color: var(--c-border); }
+  .tool-name {
+    color: var(--c-fg);
+    font-size: 16px;
+    font-family: inherit;
+    overflow-wrap: anywhere;
+  }
+  .tool-desc {
+    color: var(--c-muted);
+    font-size: 16px;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  /* ── Steps (install) ─────────────────────────────────── */
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+  .step {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .step-num {
+    color: var(--c-muted);
+    font-size: 16px;
+    padding-top: 1px;
+  }
+  .step-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+  .step-body strong {
+    color: var(--c-fg);
+    font-weight: 400;
+    font-size: 16px;
+  }
+  .step-desc {
+    color: var(--c-muted);
+    font-size: 16px;
+    margin: 0;
+    line-height: 1.5;
+  }
+  .step-desc-sm {
+    color: var(--c-muted);
+    font-size: 16px;
+    margin: 0;
+  }
+  .code-line {
+    background: var(--c-surface);
+    border-radius: var(--r);
+    padding: 16px 19px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .code-line code {
+    color: var(--c-fg);
+    font-size: 16px;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+
+  /* ── Examples list ───────────────────────────────────── */
+  .examples {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: var(--c-surface);
+    border-radius: var(--r);
+    padding: 19px;
+  }
+  .example {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    color: var(--c-fg);
+    font-size: 16px;
+    line-height: 1.4;
+  }
+  .prompt-mark {
+    color: var(--c-muted);
+    flex-shrink: 0;
+  }
+
+  /* ── Final CTA ───────────────────────────────────────── */
+  .final {
+    align-items: flex-start;
+    padding: 32px 0;
+  }
+  .ready {
+    font-size: 16px;
+    color: var(--c-muted);
+    margin: 0;
+  }
+  .small { font-size: 16px; }
+
+  /* ── Link with arrow ─────────────────────────────────── */
+  .link-arrow {
+    color: var(--c-fg);
+    text-decoration: none;
+    font-size: 16px;
+    border-bottom: 1px solid var(--c-border);
+    padding-bottom: 2px;
+    align-self: flex-start;
+    transition: border-color 150ms;
+  }
+  .link-arrow:hover { border-color: var(--c-fg); }
+
+  /* ── Helpers ─────────────────────────────────────────── */
+  .muted { color: var(--c-muted); }
+
+  /* ── Bottom bar ──────────────────────────────────────── */
+  .bottom-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 19px 32px;
+    border-top: 1px solid var(--c-border);
+    font-size: 16px;
+    flex-wrap: wrap;
+  }
+  .bottom-bar .dot-sep { color: var(--c-border); }
+
+  /* ── Responsive ──────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .topbar { padding: 14px 16px; gap: 12px; }
+    .topnav { display: none; }
+    .topbar-actions { gap: 12px; }
+    .main { padding: 32px 16px; gap: 26px; }
+    .hero { padding: 16px 0; gap: 19px; }
+    .h1 { font-size: 26px; }
+    .trust { gap: 16px; }
+    .bottom-bar { padding: 14px 16px; }
+    .step { grid-template-columns: 40px 1fr; gap: 12px; }
+    #features, #install, #examples { scroll-margin-top: 80px; }
+  }
+
+  @media (max-width: 480px) {
+    .topbar { padding: 12px 14px; gap: 8px; }
+    .brand { font-size: 14px; }
+    .btn-pill { padding: 8px 12px; font-size: 14px; }
+    .btn-lang { gap: 6px; }
+    .btn-lang .lang-sep { font-size: 10px; }
+    .topbar-actions { gap: 8px; }
+    .main { padding: 24px 14px; }
+    .h1 { font-size: 22px; line-height: 1.25; }
+    .lede { font-size: 15px; }
+    .grid { grid-template-columns: 1fr; }
+    .btn-primary, .btn-ghost { padding: 14px 22px; font-size: 15px; }
+    .btn-primary-lg { padding: 16px 26px; }
+    .cta-row { gap: 12px; }
+    .cta-row .btn-primary, .cta-row .btn-ghost { flex: 1; text-align: center; min-width: 0; }
+    .bottom-bar { padding: 14px; row-gap: 8px; }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    function applyLang(lang) {
+      document.documentElement.lang = lang;
+      var els = document.querySelectorAll('[data-t-es]');
+      for (var i = 0; i < els.length; i++) {
+        var el = els[i];
+        var text = lang === 'en' ? el.getAttribute('data-t-en') : el.getAttribute('data-t-es');
+        if (text !== null) el.textContent = text;
+      }
+      var opts = document.querySelectorAll('.lang-opt');
+      for (var j = 0; j < opts.length; j++) {
+        var opt = opts[j];
+        if (opt.getAttribute('data-lang') === lang) opt.classList.add('active');
+        else opt.classList.remove('active');
+      }
+    }
+
+    var saved = localStorage.getItem('lang');
+    var current = saved === 'en' ? 'en' : 'es';
+    applyLang(current);
+
+    var btn = document.getElementById('lang-toggle');
+    if (btn) {
+      btn.addEventListener('click', function () {
+        current = current === 'es' ? 'en' : 'es';
+        try { localStorage.setItem('lang', current); } catch (e) {}
+        applyLang(current);
+      });
+    }
+  })();
+</script>
