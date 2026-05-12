@@ -2,14 +2,38 @@
 // index.astro — Landing page. 099 / terminal aesthetic, bilingual ES/EN.
 import Base from '../layouts/Base.astro';
 
+// Pixel-style line icons (16x16 grid, sharp corners — retro terminal feel)
+const icons: Record<string, string> = {
+  get_store_info:                '<path d="M2 6h12v8H2z"/><path d="M2 6l2-3h8l2 3"/><path d="M6 9h4v5H6z"/>',
+  export_products:               '<path d="M2 5l6-3 6 3v6l-6 3-6-3z"/><path d="M2 5l6 3 6-3M8 8v6"/>',
+  export_orders:                 '<path d="M3 1h10v13l-2-1-2 1-2-1-2 1-2-1z"/><path d="M6 5h4M6 8h4M6 11h2"/>',
+  export_customers:              '<circle cx="8" cy="5" r="2.5"/><path d="M3 14v-1c0-2 2-4 5-4s5 2 5 4v1"/>',
+  export_categories:             '<path d="M2 4h4l1 2h7v8H2z"/><path d="M5 9h6M5 11h4"/>',
+  list_payment_gateways:         '<path d="M2 3h12v10H2z"/><path d="M2 6h12M4 10h3"/>',
+  export_inventory_movements:    '<path d="M2 14h12"/><path d="M4 10v4M8 6v8M12 3v11"/>',
+  export_theme_config:           '<circle cx="8" cy="8" r="2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.5 1.5M11.5 11.5L13 13M3 13l1.5-1.5M11.5 4.5L13 3"/>',
+  download_media_archive:        '<path d="M8 2v8M5 7l3 3 3-3M3 12v2h10v-2"/>',
+  suggest_alternative_platforms: '<circle cx="4" cy="3" r="1"/><circle cx="4" cy="13" r="1"/><circle cx="12" cy="8" r="1"/><path d="M4 4v8M5 13c4 0 7-2 7-5M5 3c4 0 7 2 7 5"/>',
+  validate_komercia_apis:        '<path d="M1 8h3l1-4 2 8 2-6 1 2h5"/>',
+};
+
 const tools = [
-  { name: 'get_store_info',        descEs: 'nombre, plan, dominio',          descEn: 'store name, plan, domain' },
-  { name: 'export_products',       descEs: 'csv · json · shopify · woo',     descEn: 'csv · json · shopify · woo' },
-  { name: 'export_orders',         descEs: 'historial completo de ventas',   descEn: 'full sales history' },
-  { name: 'export_customers',      descEs: 'contactos + direcciones',        descEn: 'contacts + addresses' },
-  { name: 'export_categories',     descEs: 'árbol de jerarquía',             descEn: 'hierarchy tree' },
-  { name: 'list_payment_gateways', descEs: 'métodos configurados',           descEn: 'configured methods' },
+  { name: 'get_store_info',                descEs: 'nombre, plan, dominio',         descEn: 'store name, plan, domain' },
+  { name: 'export_products',               descEs: 'csv · json · shopify · woo',    descEn: 'csv · json · shopify · woo' },
+  { name: 'export_orders',                 descEs: 'historial completo de ventas',  descEn: 'full sales history' },
+  { name: 'export_customers',              descEs: 'contactos + direcciones',       descEn: 'contacts + addresses' },
+  { name: 'export_categories',             descEs: 'árbol de jerarquía',            descEn: 'hierarchy tree' },
+  { name: 'list_payment_gateways',         descEs: 'métodos configurados',          descEn: 'configured methods' },
+  { name: 'export_inventory_movements',    descEs: 'movimientos de stock',          descEn: 'stock movements' },
+  { name: 'export_theme_config',           descEs: 'colores, fuentes, tema',        descEn: 'colors, fonts, theme' },
+  { name: 'download_media_archive',        descEs: 'zip de imágenes',               descEn: 'image zip archive' },
+  { name: 'suggest_alternative_platforms', descEs: 'plataformas para migrar',       descEn: 'migration platforms' },
+  { name: 'validate_komercia_apis',        descEs: 'health check de api',           descEn: 'api health check' },
 ];
+
+const visibleCount = 6;
+const toolsCore = tools.slice(0, visibleCount);
+const toolsExtra = tools.slice(visibleCount);
 
 const examples = [
   { es: '¿cuántos productos activos tengo?',                       en: 'how many active products do i have?' },
@@ -92,19 +116,30 @@ const examples = [
       <section id="features" class="block">
         <div class="block-header">
           <h2 class="h2" data-t-es="&gt; herramientas" data-t-en="&gt; features">&gt; herramientas</h2>
-          <p class="block-hint" data-t-es="6 de 11 herramientas mcp. todas de solo lectura." data-t-en="6 of 11 mcp tools shown. all read-only.">6 de 11 herramientas mcp. todas de solo lectura.</p>
+          <p class="block-hint" data-t-es="11 herramientas mcp. todas de solo lectura." data-t-en="11 mcp tools. all read-only.">11 herramientas mcp. todas de solo lectura.</p>
         </div>
 
         <div class="grid">
-          {tools.map((t) => (
+          {toolsCore.map((t) => (
             <article class="tool-card">
+              <svg class="tool-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true" set:html={icons[t.name]} />
               <code class="tool-name">{t.name}</code>
               <p class="tool-desc" data-t-es={t.descEs} data-t-en={t.descEn}>{t.descEs}</p>
             </article>
           ))}
         </div>
 
-        <a href="/#features" class="link-arrow" data-t-es="ver las 11 herramientas →" data-t-en="see all 11 tools →">ver las 11 herramientas →</a>
+        <div class="grid grid-extra" id="tools-extra" aria-hidden="true">
+          {toolsExtra.map((t) => (
+            <article class="tool-card">
+              <svg class="tool-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true" set:html={icons[t.name]} />
+              <code class="tool-name">{t.name}</code>
+              <p class="tool-desc" data-t-es={t.descEs} data-t-en={t.descEn}>{t.descEs}</p>
+            </article>
+          ))}
+        </div>
+
+        <button type="button" id="toggle-tools" class="link-arrow-btn" aria-expanded="false" aria-controls="tools-extra" data-t-es="ver las 5 restantes →" data-t-en="see the remaining 5 →">ver las 5 restantes →</button>
       </section>
 
       <div class="divider"></div>
@@ -457,6 +492,14 @@ const examples = [
     outline: 1px solid transparent;
   }
   .tool-card:hover { outline-color: var(--c-border); }
+  .tool-icon {
+    width: 18px;
+    height: 18px;
+    display: block;
+    color: var(--c-fg);
+    margin-bottom: 6px;
+    shape-rendering: crispEdges;
+  }
   .tool-name {
     color: var(--c-fg);
     font-size: 16px;
@@ -469,6 +512,27 @@ const examples = [
     margin: 0;
     line-height: 1.4;
   }
+
+  /* Expandable grid for extra tools */
+  .grid-extra { display: none; margin-top: 16px; }
+  .grid-extra.expanded { display: grid; }
+
+  /* Toggle button styled like .link-arrow */
+  .link-arrow-btn {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--c-border);
+    border-radius: 0;
+    color: var(--c-fg);
+    font-family: inherit;
+    font-size: 16px;
+    letter-spacing: 0.24px;
+    padding: 0 0 2px;
+    cursor: pointer;
+    align-self: flex-start;
+    transition: border-color 150ms;
+  }
+  .link-arrow-btn:hover { border-bottom-color: var(--c-fg); }
 
   /* ── Steps (install) ─────────────────────────────────── */
   .steps {
@@ -646,6 +710,25 @@ const examples = [
       btn.addEventListener('click', function () {
         current = current === 'es' ? 'en' : 'es';
         try { localStorage.setItem('lang', current); } catch (e) {}
+        applyLang(current);
+      });
+    }
+
+    // Tools expand/collapse
+    var toolsToggle = document.getElementById('toggle-tools');
+    var toolsExtra = document.getElementById('tools-extra');
+    if (toolsToggle && toolsExtra) {
+      toolsToggle.addEventListener('click', function () {
+        var expanded = toolsExtra.classList.toggle('expanded');
+        toolsToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        toolsExtra.setAttribute('aria-hidden', expanded ? 'false' : 'true');
+        if (expanded) {
+          toolsToggle.setAttribute('data-t-es', 'ocultar herramientas ↑');
+          toolsToggle.setAttribute('data-t-en', 'hide tools ↑');
+        } else {
+          toolsToggle.setAttribute('data-t-es', 'ver las 5 restantes →');
+          toolsToggle.setAttribute('data-t-en', 'see the remaining 5 →');
+        }
         applyLang(current);
       });
     }
