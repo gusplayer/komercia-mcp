@@ -409,6 +409,12 @@ const examples = [
     flex-direction: column;
     gap: 26px;
   }
+  /* Anchor-scroll offset so sticky topbar doesn't cover section titles */
+  #features,
+  #install,
+  #examples {
+    scroll-margin-top: 90px;
+  }
   .block-header {
     display: flex;
     flex-direction: column;
@@ -591,6 +597,7 @@ const examples = [
     .trust { gap: 16px; }
     .bottom-bar { padding: 14px 16px; }
     .step { grid-template-columns: 40px 1fr; gap: 12px; }
+    #features, #install, #examples { scroll-margin-top: 80px; }
   }
 
   @media (max-width: 480px) {
