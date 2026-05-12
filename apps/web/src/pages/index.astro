@@ -314,12 +314,7 @@ const examples = [
               <strong>connect_client</strong>
               <p class="step-desc" data-t-es="Elige uno. Claude Code es el más simple — un solo comando." data-t-en="Pick one. Claude Code is the simplest — single command.">Elige uno. Claude Code es el más simple — un solo comando.</p>
               <div class="install-code-shell">
-                <div class="code-block">
-                  <pre class="code-block-content"><code id="install-cmd">claude mcp add --transport sse komercia \
-  https://api-mcp.komercia.co/sse \
-  --header "Authorization: Bearer &lt;TOKEN&gt;"</code></pre>
-                  <button type="button" class="code-copy" data-copy-target="install-cmd" data-t-es="[ copiar ]" data-t-en="[ copy ]" aria-label="Copiar comando">[ copiar ]</button>
-                </div>
+                <pre class="install-cmd-text"><code>claude mcp add --transport sse komercia https://api-mcp.komercia.co/sse --header "Authorization: Bearer &lt;TOKEN&gt;"</code></pre>
               </div>
               <p class="step-desc-sm" data-t-es="También funciona con Claude.ai, Claude Desktop y ChatGPT." data-t-en="Also works with Claude.ai, Claude Desktop, and ChatGPT.">También funciona con Claude.ai, Claude Desktop y ChatGPT.</p>
             </div>
@@ -821,14 +816,26 @@ const examples = [
     font-size: 14px;
     margin: 0;
   }
-  /* Outer surface card that frames the install code block — matches the
-     two-level treatment used on /sign-in Option A (surface outer
-     containing a black inner terminal panel). */
+  /* Example command panel — Steel Gray surface only, no border, no
+     copy button (the command is illustrative; the real one with the
+     user's token comes from /sign-in). Wraps long content naturally. */
   .install-code-shell {
     background: var(--c-surface);
-    border: 1px solid var(--c-border);
     border-radius: var(--r);
-    padding: 12px;
+    padding: 14px 18px;
+  }
+  .install-cmd-text {
+    margin: 0;
+  }
+  .install-cmd-text code {
+    color: var(--c-fg);
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.6;
+    display: block;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    user-select: all;
   }
 
   /* Inner terminal panel — black with thin border, corner copy button. */
