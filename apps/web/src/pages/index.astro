@@ -654,21 +654,20 @@ const examples = [
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    /* Spotlight-style mask: soft fade-in from the left edge (so the
-       silhouette doesn't crash into the H1 column), peaks around 35%,
-       fades into darkness toward the right edge */
+    /* Inverted fade: darker on the left (so the H1 column reads clean),
+       brightest on the right edge — content "emerges" from shadow */
     mask-image: linear-gradient(90deg,
       rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.95) 22%,
-      rgba(0, 0, 0, 1) 45%,
-      rgba(0, 0, 0, 0.5) 80%,
-      rgba(0, 0, 0, 0) 100%);
+      rgba(0, 0, 0, 0.2) 18%,
+      rgba(0, 0, 0, 0.55) 45%,
+      rgba(0, 0, 0, 0.9) 75%,
+      rgba(0, 0, 0, 1) 100%);
     -webkit-mask-image: linear-gradient(90deg,
       rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.95) 22%,
-      rgba(0, 0, 0, 1) 45%,
-      rgba(0, 0, 0, 0.5) 80%,
-      rgba(0, 0, 0, 0) 100%);
+      rgba(0, 0, 0, 0.2) 18%,
+      rgba(0, 0, 0, 0.55) 45%,
+      rgba(0, 0, 0, 0.9) 75%,
+      rgba(0, 0, 0, 1) 100%);
   }
   .deco-frame {
     margin: 0;
@@ -681,12 +680,11 @@ const examples = [
     color: var(--c-muted);
     white-space: pre;
     display: block;
-    /* Subtle inner glow gradient that mimics CRT illumination —
-       brightest near the left of the panel, fading right */
+    /* CRT illumination — brightest near the right edge of the panel */
     background: linear-gradient(90deg,
-      rgba(255, 255, 255, 0.06) 0%,
-      rgba(255, 255, 255, 0.02) 60%,
-      transparent 100%);
+      transparent 0%,
+      rgba(255, 255, 255, 0.02) 50%,
+      rgba(255, 255, 255, 0.08) 100%);
     background-clip: text;
     -webkit-background-clip: text;
   }
@@ -1698,43 +1696,171 @@ const examples = [
 
     // (Prompt library modal logic now lives in RecetasModal.astro)
 
-    // ── Hero deco: subtle "live data" scramble glitch ─────
+    // ── Hero deco: cycle through different data "screens" ────
     (function () {
       var el = document.getElementById('deco-content');
       if (!el) return;
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      var original = el.textContent;
-      if (!original) return;
-      var glitchChars = '!<>-/[]{}=+*^?#0123456789';
-      // Indexes of glitchable characters (alphanumeric + $ % digits)
-      var positions = [];
-      for (var i = 0; i < original.length; i++) {
-        if (/[0-9A-Za-z$%]/.test(original.charAt(i))) positions.push(i);
-      }
-      if (!positions.length) return;
 
-      function tick() {
-        var current = el.textContent || original;
-        var howMany = 1 + Math.floor(Math.random() * 3); // 1–3 glitches
-        var temp = current.split('');
-        var changed = [];
-        for (var k = 0; k < howMany; k++) {
-          var pos = positions[Math.floor(Math.random() * positions.length)];
-          changed.push(pos);
-          temp[pos] = glitchChars.charAt(Math.floor(Math.random() * glitchChars.length));
-        }
-        el.textContent = temp.join('');
-        // Restore each changed char shortly after
-        setTimeout(function () {
-          var restored = el.textContent.split('');
-          for (var k = 0; k < changed.length; k++) {
-            restored[changed[k]] = original.charAt(changed[k]);
-          }
-          el.textContent = restored.join('');
-        }, 80 + Math.random() * 120);
-        setTimeout(tick, 350 + Math.random() * 900);
+      var states = [
+        // 1. live store snapshot (matches initial HTML)
+        '┌─ store.live ──────────────┐\n' +
+        '│                            │\n' +
+        '│ products      86           │\n' +
+        '│ orders       247           │\n' +
+        '│ customers    423           │\n' +
+        '│ revenue   $12.4M           │\n' +
+        '│                            │\n' +
+        '│ ▌ ↑ +18% mom               │\n' +
+        '│                            │\n' +
+        '├─ top_seller ───────────────┤\n' +
+        '│                            │\n' +
+        '│ camiseta_negra_L           │\n' +
+        '│ 47 uds · $1.84M            │\n' +
+        '│ ▤▤▤▤▤▤▤▤▤▤ 62%             │\n' +
+        '│                            │\n' +
+        '├─ stock_alert ──────────────┤\n' +
+        '│                            │\n' +
+        '│ ⚠ bolso_lona      8u       │\n' +
+        '│ ⚠ pin_edt_lim     4u       │\n' +
+        '│ ⚠ stcks_pck      18u       │\n' +
+        '│                            │\n' +
+        '└────────────────────────────┘',
+        // 2. monthly revenue trend
+        '┌─ monthly_sales ───────────┐\n' +
+        '│                            │\n' +
+        '│ may    $12.4M ▤▤▤▤▤▤▤▤▤▤   │\n' +
+        '│ apr    $10.5M ▤▤▤▤▤▤▤▤     │\n' +
+        '│ mar    $8.9M  ▤▤▤▤▤▤▤      │\n' +
+        '│ feb    $7.6M  ▤▤▤▤▤▤       │\n' +
+        '│ jan    $6.2M  ▤▤▤▤▤        │\n' +
+        '│                            │\n' +
+        '├─ growth ───────────────────┤\n' +
+        '│                            │\n' +
+        '│  ↗ +18% mom                │\n' +
+        '│  ↗ +99% yoy                │\n' +
+        '│                            │\n' +
+        '│  q2: $32.0M projected      │\n' +
+        '│                            │\n' +
+        '├─ peaks ────────────────────┤\n' +
+        '│                            │\n' +
+        '│ best_day      saturday     │\n' +
+        '│ best_hour     8pm — 10pm   │\n' +
+        '│ avg_ticket    $34K         │\n' +
+        '│                            │\n' +
+        '└────────────────────────────┘',
+        // 3. top products by volume
+        '┌─ top_products.q2 ─────────┐\n' +
+        '│                            │\n' +
+        '│ 1. cmst_negra_L            │\n' +
+        '│    47 uds · $1.84M         │\n' +
+        '│    ▤▤▤▤▤▤▤▤▤▤ 38%          │\n' +
+        '│                            │\n' +
+        '│ 2. pin_edt_lim             │\n' +
+        '│    31 uds · $1.24M         │\n' +
+        '│    ▤▤▤▤▤▤▤ 25%             │\n' +
+        '│                            │\n' +
+        '│ 3. bolso_lona              │\n' +
+        '│    22 uds · $880K          │\n' +
+        '│    ▤▤▤▤▤ 18%               │\n' +
+        '│                            │\n' +
+        '│ 4. stkrs_pck               │\n' +
+        '│    18 uds · $360K          │\n' +
+        '│    ▤▤▤▤ 7%                 │\n' +
+        '│                            │\n' +
+        '│ 5. grra_snpbk · ▤▤ 12%     │\n' +
+        '│                            │\n' +
+        '└────────────────────────────┘',
+        // 4. sales forecast (the AI / projection screen)
+        '┌─ forecast.next_30d ───────┐\n' +
+        '│                            │\n' +
+        '│ projected    $14.2M ↑      │\n' +
+        '│ confidence   92%           │\n' +
+        '│                            │\n' +
+        '├─ risk_signals ─────────────┤\n' +
+        '│                            │\n' +
+        '│ ↓ pin_edt_lim stock_low    │\n' +
+        '│ ↓ holiday_season ending    │\n' +
+        '│ ↑ cmst_negra restock_ok    │\n' +
+        '│                            │\n' +
+        '├─ recommended ──────────────┤\n' +
+        '│                            │\n' +
+        '│  • bump_inventory          │\n' +
+        '│  • email_top_customers     │\n' +
+        '│  • promo_pin_edt_v2        │\n' +
+        '│                            │\n' +
+        '├─ ai_summary ───────────────┤\n' +
+        '│                            │\n' +
+        '│ +15% projected if          │\n' +
+        '│ inventory holds steady     │\n' +
+        '│                            │\n' +
+        '└────────────────────────────┘',
+        // 5. top customers / retention
+        '┌─ customers.top ───────────┐\n' +
+        '│                            │\n' +
+        '│ 1. m.gomez@...             │\n' +
+        '│    $890K · 8 órdenes       │\n' +
+        '│    ★★★★★ loyal             │\n' +
+        '│                            │\n' +
+        '│ 2. l.rivera@...            │\n' +
+        '│    $670K · 5 órdenes       │\n' +
+        '│    ★★★★ vip                │\n' +
+        '│                            │\n' +
+        '│ 3. p.castro@...            │\n' +
+        '│    $540K · 6 órdenes       │\n' +
+        '│    ★★★★ vip                │\n' +
+        '│                            │\n' +
+        '├─ retention ────────────────┤\n' +
+        '│                            │\n' +
+        '│ return_rate     60% ↑      │\n' +
+        '│ avg_orders      4.2        │\n' +
+        '│ avg_lifetime    $2.4K      │\n' +
+        '│                            │\n' +
+        '└────────────────────────────┘',
+      ];
+
+      var scrambleChars = '!<>-/[]{}=+*^?#0123456789';
+      function isStructural(ch) {
+        if (ch === ' ' || ch === '\n' || ch === '\t' || ch === '.') return true;
+        return /[│┌┐└┘├┤┬┴┼─━┃═║▌▤▥▦▒▓⚠★↑↓↗↘•—]/.test(ch);
       }
-      setTimeout(tick, 2000);
+
+      function scrambleTo(target) {
+        var queue = [];
+        for (var i = 0; i < target.length; i++) {
+          var ch = target.charAt(i);
+          queue.push({
+            ch: ch,
+            passThrough: isStructural(ch),
+            resolveAt: (i / target.length) * 0.6 + Math.random() * 0.3,
+          });
+        }
+        var duration = 900;
+        var start = performance.now();
+        function tick() {
+          var elapsed = performance.now() - start;
+          var progress = elapsed / duration;
+          if (progress > 1) progress = 1;
+          var out = '';
+          for (var k = 0; k < queue.length; k++) {
+            var q = queue[k];
+            if (q.passThrough || progress >= q.resolveAt) {
+              out += q.ch;
+            } else {
+              out += scrambleChars.charAt(Math.floor(Math.random() * scrambleChars.length));
+            }
+          }
+          el.textContent = out;
+          if (progress < 1) requestAnimationFrame(tick);
+        }
+        tick();
+      }
+
+      var idx = 0;
+      setInterval(function () {
+        idx = (idx + 1) % states.length;
+        scrambleTo(states[idx]);
+      }, 6000);
     })();
   })();
 </script>
