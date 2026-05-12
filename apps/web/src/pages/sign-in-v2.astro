@@ -24,12 +24,12 @@ Astro.cookies.set('csrf_token', csrfToken, {
       <a href="/v2" class="brand" aria-label="komercia mcp home">[komercia/mcp]</a>
 
       <div class="topbar-actions">
-        <button id="lang-toggle" class="btn-lang" aria-label="Cambiar idioma" title="Cambiar idioma / Toggle language">
+        <a href="/v2" class="link-muted" data-t-es="← volver" data-t-en="← back">← volver</a>
+        <button id="lang-toggle" class="btn-pill btn-lang" aria-label="Cambiar idioma" title="Cambiar idioma / Toggle language">
           <span class="lang-opt" data-lang="es">ES</span>
           <span class="lang-sep" aria-hidden="true">⇄</span>
           <span class="lang-opt" data-lang="en">EN</span>
         </button>
-        <a href="/v2" class="link-muted" data-t-es="← volver" data-t-en="← back">← volver</a>
       </div>
     </header>
 
@@ -231,14 +231,24 @@ Astro.cookies.set('csrf_token', csrfToken, {
   }
   .link-muted:hover { color: var(--c-fg); }
 
-  /* ── Lang toggle ─────────────────────────────────────── */
-  .btn-lang {
-    background: transparent;
-    border: 1px solid var(--c-border);
+  /* ── Pill button (used by lang toggle on this page) ──── */
+  .btn-pill {
+    background: var(--c-fg);
+    color: var(--c-bg);
+    text-decoration: none;
+    border: none;
     border-radius: var(--r);
-    padding: 6px 12px;
+    padding: 8px 16px;
+    font-size: 16px;
+    transition: background 150ms;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .btn-pill:hover { background: var(--c-muted); }
+
+  /* ── Lang toggle — shares .btn-pill base, adds toggle state colors */
+  .btn-lang {
     font-family: inherit;
-    font-size: 14px;
     letter-spacing: 0.24px;
     cursor: pointer;
     display: inline-flex;
@@ -247,21 +257,18 @@ Astro.cookies.set('csrf_token', csrfToken, {
     gap: 8px;
     white-space: nowrap;
     line-height: 1;
-    transition: border-color 150ms;
   }
-  .btn-lang:hover { border-color: var(--c-fg); }
   .btn-lang .lang-opt {
     color: var(--c-muted);
     transition: color 150ms;
   }
   .btn-lang .lang-opt.active {
-    color: var(--c-fg);
+    color: var(--c-bg);
   }
   .btn-lang .lang-sep {
-    color: var(--c-border);
+    color: var(--c-muted);
     font-size: 12px;
   }
-  .btn-lang:hover .lang-sep { color: var(--c-muted); }
 
   /* ── Main ────────────────────────────────────────────── */
   .main {
@@ -555,7 +562,9 @@ Astro.cookies.set('csrf_token', csrfToken, {
     .topbar { padding: 12px 14px; }
     .brand { font-size: 14px; }
     .topbar-actions { gap: 10px; }
-    .btn-lang { padding: 5px 10px; font-size: 13px; gap: 6px; }
+    .btn-pill { padding: 8px 12px; font-size: 14px; }
+    .btn-lang { gap: 6px; }
+    .btn-lang .lang-sep { font-size: 10px; }
     .link-muted { font-size: 14px; }
     .main { padding: 24px 14px; }
     .token-row { flex-direction: column; }

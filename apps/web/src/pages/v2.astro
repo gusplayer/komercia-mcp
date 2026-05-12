@@ -39,12 +39,12 @@ const examples = [
       </nav>
 
       <div class="topbar-actions">
-        <button id="lang-toggle" class="btn-lang" aria-label="Cambiar idioma" title="Cambiar idioma / Toggle language">
+        <a href="/sign-in-v2" class="btn-pill" data-t-es="obtener_token →" data-t-en="get_token →">obtener_token →</a>
+        <button id="lang-toggle" class="btn-pill btn-lang" aria-label="Cambiar idioma" title="Cambiar idioma / Toggle language">
           <span class="lang-opt" data-lang="es">ES</span>
           <span class="lang-sep" aria-hidden="true">⇄</span>
           <span class="lang-opt" data-lang="en">EN</span>
         </button>
-        <a href="/sign-in-v2" class="btn-pill" data-t-es="obtener_token →" data-t-en="get_token →">obtener_token →</a>
       </div>
     </header>
 
@@ -263,14 +263,9 @@ const examples = [
   }
   .btn-pill:hover { background: var(--c-muted); }
 
-  /* ── Lang toggle ─────────────────────────────────────── */
+  /* ── Lang toggle — shares .btn-pill base, adds toggle state colors */
   .btn-lang {
-    background: transparent;
-    border: 1px solid var(--c-border);
-    border-radius: var(--r);
-    padding: 6px 12px;
     font-family: inherit;
-    font-size: 14px;
     letter-spacing: 0.24px;
     cursor: pointer;
     display: inline-flex;
@@ -279,21 +274,18 @@ const examples = [
     gap: 8px;
     white-space: nowrap;
     line-height: 1;
-    transition: border-color 150ms;
   }
-  .btn-lang:hover { border-color: var(--c-fg); }
   .btn-lang .lang-opt {
     color: var(--c-muted);
     transition: color 150ms;
   }
   .btn-lang .lang-opt.active {
-    color: var(--c-fg);
+    color: var(--c-bg);
   }
   .btn-lang .lang-sep {
-    color: var(--c-border);
+    color: var(--c-muted);
     font-size: 12px;
   }
-  .btn-lang:hover .lang-sep { color: var(--c-muted); }
 
   /* ── Main ────────────────────────────────────────────── */
   .main {
@@ -604,7 +596,8 @@ const examples = [
     .topbar { padding: 12px 14px; gap: 8px; }
     .brand { font-size: 14px; }
     .btn-pill { padding: 8px 12px; font-size: 14px; }
-    .btn-lang { padding: 5px 10px; font-size: 13px; gap: 6px; }
+    .btn-lang { gap: 6px; }
+    .btn-lang .lang-sep { font-size: 10px; }
     .topbar-actions { gap: 8px; }
     .main { padding: 24px 14px; }
     .h1 { font-size: 22px; line-height: 1.25; }
