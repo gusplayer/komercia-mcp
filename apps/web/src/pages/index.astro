@@ -861,12 +861,27 @@ const examples = [
     flex-shrink: 0;
   }
   .link-muted {
+    position: relative;
     color: var(--c-muted);
     text-decoration: none;
     font-size: 16px;
     transition: color 150ms;
   }
   .link-muted:hover { color: var(--c-fg); }
+  /* Scrollspy active state — current section's link turns white with
+     a thin underline that matches the topbar's border underneath. */
+  .link-muted.nav-active {
+    color: var(--c-fg);
+  }
+  .link-muted.nav-active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -22px;
+    height: 1px;
+    background: var(--c-fg);
+  }
   /* Shared sizing — every topbar button is exactly 36px tall, box-sized */
   .btn-pill,
   .btn-ghost-pill {
@@ -1785,6 +1800,53 @@ const examples = [
         for (var fi = 0; fi < scrambleEls.length; fi++) scrambleText(scrambleEls[fi]);
       }
     }
+
+    // ── Scrollspy: highlight topnav link for the section in view ──
+    (function () {
+      var navLinks = document.querySelectorAll('.topnav a[href^="#"]');
+      if (!navLinks.length || typeof IntersectionObserver === 'undefined') return;
+      var linkBySection = {};
+      navLinks.forEach(function (link) {
+        var id = (link.getAttribute('href') || '').slice(1);
+        if (id) linkBySection[id] = link;
+      });
+      var sections = Object.keys(linkBySection)
+        .map(function (id) { return document.getElementById(id); })
+        .filter(Boolean);
+      if (!sections.length) return;
+
+      function clearActive() {
+        for (var k in linkBySection) linkBySection[k].classList.remove('nav-active');
+      }
+
+      var spy = new IntersectionObserver(function (entries) {
+        // Pick the entry with the highest intersection ratio that is intersecting
+        var best = null;
+        entries.forEach(function (e) {
+          if (e.isIntersecting && (!best || e.intersectionRatio > best.intersectionRatio)) {
+            best = e;
+          }
+        });
+        if (best) {
+          clearActive();
+          var link = linkBySection[best.target.id];
+          if (link) link.classList.add('nav-active');
+        }
+      }, {
+        // Trigger when the section is within the top 40% of viewport,
+        // accounting for the ~64px sticky topbar height.
+        rootMargin: '-72px 0px -55% 0px',
+        threshold: [0, 0.1, 0.5],
+      });
+
+      sections.forEach(function (s) { spy.observe(s); });
+
+      // Clear active state when scrolled back to the very top (hero)
+      function onScroll() {
+        if (window.scrollY < 200) clearActive();
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+    })();
 
     // ── Code block copy buttons ───────────────────────────
     var codeCopyBtns = document.querySelectorAll('.code-copy');
