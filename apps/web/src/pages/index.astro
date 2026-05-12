@@ -220,6 +220,32 @@ const examples = [
 
       <!-- ── Hero ──────────────────────────────────────── -->
       <section class="hero">
+        <!-- Right-side ASCII store-data deco — decorative only, hidden on mobile -->
+        <div class="hero-deco" aria-hidden="true">
+          <pre class="deco-frame"><code id="deco-content">┌─ store.live ──────────────┐
+│                            │
+│ products      86           │
+│ orders       247           │
+│ customers    423           │
+│ revenue   $12.4M           │
+│                            │
+│ ▌ ↑ +18% mom               │
+│                            │
+├─ top_seller ───────────────┤
+│                            │
+│ camiseta_negra_L           │
+│ 47 uds · $1.84M            │
+│ ▤▤▤▤▤▤▤▤▤▤ 62%             │
+│                            │
+├─ stock_alert ──────────────┤
+│                            │
+│ ⚠ bolso_lona      8u       │
+│ ⚠ pin_edt_lim     4u       │
+│ ⚠ stcks_pck      18u       │
+│                            │
+└────────────────────────────┘</code></pre>
+        </div>
+
         <div class="prompt">
           <span class="muted">user@komercia ~$</span>
           <span class="cmd">./mcp.connect</span><span class="caret">_</span>
@@ -603,10 +629,70 @@ const examples = [
 
   /* ── Hero ────────────────────────────────────────────── */
   .hero {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 26px;
     padding: 32px 0;
+  }
+  /* Make sure hero content sits above the decorative panel */
+  .hero > :not(.hero-deco) {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Right-side decorative store-data panel (retro terminal) */
+  .hero-deco {
+    position: absolute;
+    top: 32px;
+    bottom: 32px;
+    right: -24px;
+    width: 52%;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    /* Spotlight-style mask: soft fade-in from the left edge (so the
+       silhouette doesn't crash into the H1 column), peaks around 35%,
+       fades into darkness toward the right edge */
+    mask-image: linear-gradient(90deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.95) 22%,
+      rgba(0, 0, 0, 1) 45%,
+      rgba(0, 0, 0, 0.5) 80%,
+      rgba(0, 0, 0, 0) 100%);
+    -webkit-mask-image: linear-gradient(90deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.95) 22%,
+      rgba(0, 0, 0, 1) 45%,
+      rgba(0, 0, 0, 0.5) 80%,
+      rgba(0, 0, 0, 0) 100%);
+  }
+  .deco-frame {
+    margin: 0;
+    padding: 0;
+  }
+  .deco-frame code {
+    font-family: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--c-muted);
+    white-space: pre;
+    display: block;
+    /* Subtle inner glow gradient that mimics CRT illumination —
+       brightest near the left of the panel, fading right */
+    background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0.06) 0%,
+      rgba(255, 255, 255, 0.02) 60%,
+      transparent 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+  }
+
+  @media (max-width: 1024px) {
+    .hero-deco { display: none; }
   }
   .h1 {
     font-size: 32px;
@@ -1611,5 +1697,44 @@ const examples = [
     }
 
     // (Prompt library modal logic now lives in RecetasModal.astro)
+
+    // ── Hero deco: subtle "live data" scramble glitch ─────
+    (function () {
+      var el = document.getElementById('deco-content');
+      if (!el) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var original = el.textContent;
+      if (!original) return;
+      var glitchChars = '!<>-/[]{}=+*^?#0123456789';
+      // Indexes of glitchable characters (alphanumeric + $ % digits)
+      var positions = [];
+      for (var i = 0; i < original.length; i++) {
+        if (/[0-9A-Za-z$%]/.test(original.charAt(i))) positions.push(i);
+      }
+      if (!positions.length) return;
+
+      function tick() {
+        var current = el.textContent || original;
+        var howMany = 1 + Math.floor(Math.random() * 3); // 1–3 glitches
+        var temp = current.split('');
+        var changed = [];
+        for (var k = 0; k < howMany; k++) {
+          var pos = positions[Math.floor(Math.random() * positions.length)];
+          changed.push(pos);
+          temp[pos] = glitchChars.charAt(Math.floor(Math.random() * glitchChars.length));
+        }
+        el.textContent = temp.join('');
+        // Restore each changed char shortly after
+        setTimeout(function () {
+          var restored = el.textContent.split('');
+          for (var k = 0; k < changed.length; k++) {
+            restored[changed[k]] = original.charAt(changed[k]);
+          }
+          el.textContent = restored.join('');
+        }, 80 + Math.random() * 120);
+        setTimeout(tick, 350 + Math.random() * 900);
+      }
+      setTimeout(tick, 2000);
+    })();
   })();
 </script>
