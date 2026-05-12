@@ -51,6 +51,18 @@ const examples = [
 >
   <div class="page">
 
+    <!-- Pre-script: hide hero text on first session load so the typewriter
+         animation can reveal it character-by-character without a flash. -->
+    <script is:inline>
+      (function () {
+        try {
+          if (sessionStorage.getItem('intro-seen') === '1') return;
+        } catch (e) { return; }
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        document.documentElement.classList.add('intro-pending');
+      })();
+    </script>
+
     <!-- ── Top bar ─────────────────────────────────────── -->
     <header class="topbar">
       <a href="/" class="brand" aria-label="komercia mcp home">[komercia/mcp]</a>
@@ -89,11 +101,11 @@ const examples = [
         </div>
 
         <h1 class="h1">
-          <span data-t-es="los datos de tu tienda," data-t-en="your store data,">los datos de tu tienda,</span><br />
-          <span class="muted" data-t-es="en lenguaje natural." data-t-en="in natural language.">en lenguaje natural.</span>
+          <span id="h1-main" data-t-es="los datos de tu tienda," data-t-en="your store data,">los datos de tu tienda,</span><br />
+          <span id="h1-muted" class="muted" data-t-es="en lenguaje natural." data-t-en="in natural language.">en lenguaje natural.</span>
         </h1>
 
-        <p class="lede" data-t-es="el servidor mcp oficial para komercia. pregúntale a claude lo que sea sobre tu tienda — productos, ventas, clientes, inventario — sin escribir una línea de código." data-t-en="the official mcp server for komercia. ask claude anything about your store — products, orders, customers, inventory — without writing a line of code.">
+        <p id="hero-lede" class="lede" data-t-es="el servidor mcp oficial para komercia. pregúntale a claude lo que sea sobre tu tienda — productos, ventas, clientes, inventario — sin escribir una línea de código." data-t-en="the official mcp server for komercia. ask claude anything about your store — products, orders, customers, inventory — without writing a line of code.">
           el servidor mcp oficial para komercia. pregúntale a claude lo que sea sobre tu tienda — productos, ventas, clientes, inventario — sin escribir una línea de código.
         </p>
 
@@ -106,7 +118,7 @@ const examples = [
           <li><span class="dot">●</span> <span data-t-es="11 herramientas" data-t-en="11 tools">11 herramientas</span></li>
           <li><span class="dot">●</span> <span data-t-es="solo lectura" data-t-en="read-only">solo lectura</span></li>
           <li><span class="dot">●</span> <span>open source</span></li>
-          <li><span class="dot">●</span> <span data-t-es="sin tarjeta" data-t-en="no credit card">sin tarjeta</span></li>
+          <li><span class="dot">●</span> <span data-t-es="gratis" data-t-en="free">gratis</span></li>
         </ul>
       </section>
 
@@ -360,6 +372,23 @@ const examples = [
     animation: blink 1s steps(1) infinite;
   }
   @keyframes blink { 50% { opacity: 0; } }
+
+  /* Typewriter cursor — shown on the element currently being typed */
+  .is-typing::after {
+    content: '_';
+    color: currentColor;
+    animation: blink 1s steps(1) infinite;
+    display: inline-block;
+    margin-left: 2px;
+    font-weight: inherit;
+  }
+  /* Pre-animation state: hide hero text but keep full layout so there's
+     no flash or layout shift when JS captures and re-types it. */
+  :global(html.intro-pending) #h1-main,
+  :global(html.intro-pending) #h1-muted,
+  :global(html.intro-pending) #hero-lede {
+    color: transparent;
+  }
 
   /* ── Hero ────────────────────────────────────────────── */
   .hero {
@@ -732,5 +761,52 @@ const examples = [
         applyLang(current);
       });
     }
+
+    // ── Typewriter intro animation ────────────────────────
+    function typeText(el, text, speed) {
+      return new Promise(function (resolve) {
+        el.classList.add('is-typing');
+        var i = 0;
+        el.textContent = '';
+        function tick() {
+          if (i >= text.length) {
+            el.classList.remove('is-typing');
+            resolve();
+            return;
+          }
+          el.textContent += text.charAt(i);
+          i++;
+          setTimeout(tick, speed);
+        }
+        tick();
+      });
+    }
+
+    function runIntro() {
+      if (!document.documentElement.classList.contains('intro-pending')) return;
+      var ids = ['h1-main', 'h1-muted', 'hero-lede'];
+      var els = [];
+      for (var i = 0; i < ids.length; i++) {
+        var e = document.getElementById(ids[i]);
+        if (!e) { document.documentElement.classList.remove('intro-pending'); return; }
+        els.push(e);
+      }
+      var texts = els.map(function (e) { return e.textContent; });
+      els.forEach(function (e) { e.textContent = ''; });
+      document.documentElement.classList.remove('intro-pending');
+
+      setTimeout(function () {
+        typeText(els[0], texts[0], 25)
+          .then(function () { return new Promise(function (r) { setTimeout(r, 120); }); })
+          .then(function () { return typeText(els[1], texts[1], 25); })
+          .then(function () { return new Promise(function (r) { setTimeout(r, 200); }); })
+          .then(function () { return typeText(els[2], texts[2], 12); })
+          .then(function () {
+            try { sessionStorage.setItem('intro-seen', '1'); } catch (e) {}
+          });
+      }, 250);
+    }
+
+    runIntro();
   })();
 </script>
