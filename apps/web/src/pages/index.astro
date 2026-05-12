@@ -835,24 +835,24 @@ const examples = [
     font-size: 14px;
     margin: 0;
   }
-  /* Multi-line code block with line numbers + copy button */
+  /* Terminal-style code block — matches /sign-in Option A: black inner,
+     subtle Muted Ash border, corner copy button. */
   .code-block {
     position: relative;
-    background: var(--c-surface);
+    background: var(--c-bg);
     border: 1px solid var(--c-border);
     border-radius: var(--r);
     overflow: hidden;
   }
   .code-block-content {
     margin: 0;
-    padding: 16px 56px 16px 19px;
+    padding: 14px 56px 14px 16px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    counter-reset: line;
   }
   .code-block-content code {
     color: var(--c-fg);
-    font-size: 14px;
+    font-size: 13px;
     font-family: inherit;
     line-height: 1.6;
     display: block;
@@ -861,9 +861,9 @@ const examples = [
   }
   .code-copy {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background: var(--c-bg);
+    top: 8px;
+    right: 8px;
+    background: transparent;
     border: 1px solid var(--c-border);
     border-radius: 6px;
     color: var(--c-muted);
