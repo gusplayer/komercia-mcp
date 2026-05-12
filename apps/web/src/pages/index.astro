@@ -297,6 +297,172 @@ const catCounts = categories.reduce<Record<string, number>>((acc, c) => {
   return acc;
 }, {});
 
+// ── Install methods (modal content). Each client has its own setup flow.
+interface InstallStep { titleEs: string; titleEn: string; code?: string; }
+interface InstallMethod {
+  id: string;
+  name: string;
+  badgeEs: string;
+  badgeEn: string;
+  descEs: string;
+  descEn: string;
+  steps: InstallStep[];
+  tipEs?: string;
+  tipEn?: string;
+}
+
+const installMethods: InstallMethod[] = [
+  {
+    id: 'claude-code',
+    name: 'Claude Code',
+    badgeEs: 'cli · el más simple',
+    badgeEn: 'cli · the simplest',
+    descEs: 'Claude Code corre en tu terminal. Un solo comando registra el MCP y queda disponible en todas tus sesiones.',
+    descEn: 'Claude Code runs in your terminal. A single command registers the MCP and it stays available in every session.',
+    steps: [
+      {
+        titleEs: 'instala claude code (si no lo tienes)',
+        titleEn: "install claude code (if you don't have it)",
+        code: 'npm i -g @anthropic-ai/claude-code',
+      },
+      {
+        titleEs: 'registra el servidor mcp con tu token',
+        titleEn: 'register the mcp server with your token',
+        code: 'claude mcp add --transport sse komercia \\\n  https://api-mcp.komercia.co/sse \\\n  --header "Authorization: Bearer TU_TOKEN"',
+      },
+      {
+        titleEs: 'verifica que quedó registrado',
+        titleEn: 'verify it was registered',
+        code: 'claude mcp list',
+      },
+    ],
+    tipEs: 'agrega --scope project al final para limitarlo a un solo proyecto en vez de globalmente.',
+    tipEn: 'add --scope project at the end to limit it to one project instead of globally.',
+  },
+  {
+    id: 'claude-ai',
+    name: 'Claude.ai',
+    badgeEs: 'web · sin instalación',
+    badgeEn: 'web · no install',
+    descEs: 'Funciona directamente en claude.ai. Sin instalar nada — solo pega la URL y tu token en la interfaz.',
+    descEn: 'Works directly in claude.ai. No install — just paste URL and token in the interface.',
+    steps: [
+      {
+        titleEs: 'en claude.ai → configuración → integraciones',
+        titleEn: 'in claude.ai → settings → integrations',
+      },
+      {
+        titleEs: 'click en "add custom integration" → "mcp server"',
+        titleEn: 'click "add custom integration" → "mcp server"',
+      },
+      {
+        titleEs: 'pega la url del servidor',
+        titleEn: 'paste the server url',
+        code: 'https://api-mcp.komercia.co/sse',
+      },
+      {
+        titleEs: 'en authorization pega: bearer TU_TOKEN',
+        titleEn: 'in authorization paste: bearer YOUR_TOKEN',
+      },
+      {
+        titleEs: 'guarda y abre un chat nuevo',
+        titleEn: 'save and open a new chat',
+      },
+    ],
+  },
+  {
+    id: 'claude-desktop',
+    name: 'Claude Desktop',
+    badgeEs: 'app · mac · windows',
+    badgeEn: 'app · mac · windows',
+    descEs: 'Claude Desktop usa stdio internamente. Necesitas el puente mcp-remote para conectarse a servidores http/sse.',
+    descEn: 'Claude Desktop uses stdio internally. You need the mcp-remote bridge to connect to http/sse servers.',
+    steps: [
+      {
+        titleEs: 'instala el puente mcp-remote',
+        titleEn: 'install the mcp-remote bridge',
+        code: 'npm install -g mcp-remote',
+      },
+      {
+        titleEs: 'edita el archivo de configuración',
+        titleEn: 'edit the config file',
+        code: '# macOS\n~/Library/Application Support/Claude/claude_desktop_config.json\n\n# Windows\n%APPDATA%\\Claude\\claude_desktop_config.json',
+      },
+      {
+        titleEs: 'agrega esta entrada dentro de mcpServers',
+        titleEn: 'add this entry inside mcpServers',
+        code: '{\n  "mcpServers": {\n    "komercia": {\n      "command": "mcp-remote",\n      "args": [\n        "https://api-mcp.komercia.co/sse",\n        "--header",\n        "Authorization: Bearer TU_TOKEN"\n      ]\n    }\n  }\n}',
+      },
+      {
+        titleEs: 'reinicia claude desktop',
+        titleEn: 'restart claude desktop',
+      },
+    ],
+  },
+  {
+    id: 'cursor',
+    name: 'Cursor / Windsurf / IDEs',
+    badgeEs: 'ide · editor de código',
+    badgeEn: 'ide · code editor',
+    descEs: 'Cualquier IDE compatible con MCP funciona: Cursor, Windsurf, Continue, Zed. La configuración es JSON casi idéntica entre ellos.',
+    descEn: 'Any MCP-compatible IDE works: Cursor, Windsurf, Continue, Zed. The JSON config is nearly identical across them.',
+    steps: [
+      {
+        titleEs: 'abre settings → mcp → add mcp server',
+        titleEn: 'open settings → mcp → add mcp server',
+      },
+      {
+        titleEs: 'pega esta configuración json',
+        titleEn: 'paste this json config',
+        code: '{\n  "mcpServers": {\n    "komercia": {\n      "url": "https://api-mcp.komercia.co/sse",\n      "headers": {\n        "Authorization": "Bearer TU_TOKEN"\n      }\n    }\n  }\n}',
+      },
+      {
+        titleEs: 'guarda. el ide detecta el servidor automáticamente',
+        titleEn: 'save. the ide detects the server automatically',
+      },
+      {
+        titleEs: 'en cursor agent mode, verifica que "komercia" aparezca activo',
+        titleEn: 'in cursor agent mode, verify "komercia" shows as active',
+      },
+    ],
+    tipEs: 'la ruta exacta del archivo varía por IDE — busca "mcp" en la configuración de cada uno.',
+    tipEn: 'exact file path varies by IDE — search for "mcp" in each editor\'s settings.',
+  },
+  {
+    id: 'chatgpt',
+    name: 'ChatGPT',
+    badgeEs: 'plus · pro',
+    badgeEn: 'plus · pro',
+    descEs: 'ChatGPT soporta conectores MCP remotos en planes Plus y Pro. Se configuran desde Settings → Connectors.',
+    descEn: 'ChatGPT supports remote MCP connectors on Plus and Pro plans. Configure from Settings → Connectors.',
+    steps: [
+      {
+        titleEs: 'chatgpt → settings → connectors',
+        titleEn: 'chatgpt → settings → connectors',
+      },
+      {
+        titleEs: 'add custom connector → mcp server',
+        titleEn: 'add custom connector → mcp server',
+      },
+      {
+        titleEs: 'url del servidor',
+        titleEn: 'server url',
+        code: 'https://api-mcp.komercia.co/sse',
+      },
+      {
+        titleEs: 'authentication: bearer · pega tu token',
+        titleEn: 'authentication: bearer · paste your token',
+      },
+      {
+        titleEs: 'habilita el conector en cada chat donde lo necesites',
+        titleEn: 'enable the connector in each chat where you need it',
+      },
+    ],
+    tipEs: 'la ui exacta evoluciona — si no ves "connectors", busca "actions" o "tools" en settings.',
+    tipEn: 'exact ui evolves — if you don\'t see "connectors", look for "actions" or "tools" in settings.',
+  },
+];
+
 const examples = [
   { es: '¿cuántos productos activos tengo?',                       en: 'how many active products do i have?' },
   { es: 'muéstrame los ingresos del último mes con totales',       en: 'show me last month\'s revenue with totals' },
@@ -456,6 +622,16 @@ const examples = [
             </div>
           </li>
         </ol>
+
+        <div class="install-clients">
+          <p class="clients-label" data-t-es="¿usas otro cliente? mcp funciona en:" data-t-en="using a different client? mcp works in:">¿usas otro cliente? mcp funciona en:</p>
+          <div class="clients-row">
+            {installMethods.map((m) => (
+              <button type="button" class="client-chip" data-install-target={m.id}>{m.name}</button>
+            ))}
+          </div>
+          <button type="button" id="open-install-modal" class="link-arrow-btn" data-install-target="all" data-t-es={`ver guía para los ${installMethods.length} clientes →`} data-t-en={`see setup guide for all ${installMethods.length} clients →`}>{`ver guía para los ${installMethods.length} clientes →`}</button>
+        </div>
       </section>
 
       <div class="divider"></div>
@@ -489,6 +665,85 @@ const examples = [
       </section>
 
     </main>
+
+    <!-- ── Install methods modal ─────────────────────── -->
+    <div id="install-modal" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="install-modal-title">
+      <div class="modal-window" role="document">
+
+        <header class="modal-header">
+          <span class="modal-title" id="install-modal-title">
+            <span class="muted">user@komercia ~$</span> ./install.guide<span class="caret">_</span>
+          </span>
+          <button type="button" class="modal-close" aria-label="Cerrar modal" title="Cerrar (esc)">[ × ]</button>
+        </header>
+
+        <div class="modal-info">
+          <span data-t-es={`${installMethods.length} clientes soportados · click para filtrar`} data-t-en={`${installMethods.length} clients supported · click to filter`}>{installMethods.length} clientes soportados · click para filtrar</span>
+        </div>
+
+        <nav class="modal-filters" aria-label="Filtrar por cliente">
+          <button type="button" class="filter-btn install-filter active" data-cat="all">
+            <span data-t-es="todos" data-t-en="all">todos</span>
+            <span class="count">({installMethods.length})</span>
+          </button>
+          {installMethods.map((m) => (
+            <button type="button" class="filter-btn install-filter" data-cat={m.id}>{m.name}</button>
+          ))}
+        </nav>
+
+        <div class="modal-body">
+          {installMethods.map((m) => (
+            <article class="install-method" data-cat={m.id}>
+              <div class="method-header">
+                <h3 class="method-name">{m.name}</h3>
+                <span class="method-badge" data-t-es={m.badgeEs} data-t-en={m.badgeEn}>{m.badgeEs}</span>
+              </div>
+              <p class="method-desc" data-t-es={m.descEs} data-t-en={m.descEn}>{m.descEs}</p>
+
+              <ol class="method-steps">
+                {m.steps.map((step, si) => {
+                  const codeId = `install-${m.id}-step-${si}`;
+                  const stepNum = `[${String(si + 1).padStart(2, '0')}]`;
+                  return (
+                    <li class="method-step">
+                      <span class="step-num">{stepNum}</span>
+                      <div class="step-body">
+                        <p class="step-title" data-t-es={step.titleEs} data-t-en={step.titleEn}>{step.titleEs}</p>
+                        {step.code && (
+                          <div class="code-block">
+                            <pre class="code-block-content"><code id={codeId}>{step.code}</code></pre>
+                            <button type="button" class="code-copy" data-copy-target={codeId} aria-label="Copiar" title="Copiar">
+                              <svg class="copy-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">
+                                <rect x="9" y="9" width="13" height="13" rx="1" ry="1"/>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                              </svg>
+                              <svg class="copy-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true" style="display:none;">
+                                <polyline points="20 6 9 17 4 12"/>
+                              </svg>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
+
+              {m.tipEs && (
+                <p class="method-tip">
+                  <span class="muted">tip ·</span>
+                  <span data-t-es={m.tipEs} data-t-en={m.tipEn ?? m.tipEs}>{m.tipEs}</span>
+                </p>
+              )}
+            </article>
+          ))}
+        </div>
+
+        <footer class="modal-footer">
+          <span class="muted" data-t-es="[ esc ] cerrar · click fuera para cerrar" data-t-en="[ esc ] close · click outside to close">[ esc ] cerrar · click fuera para cerrar</span>
+        </footer>
+      </div>
+    </div>
 
     <!-- ── Prompt library modal ──────────────────────── -->
     <div id="recetas-modal" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-title">
@@ -556,8 +811,6 @@ const examples = [
     <!-- ── Footer ────────────────────────────────────── -->
     <footer class="bottom-bar">
       <span class="muted">komercia/mcp v0.1</span>
-      <span class="dot-sep">·</span>
-      <a href="/uso" class="link-muted">/uso</a>
       <span class="dot-sep">·</span>
       <a href="https://github.com/gusplayer/komercia-mcp" target="_blank" rel="noopener noreferrer" class="link-muted">source</a>
     </footer>
@@ -1079,6 +1332,122 @@ const examples = [
     .bottom-bar { padding: 14px; row-gap: 8px; }
   }
 
+  /* ── Install clients row (below 3 steps) ────────────── */
+  .install-clients {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--c-border);
+  }
+  .clients-label {
+    font-size: 14px;
+    color: var(--c-muted);
+    margin: 0;
+  }
+  .clients-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .client-chip {
+    background: var(--c-surface);
+    color: var(--c-fg);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r);
+    font-family: inherit;
+    font-size: 14px;
+    padding: 7px 12px;
+    cursor: pointer;
+    transition: border-color 150ms, background 150ms;
+    white-space: nowrap;
+  }
+  .client-chip:hover {
+    border-color: var(--c-fg);
+    background: var(--c-bg);
+  }
+
+  /* ── Install method (inside modal) ──────────────────── */
+  .install-method {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-bottom: 24px;
+    border-bottom: 1px dashed var(--c-border);
+  }
+  .install-method:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  .install-method.hidden { display: none; }
+
+  .method-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .method-name {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--c-fg);
+    font-family: inherit;
+    letter-spacing: 0.24px;
+  }
+  .method-badge {
+    font-size: 13px;
+    color: var(--c-muted);
+  }
+  .method-desc {
+    margin: 0;
+    font-size: 14px;
+    color: var(--c-muted);
+    line-height: 1.5;
+  }
+
+  .method-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .method-step {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .method-step .step-num {
+    color: var(--c-muted);
+    font-size: 14px;
+  }
+  .method-step .step-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+  .step-title {
+    margin: 0;
+    font-size: 14px;
+    color: var(--c-fg);
+    line-height: 1.5;
+  }
+
+  .method-tip {
+    margin: 0;
+    padding: 10px 14px;
+    background: var(--c-surface);
+    border-radius: var(--r);
+    font-size: 13px;
+    color: var(--c-muted);
+    line-height: 1.5;
+  }
+  .method-tip .muted { color: var(--c-fg); margin-right: 4px; }
+
   /* ── Prompt library modal ───────────────────────────── */
   .modal-overlay {
     position: fixed;
@@ -1412,34 +1781,84 @@ const examples = [
       })(codeCopyBtns[ki]);
     }
 
+    // ── Generic modal helpers ─────────────────────────────
+    function openModal(modal) {
+      modal.setAttribute('aria-hidden', 'false');
+      modal.classList.add('open');
+      document.documentElement.classList.add('modal-open');
+    }
+    function closeModal(modal) {
+      modal.setAttribute('aria-hidden', 'true');
+      modal.classList.remove('open');
+      document.documentElement.classList.remove('modal-open');
+    }
+
+    // Global ESC handler — closes any open modal
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      var openModals = document.querySelectorAll('.modal-overlay.open');
+      for (var i = 0; i < openModals.length; i++) closeModal(openModals[i]);
+    });
+
+    // ── Install methods modal ─────────────────────────────
+    var installModal = document.getElementById('install-modal');
+    var installTriggers = document.querySelectorAll('[data-install-target]');
+    if (installModal && installTriggers.length) {
+      var installCloseBtn = installModal.querySelector('.modal-close');
+      var installFilters = installModal.querySelectorAll('.install-filter');
+      var installMethodsEls = installModal.querySelectorAll('.install-method');
+
+      function applyInstallFilter(cat) {
+        for (var i = 0; i < installFilters.length; i++) {
+          if (installFilters[i].getAttribute('data-cat') === cat) installFilters[i].classList.add('active');
+          else installFilters[i].classList.remove('active');
+        }
+        for (var j = 0; j < installMethodsEls.length; j++) {
+          var m = installMethodsEls[j];
+          if (cat === 'all' || m.getAttribute('data-cat') === cat) m.classList.remove('hidden');
+          else m.classList.add('hidden');
+        }
+      }
+
+      for (var ti = 0; ti < installTriggers.length; ti++) {
+        (function (trigger) {
+          trigger.addEventListener('click', function () {
+            var target = trigger.getAttribute('data-install-target') || 'all';
+            applyInstallFilter(target);
+            openModal(installModal);
+            // Scroll modal body back to top on open
+            var body = installModal.querySelector('.modal-body');
+            if (body) body.scrollTop = 0;
+          });
+        })(installTriggers[ti]);
+      }
+
+      if (installCloseBtn) installCloseBtn.addEventListener('click', function () { closeModal(installModal); });
+      installModal.addEventListener('click', function (e) {
+        if (e.target === installModal) closeModal(installModal);
+      });
+      for (var fi = 0; fi < installFilters.length; fi++) {
+        (function (btn) {
+          btn.addEventListener('click', function () {
+            applyInstallFilter(btn.getAttribute('data-cat') || 'all');
+          });
+        })(installFilters[fi]);
+      }
+    }
+
     // ── Prompt library modal ──────────────────────────────
     var modal = document.getElementById('recetas-modal');
     var openModalBtn = document.getElementById('open-recetas');
     if (modal && openModalBtn) {
       var modalCloseBtn = modal.querySelector('.modal-close');
-      var filterBtns = modal.querySelectorAll('.filter-btn');
+      var filterBtns = modal.querySelectorAll('.filter-btn:not(.install-filter)');
       var recipes = modal.querySelectorAll('.recipe');
 
-      function openModal() {
-        modal.setAttribute('aria-hidden', 'false');
-        modal.classList.add('open');
-        document.documentElement.classList.add('modal-open');
-      }
-      function closeModal() {
-        modal.setAttribute('aria-hidden', 'true');
-        modal.classList.remove('open');
-        document.documentElement.classList.remove('modal-open');
-      }
-
-      openModalBtn.addEventListener('click', openModal);
-      if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeModal);
+      openModalBtn.addEventListener('click', function () { openModal(modal); });
+      if (modalCloseBtn) modalCloseBtn.addEventListener('click', function () { closeModal(modal); });
 
       modal.addEventListener('click', function (e) {
-        if (e.target === modal) closeModal();
-      });
-
-      document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+        if (e.target === modal) closeModal(modal);
       });
 
       // Category filter
