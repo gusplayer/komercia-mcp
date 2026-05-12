@@ -639,19 +639,30 @@ const examples = [
     transition: color 150ms;
   }
   .link-muted:hover { color: var(--c-fg); }
+  /* Shared sizing — every topbar button is exactly 36px tall, box-sized */
+  .btn-pill,
+  .btn-ghost-pill {
+    height: 36px;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    border-radius: var(--r);
+    font-family: inherit;
+    letter-spacing: 0.24px;
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+    line-height: 1;
+  }
+
   /* Primary CTA — high-contrast filled (099 spec) */
   .btn-pill {
     background: var(--c-fg);
     color: var(--c-bg);
-    text-decoration: none;
     border: 1px solid var(--c-fg);
-    border-radius: var(--r);
-    padding: 8px 16px;
+    padding: 0 16px;
     font-size: 16px;
     transition: background 150ms, border-color 150ms;
-    white-space: nowrap;
-    cursor: pointer;
-    line-height: 1.4;
   }
   .btn-pill:hover { background: var(--c-muted); border-color: var(--c-muted); }
 
@@ -660,19 +671,9 @@ const examples = [
     background: transparent;
     color: var(--c-fg);
     border: 1px solid var(--c-border);
-    border-radius: var(--r);
-    padding: 8px 12px;
-    font-family: inherit;
+    padding: 0 12px;
     font-size: 14px;
-    letter-spacing: 0.24px;
-    cursor: pointer;
-    display: inline-flex;
-    flex-direction: row;
-    align-items: center;
     gap: 8px;
-    white-space: nowrap;
-    line-height: 1;
-    text-decoration: none;
     transition: border-color 150ms, color 150ms, background 150ms;
   }
   .btn-ghost-pill:hover {
@@ -680,7 +681,11 @@ const examples = [
     background: var(--c-surface);
   }
   .btn-ghost-pill svg { display: block; flex-shrink: 0; }
-  .btn-ghost-pill.btn-icon-only { padding: 8px 9px; }
+  .btn-ghost-pill.btn-icon-only {
+    padding: 0;
+    width: 36px;
+    justify-content: center;
+  }
 
   /* ── Main ────────────────────────────────────────────── */
   .main {
@@ -1070,9 +1075,10 @@ const examples = [
   @media (max-width: 480px) {
     .topbar { padding: 12px 14px; gap: 8px; }
     .brand { font-size: 14px; }
-    .btn-pill { padding: 8px 12px; font-size: 14px; }
-    .btn-ghost-pill { padding: 7px 10px; font-size: 13px; gap: 6px; }
-    .btn-ghost-pill.btn-icon-only { padding: 7px 8px; }
+    .btn-pill, .btn-ghost-pill { height: 32px; }
+    .btn-pill { padding: 0 12px; font-size: 14px; }
+    .btn-ghost-pill { padding: 0 10px; font-size: 13px; gap: 6px; }
+    .btn-ghost-pill.btn-icon-only { width: 32px; padding: 0; }
     .topbar-actions { gap: 8px; }
     .main { padding: 24px 14px; }
     .h1 { font-size: 22px; line-height: 1.25; }
