@@ -321,23 +321,23 @@ const installMethods: InstallMethod[] = [
     descEn: 'Claude Code runs in your terminal. A single command registers the MCP and it stays available in every session.',
     steps: [
       {
-        titleEs: 'instala claude code (si no lo tienes)',
-        titleEn: "install claude code (if you don't have it)",
+        titleEs: 'Instala Claude Code (si no lo tienes)',
+        titleEn: "Install Claude Code (if you don't have it yet)",
         code: 'npm i -g @anthropic-ai/claude-code',
       },
       {
-        titleEs: 'registra el servidor mcp con tu token',
-        titleEn: 'register the mcp server with your token',
+        titleEs: 'Registra el servidor MCP con tu token',
+        titleEn: 'Register the MCP server with your token',
         code: 'claude mcp add --transport sse komercia \\\n  https://api-mcp.komercia.co/sse \\\n  --header "Authorization: Bearer TU_TOKEN"',
       },
       {
-        titleEs: 'verifica que quedó registrado',
-        titleEn: 'verify it was registered',
+        titleEs: 'Verifica que quedó registrado',
+        titleEn: 'Verify it was registered',
         code: 'claude mcp list',
       },
     ],
-    tipEs: 'agrega --scope project al final para limitarlo a un solo proyecto en vez de globalmente.',
-    tipEn: 'add --scope project at the end to limit it to one project instead of globally.',
+    tipEs: 'Agrega --scope project al final para limitarlo a un solo proyecto en lugar de globalmente.',
+    tipEn: 'Add --scope project at the end to limit it to a single project instead of globally.',
   },
   {
     id: 'claude-ai',
@@ -348,25 +348,25 @@ const installMethods: InstallMethod[] = [
     descEn: 'Works directly in claude.ai. No install — just paste URL and token in the interface.',
     steps: [
       {
-        titleEs: 'en claude.ai → configuración → integraciones',
-        titleEn: 'in claude.ai → settings → integrations',
+        titleEs: 'Abre Claude.ai → Configuración → Integraciones',
+        titleEn: 'Open Claude.ai → Settings → Integrations',
       },
       {
-        titleEs: 'click en "add custom integration" → "mcp server"',
-        titleEn: 'click "add custom integration" → "mcp server"',
+        titleEs: 'Click en "Add custom integration" → "MCP Server"',
+        titleEn: 'Click "Add custom integration" → "MCP Server"',
       },
       {
-        titleEs: 'pega la url del servidor',
-        titleEn: 'paste the server url',
+        titleEs: 'Pega la URL del servidor',
+        titleEn: 'Paste the server URL',
         code: 'https://api-mcp.komercia.co/sse',
       },
       {
-        titleEs: 'en authorization pega: bearer TU_TOKEN',
-        titleEn: 'in authorization paste: bearer YOUR_TOKEN',
+        titleEs: 'En Authorization pega: Bearer TU_TOKEN',
+        titleEn: 'In Authorization paste: Bearer YOUR_TOKEN',
       },
       {
-        titleEs: 'guarda y abre un chat nuevo',
-        titleEn: 'save and open a new chat',
+        titleEs: 'Guarda y abre un chat nuevo',
+        titleEn: 'Save and open a new chat',
       },
     ],
   },
@@ -379,23 +379,23 @@ const installMethods: InstallMethod[] = [
     descEn: 'Claude Desktop uses stdio internally. You need the mcp-remote bridge to connect to http/sse servers.',
     steps: [
       {
-        titleEs: 'instala el puente mcp-remote',
-        titleEn: 'install the mcp-remote bridge',
+        titleEs: 'Instala el puente mcp-remote',
+        titleEn: 'Install the mcp-remote bridge',
         code: 'npm install -g mcp-remote',
       },
       {
-        titleEs: 'edita el archivo de configuración',
-        titleEn: 'edit the config file',
+        titleEs: 'Abre el archivo de configuración',
+        titleEn: 'Open the config file',
         code: '# macOS\n~/Library/Application Support/Claude/claude_desktop_config.json\n\n# Windows\n%APPDATA%\\Claude\\claude_desktop_config.json',
       },
       {
-        titleEs: 'agrega esta entrada dentro de mcpServers',
-        titleEn: 'add this entry inside mcpServers',
+        titleEs: 'Agrega esta entrada dentro de "mcpServers"',
+        titleEn: 'Add this entry inside "mcpServers"',
         code: '{\n  "mcpServers": {\n    "komercia": {\n      "command": "mcp-remote",\n      "args": [\n        "https://api-mcp.komercia.co/sse",\n        "--header",\n        "Authorization: Bearer TU_TOKEN"\n      ]\n    }\n  }\n}',
       },
       {
-        titleEs: 'reinicia claude desktop',
-        titleEn: 'restart claude desktop',
+        titleEs: 'Reinicia Claude Desktop',
+        titleEn: 'Restart Claude Desktop',
       },
     ],
   },
@@ -408,29 +408,29 @@ const installMethods: InstallMethod[] = [
     descEn: 'ChatGPT supports remote MCP connectors on Plus and Pro plans. Configure from Settings → Connectors.',
     steps: [
       {
-        titleEs: 'chatgpt → settings → connectors',
-        titleEn: 'chatgpt → settings → connectors',
+        titleEs: 'Abre ChatGPT → Settings → Connectors',
+        titleEn: 'Open ChatGPT → Settings → Connectors',
       },
       {
-        titleEs: 'add custom connector → mcp server',
-        titleEn: 'add custom connector → mcp server',
+        titleEs: 'Add custom connector → MCP Server',
+        titleEn: 'Add custom connector → MCP Server',
       },
       {
-        titleEs: 'url del servidor',
-        titleEn: 'server url',
+        titleEs: 'Pega la URL del servidor',
+        titleEn: 'Paste the server URL',
         code: 'https://api-mcp.komercia.co/sse',
       },
       {
-        titleEs: 'authentication: bearer · pega tu token',
-        titleEn: 'authentication: bearer · paste your token',
+        titleEs: 'Authentication: Bearer · pega tu token',
+        titleEn: 'Authentication: Bearer · paste your token',
       },
       {
-        titleEs: 'habilita el conector en cada chat donde lo necesites',
-        titleEn: 'enable the connector in each chat where you need it',
+        titleEs: 'Habilita el conector en cada chat donde lo necesites',
+        titleEn: 'Enable the connector in each chat where you need it',
       },
     ],
-    tipEs: 'la ui exacta evoluciona — si no ves "connectors", busca "actions" o "tools" en settings.',
-    tipEn: 'exact ui evolves — if you don\'t see "connectors", look for "actions" or "tools" in settings.',
+    tipEs: 'La interfaz puede variar — si no ves "Connectors", busca "Actions" o "Tools" dentro de Settings.',
+    tipEn: 'The exact UI evolves — if you don\'t see "Connectors", look for "Actions" or "Tools" under Settings.',
   },
 ];
 
@@ -568,7 +568,7 @@ const examples = [
                   </svg>
                 </button>
               </div>
-              <p class="step-desc-sm" data-t-es="También funciona con Claude.ai, Claude Desktop, Cursor y ChatGPT." data-t-en="Also works with Claude.ai, Claude Desktop, Cursor, and ChatGPT.">También funciona con Claude.ai, Claude Desktop, Cursor y ChatGPT.</p>
+              <p class="step-desc-sm" data-t-es="También funciona con Claude.ai, Claude Desktop y ChatGPT." data-t-en="Also works with Claude.ai, Claude Desktop, and ChatGPT.">También funciona con Claude.ai, Claude Desktop y ChatGPT.</p>
             </div>
           </li>
 
@@ -635,22 +635,18 @@ const examples = [
         </header>
 
         <div class="modal-info">
-          <span data-t-es={`${installMethods.length} clientes soportados · click para filtrar`} data-t-en={`${installMethods.length} clients supported · click to filter`}>{installMethods.length} clientes soportados · click para filtrar</span>
+          <span data-t-es={`${installMethods.length} clientes soportados · selecciona uno`} data-t-en={`${installMethods.length} clients supported · select one`}>{installMethods.length} clientes soportados · selecciona uno</span>
         </div>
 
         <nav class="modal-filters" aria-label="Filtrar por cliente">
-          <button type="button" class="filter-btn install-filter active" data-cat="all">
-            <span data-t-es="todos" data-t-en="all">todos</span>
-            <span class="count">({installMethods.length})</span>
-          </button>
-          {installMethods.map((m) => (
-            <button type="button" class="filter-btn install-filter" data-cat={m.id}>{m.name}</button>
+          {installMethods.map((m, mi) => (
+            <button type="button" class={mi === 0 ? 'filter-btn install-filter active' : 'filter-btn install-filter'} data-cat={m.id}>{m.name}</button>
           ))}
         </nav>
 
         <div class="modal-body">
-          {installMethods.map((m) => (
-            <article class="install-method" data-cat={m.id}>
+          {installMethods.map((m, mi) => (
+            <article class={mi === 0 ? 'install-method' : 'install-method hidden'} data-cat={m.id}>
               <div class="method-header">
                 <h3 class="method-name">{m.name}</h3>
                 <span class="method-badge" data-t-es={m.badgeEs} data-t-en={m.badgeEn}>{m.badgeEs}</span>
