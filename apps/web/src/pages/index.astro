@@ -400,35 +400,6 @@ const installMethods: InstallMethod[] = [
     ],
   },
   {
-    id: 'cursor',
-    name: 'Cursor / Windsurf / IDEs',
-    badgeEs: 'ide · editor de código',
-    badgeEn: 'ide · code editor',
-    descEs: 'Cualquier IDE compatible con MCP funciona: Cursor, Windsurf, Continue, Zed. La configuración es JSON casi idéntica entre ellos.',
-    descEn: 'Any MCP-compatible IDE works: Cursor, Windsurf, Continue, Zed. The JSON config is nearly identical across them.',
-    steps: [
-      {
-        titleEs: 'abre settings → mcp → add mcp server',
-        titleEn: 'open settings → mcp → add mcp server',
-      },
-      {
-        titleEs: 'pega esta configuración json',
-        titleEn: 'paste this json config',
-        code: '{\n  "mcpServers": {\n    "komercia": {\n      "url": "https://api-mcp.komercia.co/sse",\n      "headers": {\n        "Authorization": "Bearer TU_TOKEN"\n      }\n    }\n  }\n}',
-      },
-      {
-        titleEs: 'guarda. el ide detecta el servidor automáticamente',
-        titleEn: 'save. the ide detects the server automatically',
-      },
-      {
-        titleEs: 'en cursor agent mode, verifica que "komercia" aparezca activo',
-        titleEn: 'in cursor agent mode, verify "komercia" shows as active',
-      },
-    ],
-    tipEs: 'la ruta exacta del archivo varía por IDE — busca "mcp" en la configuración de cada uno.',
-    tipEn: 'exact file path varies by IDE — search for "mcp" in each editor\'s settings.',
-  },
-  {
     id: 'chatgpt',
     name: 'ChatGPT',
     badgeEs: 'plus · pro',
@@ -617,7 +588,6 @@ const examples = [
               <button type="button" class="client-chip" data-install-target={m.id}>{m.name}</button>
             ))}
           </div>
-          <button type="button" id="open-install-modal" class="link-arrow-btn" data-install-target="all" data-t-es={`Ver guía para los ${installMethods.length} clientes →`} data-t-en={`See setup guide for all ${installMethods.length} clients →`}>{`Ver guía para los ${installMethods.length} clientes →`}</button>
         </div>
       </section>
 
