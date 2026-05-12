@@ -1,0 +1,20 @@
+{
+  "name": "Komercia MCP",
+  "short_name": "Komercia MCP",
+  "description": "Servidor MCP oficial de Komercia. Pregúntale a Claude sobre tu tienda — productos, ventas, clientes, inventario.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "lang": "es",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["developer", "productivity", "business"]
+}

@@ -1,48 +1,46 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
-  <!-- Ghost white background -->
-  <rect width="1200" height="630" fill="#fdfcfc"/>
+  <!-- Pure black background (099 / terminal aesthetic) -->
+  <rect width="1200" height="630" fill="#000000"/>
 
-  <!-- Subtle dotted grid pattern (faded grid blue at low opacity) -->
+  <!-- Subtle dotted grid -->
   <defs>
-    <pattern id="dots" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
-      <circle cx="1" cy="1" r="1" fill="rgba(2, 50, 71, 0.08)"/>
+    <pattern id="dots" x="0" y="0" width="32" height="32" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="#383838" opacity="0.6"/>
     </pattern>
-    <radialGradient id="mask">
-      <stop offset="30%" stop-color="white" stop-opacity="1"/>
-      <stop offset="100%" stop-color="white" stop-opacity="0"/>
-    </radialGradient>
-    <mask id="fade">
-      <rect width="1200" height="630" fill="url(#mask)"/>
-    </mask>
   </defs>
-  <rect width="1200" height="630" fill="url(#dots)" mask="url(#fade)"/>
+  <rect width="1200" height="630" fill="url(#dots)"/>
 
-  <!-- Logo top-left: small plum squircle + wordmark -->
-  <g transform="translate(64, 64)">
-    <rect width="20" height="20" rx="4" fill="#111a4a"/>
-    <text x="32" y="16" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#011821">komercia</text>
-    <text x="118" y="16" font-family="Inter, sans-serif" font-size="16" font-weight="400" fill="#7c7f88">mcp</text>
+  <!-- Top bar -->
+  <text x="64" y="80" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="22" font-weight="400" fill="#ffffff" letter-spacing="0.5">[komercia/mcp]</text>
+
+  <!-- Divider line under top bar -->
+  <line x1="64" y1="110" x2="1136" y2="110" stroke="#383838" stroke-width="1"/>
+
+  <!-- Shell prompt -->
+  <text x="64" y="200" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="24" fill="#888888">user@komercia ~$</text>
+  <text x="320" y="200" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="24" fill="#ffffff">./mcp.connect</text>
+  <text x="497" y="200" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="24" fill="#ffffff">_</text>
+
+  <!-- Main headline (bicolor: white + muted) -->
+  <text x="64" y="320" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="60" font-weight="400" fill="#ffffff" letter-spacing="0.5">los datos de tu tienda,</text>
+  <text x="64" y="400" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="60" font-weight="400" fill="#888888" letter-spacing="0.5">en lenguaje natural.</text>
+
+  <!-- Subtitle -->
+  <text x="64" y="475" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="22" fill="#888888">el servidor mcp oficial para komercia.</text>
+  <text x="64" y="510" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="22" fill="#888888">pregúntale a claude sobre tu tienda — sin código.</text>
+
+  <!-- Bottom badge row -->
+  <g transform="translate(64, 575)">
+    <circle cx="6" cy="-5" r="4" fill="#ffffff"/>
+    <text x="22" y="0" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="19" fill="#ffffff">11 herramientas</text>
+
+    <circle cx="240" cy="-5" r="4" fill="#ffffff"/>
+    <text x="256" y="0" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="19" fill="#ffffff">solo lectura</text>
+
+    <circle cx="445" cy="-5" r="4" fill="#ffffff"/>
+    <text x="461" y="0" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="19" fill="#ffffff">open source</text>
+
+    <circle cx="645" cy="-5" r="4" fill="#ffffff"/>
+    <text x="661" y="0" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="19" fill="#ffffff">gratis</text>
   </g>
-
-  <!-- Eyebrow badge top-left below logo -->
-  <g transform="translate(64, 220)">
-    <rect width="220" height="28" rx="6" fill="#ffffff" stroke="#e3e4e8" stroke-width="1"/>
-    <text x="14" y="19" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#111a4a" letter-spacing="1.1">MCP OFICIAL DE KOMERCIA</text>
-  </g>
-
-  <!-- Bicolor headline (two lines, 60px Inter 600) -->
-  <text x="64" y="320" font-family="Inter, sans-serif" font-size="60" font-weight="600" fill="#011821" letter-spacing="-1.8">Tu tienda Komercia,</text>
-  <text x="64" y="396" font-family="Inter, sans-serif" font-size="60" font-weight="600" fill="#7c7f88" letter-spacing="-1.8">en lenguaje natural.</text>
-
-  <!-- Subhead -->
-  <text x="64" y="468" font-family="Inter, sans-serif" font-size="20" font-weight="400" fill="#7c7f88" letter-spacing="-0.4">El conector oficial de Komercia para Claude.ai.</text>
-  <text x="64" y="498" font-family="Inter, sans-serif" font-size="20" font-weight="400" fill="#7c7f88" letter-spacing="-0.4">Consulta ventas, automatiza reportes, conversa con tus datos.</text>
-
-  <!-- Action Orange accent strip on right -->
-  <rect x="1100" y="0" width="100" height="630" fill="#ec652b"/>
-
-  <!-- Three accent dots at the bottom -->
-  <circle cx="1090" cy="540" r="6" fill="#111a4a"/>
-  <circle cx="1110" cy="540" r="6" fill="#7c7f88"/>
-  <circle cx="1130" cy="540" r="6" fill="#ec652b"/>
 </svg>

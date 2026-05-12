@@ -9,8 +9,8 @@ export interface Props {
 }
 
 const {
-  title = 'Komercia MCP — Exporta tu tienda con Claude.ai',
-  description = 'El MCP oficial de Komercia. Exporta productos, órdenes, clientes y más conversando con Claude.ai. Gratis, seguro, sin código.',
+  title = 'Komercia MCP — Los datos de tu tienda Komercia, en lenguaje natural',
+  description = 'Servidor MCP oficial de Komercia. Pregúntale a Claude sobre tu tienda — productos, ventas, clientes, inventario — sin escribir una línea de código. Solo lectura, open source, gratis.',
   noindex = false,
   ogImage,
 } = Astro.props;
@@ -18,6 +18,40 @@ const {
 const siteOrigin = Astro.site ?? new URL('https://mcp.komercia.co');
 const canonicalUrl = new URL(Astro.url.pathname, siteOrigin);
 const ogImageUrl = new URL(ogImage ?? '/og-image.svg', siteOrigin).toString();
+
+// JSON-LD structured data (SoftwareApplication + Organization)
+const softwareSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'Komercia MCP',
+  applicationCategory: 'DeveloperApplication',
+  applicationSubCategory: 'Model Context Protocol Server',
+  operatingSystem: 'Web, macOS, Windows, Linux',
+  description,
+  url: siteOrigin.toString(),
+  downloadUrl: 'https://github.com/gusplayer/komercia-mcp',
+  softwareVersion: '0.1.0',
+  license: 'https://github.com/gusplayer/komercia-mcp/blob/main/LICENSE',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+    availability: 'https://schema.org/InStock',
+  },
+  author: {
+    '@type': 'Person',
+    name: 'Gustavo Moreno',
+    url: 'https://github.com/gusplayer',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Komercia',
+    url: 'https://komercia.co',
+  },
+  aggregateRating: undefined,
+  inLanguage: ['es', 'en'],
+  keywords: 'komercia, mcp, claude, claude.ai, model context protocol, ecommerce, store data, api, integration, open source',
+};
 
 // Security headers
 Astro.response.headers.set(
@@ -36,15 +70,21 @@ Astro.response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(),
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    <meta name="author" content="Gustavo Moreno" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="keywords" content="komercia, mcp, claude, claude.ai, model context protocol, ecommerce, tienda, exportar datos, open source" />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {!noindex && <meta name="robots" content="index, follow, max-image-preview:large" />}
     <link rel="canonical" href={canonicalUrl.toString()} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
 
-    <!-- Google Fonts: Inter (Suisse Intl substitute) + IBM Plex Mono (SFMono substitute) -->
+    <!-- Google Fonts: Inter + IBM Plex Mono + Space Mono (terminal) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
       rel="stylesheet"
     />
 
@@ -56,22 +96,22 @@ Astro.response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(),
     <meta property="og:image" content={ogImageUrl} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Komercia MCP — terminal-style preview" />
+    <meta property="og:site_name" content="Komercia MCP" />
+    <meta property="og:locale" content="es_CO" />
+    <meta property="og:locale:alternate" content="en_US" />
+
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content="Komercia MCP — terminal-style preview" />
+
+    <!-- Structured data (Schema.org) -->
+    <script type="application/ld+json" set:html={JSON.stringify(softwareSchema)} />
 
     <title>{title}</title>
-
-    <!-- Dark mode: initialize before first paint to prevent flash -->
-    <script is:inline>
-      (function () {
-        try {
-          var saved = localStorage.getItem('theme');
-          if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-          }
-        } catch (e) {}
-      })();
-    </script>
   </head>
   <body>
     <slot />

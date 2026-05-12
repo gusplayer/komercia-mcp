@@ -18,9 +18,11 @@ export default defineConfig({
     sitemap({
       filter: (page) =>
         !page.includes('/api/') &&
-        !page.includes('/token') &&
         !page.includes('/sign-in') &&
         !page.includes('/404'),
+      changefreq: 'weekly',
+      priority: 0.8,
+      lastmod: new Date(),
     }),
   ],
   vite: {
