@@ -1,6 +1,7 @@
 ---
 // sign-in.astro — Auth + token issuance. 099 / terminal aesthetic, bilingual.
 import Base from '../layouts/Base.astro';
+import RecetasModal from '../components/RecetasModal.astro';
 import { generateCsrfToken } from '../lib/csrf.js';
 
 const csrfToken = generateCsrfToken();
@@ -128,23 +129,43 @@ Astro.cookies.set('csrf_token', csrfToken, {
           <div class="divider divider-spaced"></div>
 
           <div class="prompt">
-            <span class="muted">user@komercia ~$</span> <span class="cmd">connect</span>
+            <span class="muted">user@komercia ~$</span> <span class="cmd">./connect.mcp</span>
           </div>
 
-          <!-- Claude Code -->
-          <div class="field">
-            <label>&gt; claude_code</label>
-            <p class="hint" data-t-es="terminal · un solo comando" data-t-en="terminal · single command">terminal · un solo comando</p>
-            <div class="snippet">
-              <code id="cmd-claude-code"></code>
+          <p class="connect-intro" data-t-es="Tres formas de usarlo — todas funcionan con el mismo token. Elige una." data-t-en="Three ways to use it — all work with the same token. Pick one.">
+            Tres formas de usarlo — todas funcionan con el mismo token. Elige una.
+          </p>
+
+          <!-- Opción A · Claude Code (most prominent — single command) -->
+          <article class="option-card option-recommended">
+            <header class="option-header">
+              <span class="option-label">A</span>
+              <div class="option-meta">
+                <h3 class="option-name">Claude Code</h3>
+                <span class="option-tag" data-t-es="terminal · el más simple" data-t-en="terminal · the simplest">terminal · el más simple</span>
+              </div>
+            </header>
+            <p class="option-desc" data-t-es="Copia este comando, pégalo en tu terminal con Claude Code y empieza a usarlo. Listo en 5 segundos." data-t-en="Copy this command, paste it in your terminal with Claude Code, and start using it. Done in 5 seconds.">
+              Copia este comando, pégalo en tu terminal con Claude Code y empieza a usarlo. Listo en 5 segundos.
+            </p>
+            <div class="snippet-block-wrap">
+              <pre class="snippet-pre"><code id="cmd-claude-code"></code></pre>
               <button class="btn-mini snippet-copy" data-target="cmd-claude-code" data-t-es="[ copiar ]" data-t-en="[ copy ]" aria-label="copiar comando claude code">[ copiar ]</button>
             </div>
-          </div>
+          </article>
 
-          <!-- Claude.ai -->
-          <div class="field">
-            <label>&gt; claude.ai</label>
-            <p class="hint" data-t-es="settings → integrations → add mcp server" data-t-en="settings → integrations → add mcp server">settings → integrations → add mcp server</p>
+          <!-- Opción B · Claude.ai -->
+          <article class="option-card">
+            <header class="option-header">
+              <span class="option-label">B</span>
+              <div class="option-meta">
+                <h3 class="option-name">Claude.ai</h3>
+                <span class="option-tag" data-t-es="web · sin instalación" data-t-en="web · no install">web · sin instalación</span>
+              </div>
+            </header>
+            <p class="option-desc" data-t-es="En claude.ai abre Settings → Integrations → Add MCP Server, y pega estos dos valores." data-t-en="In claude.ai open Settings → Integrations → Add MCP Server, then paste these two values.">
+              En claude.ai abre Settings → Integrations → Add MCP Server, y pega estos dos valores.
+            </p>
             <div class="kv">
               <span class="kv-k">server_url</span>
               <code id="cmd-claudeai-url" class="kv-v"></code>
@@ -155,27 +176,58 @@ Astro.cookies.set('csrf_token', csrfToken, {
               <code id="cmd-claudeai-auth" class="kv-v"></code>
               <button class="btn-mini snippet-copy" data-target="cmd-claudeai-auth" data-t-es="[ copiar ]" data-t-en="[ copy ]" aria-label="copiar header">[ copiar ]</button>
             </div>
-          </div>
+          </article>
 
-          <!-- Claude Desktop -->
-          <div class="field">
-            <label>&gt; claude_desktop</label>
-            <p class="hint" data-t-es="claude_desktop_config.json · puente mcp-remote" data-t-en="claude_desktop_config.json · mcp-remote bridge">claude_desktop_config.json · puente mcp-remote</p>
-            <div class="snippet snippet-block">
-              <code id="cmd-desktop"></code>
+          <!-- Opción C · Claude Desktop -->
+          <article class="option-card">
+            <header class="option-header">
+              <span class="option-label">C</span>
+              <div class="option-meta">
+                <h3 class="option-name">Claude Desktop</h3>
+                <span class="option-tag" data-t-es="app · puente mcp-remote" data-t-en="app · mcp-remote bridge">app · puente mcp-remote</span>
+              </div>
+            </header>
+            <p class="option-desc" data-t-es="Pega este JSON dentro de claude_desktop_config.json y reinicia la app." data-t-en="Paste this JSON into claude_desktop_config.json and restart the app.">
+              Pega este JSON dentro de claude_desktop_config.json y reinicia la app.
+            </p>
+            <div class="snippet-block-wrap">
+              <pre class="snippet-pre snippet-pre-block"><code id="cmd-desktop"></code></pre>
               <button class="btn-mini snippet-copy" data-target="cmd-desktop" data-t-es="[ copiar ]" data-t-en="[ copy ]" aria-label="copiar json">[ copiar ]</button>
             </div>
+          </article>
+
+          <div class="divider divider-spaced"></div>
+
+          <!-- See usage examples (opens shared modal) -->
+          <div class="examples-row">
+            <p class="muted small" data-t-es="¿No sabes qué preguntarle a Claude?" data-t-en="Not sure what to ask Claude?">¿No sabes qué preguntarle a Claude?</p>
+            <button type="button" data-open-recetas class="btn-examples" data-t-es="Ver 18 ejemplos de uso →" data-t-en="See 18 usage examples →">Ver 18 ejemplos de uso →</button>
           </div>
 
           <div class="divider divider-spaced"></div>
 
+          <!-- Token lifecycle FAQ -->
+          <div class="token-faq" role="note">
+            <p class="faq-q" data-t-es="¿Perdiste el token?" data-t-en="Lost the token?">¿Perdiste el token?</p>
+            <p class="faq-a" data-t-es="Vuelve a iniciar sesión para generar uno nuevo. El anterior sigue funcionando hasta que lo revoques o caduque (6 meses)." data-t-en="Log in again to generate a new one. The previous token keeps working until you revoke it or until it expires (6 months).">
+              Vuelve a iniciar sesión para generar uno nuevo. El anterior sigue funcionando hasta que lo revoques o caduque (6 meses).
+            </p>
+
+            <p class="faq-q" data-t-es="¿Revocas el token?" data-t-en="Revoking the token?">¿Revocas el token?</p>
+            <p class="faq-a" data-t-es="El acceso se corta de inmediato en todos los clientes donde lo hayas pegado. Genera uno nuevo con una sesión nueva si lo necesitas otra vez." data-t-en="Access stops immediately on every client where you pasted it. Generate a new one with a fresh login if you need to use it again.">
+              El acceso se corta de inmediato en todos los clientes donde lo hayas pegado. Genera uno nuevo con una sesión nueva si lo necesitas otra vez.
+            </p>
+          </div>
+
           <div class="revoke-row">
-            <button id="revoke-btn" type="button" class="btn-revoke" data-t-es="revocar token →" data-t-en="revoke token →">revocar token →</button>
+            <button id="revoke-btn" type="button" class="btn-revoke" data-t-es="Revocar token →" data-t-en="Revoke token →">Revocar token →</button>
             <p id="revoke-status" class="hint hidden"></p>
           </div>
         </section>
       </div>
     </main>
+
+    <RecetasModal />
 
     <footer class="bottom-bar">
       <span class="muted">komercia/mcp v0.1</span>
@@ -472,6 +524,152 @@ Astro.cookies.set('csrf_token', csrfToken, {
     color: var(--c-muted);
     margin: 0;
   }
+  /* ── Connection options (A · B · C) ──────────────────── */
+  .connect-intro {
+    margin: 0 0 8px;
+    font-size: 14px;
+    color: var(--c-fg);
+    line-height: 1.5;
+  }
+  .option-card {
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r);
+    padding: 19px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .option-card.option-recommended {
+    border-color: var(--c-fg);
+  }
+  .option-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .option-label {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: var(--c-fg);
+    color: var(--c-bg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+    font-size: 14px;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .option-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .option-name {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--c-fg);
+    line-height: 1.2;
+    letter-spacing: 0.24px;
+  }
+  .option-tag {
+    color: var(--c-muted);
+    font-size: 13px;
+  }
+  .option-desc {
+    margin: 0;
+    color: var(--c-fg);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  /* Multi-line snippet that wraps long content instead of truncating */
+  .snippet-block-wrap {
+    position: relative;
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r);
+    padding: 14px 56px 14px 16px;
+  }
+  .snippet-pre {
+    margin: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .snippet-pre code {
+    color: var(--c-fg);
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.6;
+    display: block;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    user-select: all;
+  }
+  .snippet-pre-block code {
+    white-space: pre;
+    overflow-wrap: normal;
+  }
+  .snippet-block-wrap .snippet-copy {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+  }
+
+  /* "See examples" row */
+  .examples-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .examples-row .small { font-size: 14px; margin: 0; }
+  .btn-examples {
+    background: transparent;
+    color: var(--c-fg);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r);
+    height: 36px;
+    padding: 0 14px;
+    font-family: inherit;
+    font-size: 14px;
+    letter-spacing: 0.24px;
+    cursor: pointer;
+    transition: border-color 150ms, background 150ms;
+  }
+  .btn-examples:hover { border-color: var(--c-fg); background: var(--c-surface); }
+
+  /* Token-lifecycle FAQ */
+  .token-faq {
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r);
+    padding: 16px 19px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .faq-q {
+    margin: 0;
+    color: var(--c-fg);
+    font-size: 14px;
+  }
+  .faq-q::before {
+    content: '? ';
+    color: var(--c-muted);
+  }
+  .faq-a {
+    margin: 0 0 8px;
+    color: var(--c-fg);
+    font-size: 13px;
+    line-height: 1.5;
+    opacity: 0.85;
+  }
+  .faq-a:last-of-type { margin-bottom: 0; }
+
   .snippet {
     display: flex;
     align-items: center;
