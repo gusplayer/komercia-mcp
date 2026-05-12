@@ -654,20 +654,19 @@ const examples = [
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    /* Inverted fade: darker on the left (so the H1 column reads clean),
-       brightest on the right edge — content "emerges" from shadow */
+    /* Bright on the left edge (the content reads almost full), gradually
+       dims toward the right edge — but never fades completely so the
+       silhouette stays appreciable across the whole panel */
     mask-image: linear-gradient(90deg,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.2) 18%,
-      rgba(0, 0, 0, 0.55) 45%,
-      rgba(0, 0, 0, 0.9) 75%,
-      rgba(0, 0, 0, 1) 100%);
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 0.95) 30%,
+      rgba(0, 0, 0, 0.75) 65%,
+      rgba(0, 0, 0, 0.45) 100%);
     -webkit-mask-image: linear-gradient(90deg,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.2) 18%,
-      rgba(0, 0, 0, 0.55) 45%,
-      rgba(0, 0, 0, 0.9) 75%,
-      rgba(0, 0, 0, 1) 100%);
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 0.95) 30%,
+      rgba(0, 0, 0, 0.75) 65%,
+      rgba(0, 0, 0, 0.45) 100%);
   }
   .deco-frame {
     margin: 0;
@@ -680,11 +679,11 @@ const examples = [
     color: var(--c-muted);
     white-space: pre;
     display: block;
-    /* CRT illumination — brightest near the right edge of the panel */
+    /* CRT illumination — brightest near the left edge, mild dim on right */
     background: linear-gradient(90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.02) 50%,
-      rgba(255, 255, 255, 0.08) 100%);
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(255, 255, 255, 0.03) 60%,
+      transparent 100%);
     background-clip: text;
     -webkit-background-clip: text;
   }
@@ -1702,6 +1701,8 @@ const examples = [
       if (!el) return;
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
+      // All states are normalised to the same height (22 lines · 30
+       // cols) so the box never grows or shrinks between transitions.
       var states = [
         // 1. live store snapshot (matches initial HTML)
         '┌─ store.live ──────────────┐\n' +
@@ -1793,7 +1794,6 @@ const examples = [
         '│                            │\n' +
         '│ +15% projected if          │\n' +
         '│ inventory holds steady     │\n' +
-        '│                            │\n' +
         '└────────────────────────────┘',
         // 5. top customers / retention
         '┌─ customers.top ───────────┐\n' +
@@ -1816,6 +1816,7 @@ const examples = [
         '│ avg_orders      4.2        │\n' +
         '│ avg_lifetime    $2.4K      │\n' +
         '│                            │\n' +
+        '│                            │\n' +
         '└────────────────────────────┘',
       ];
 
@@ -1826,16 +1827,20 @@ const examples = [
       }
 
       function scrambleTo(target) {
+        // Slower, more "thinking/typing" feel: chars resolve mostly
+        // in reading order (~85% left-to-right, ~15% random jitter)
+        // and the whole transition takes ~2200ms so the change is
+        // noticeable.
         var queue = [];
         for (var i = 0; i < target.length; i++) {
           var ch = target.charAt(i);
           queue.push({
             ch: ch,
             passThrough: isStructural(ch),
-            resolveAt: (i / target.length) * 0.6 + Math.random() * 0.3,
+            resolveAt: (i / target.length) * 0.85 + Math.random() * 0.12,
           });
         }
-        var duration = 900;
+        var duration = 2200;
         var start = performance.now();
         function tick() {
           var elapsed = performance.now() - start;
@@ -1860,7 +1865,7 @@ const examples = [
       setInterval(function () {
         idx = (idx + 1) % states.length;
         scrambleTo(states[idx]);
-      }, 6000);
+      }, 8000);
     })();
   })();
 </script>
