@@ -39,12 +39,15 @@ const examples = [
 
       <div class="topbar-actions">
         <a href="/sign-in" class="btn-pill" data-t-es="obtener_token →" data-t-en="get_token →">obtener_token →</a>
-        <button id="lang-toggle" class="btn-pill btn-lang" aria-label="Cambiar idioma" title="Cambiar idioma / Toggle language">
-          <span class="lang-opt" data-lang="es">ES</span>
-          <span class="lang-sep" aria-hidden="true">⇄</span>
-          <span class="lang-opt" data-lang="en">EN</span>
+        <button id="lang-toggle" class="btn-ghost-pill" aria-label="Cambiar idioma" title="Cambiar idioma / Toggle language">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M2 12h20"/>
+            <path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10 15 15 0 0 1 4-10z"/>
+          </svg>
+          <span id="lang-current">ES</span>
         </button>
-        <a href="https://github.com/gusplayer/komercia-mcp" target="_blank" rel="noopener noreferrer" class="btn-pill btn-icon" aria-label="Ver repositorio en GitHub" title="Ver repositorio en GitHub">
+        <a href="https://github.com/gusplayer/komercia-mcp" target="_blank" rel="noopener noreferrer" class="btn-ghost-pill btn-icon-only" aria-label="Ver repositorio en GitHub" title="Ver repositorio en GitHub">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
           </svg>
@@ -253,33 +256,31 @@ const examples = [
     transition: color 150ms;
   }
   .link-muted:hover { color: var(--c-fg); }
+  /* Primary CTA — high-contrast filled (099 spec) */
   .btn-pill {
     background: var(--c-fg);
     color: var(--c-bg);
     text-decoration: none;
-    border: none;
+    border: 1px solid var(--c-fg);
     border-radius: var(--r);
     padding: 8px 16px;
     font-size: 16px;
-    transition: background 150ms;
+    transition: background 150ms, border-color 150ms;
     white-space: nowrap;
     cursor: pointer;
+    line-height: 1.4;
   }
-  .btn-pill:hover { background: var(--c-muted); }
+  .btn-pill:hover { background: var(--c-muted); border-color: var(--c-muted); }
 
-  /* Icon-only pill (GitHub, etc.) — square with centered SVG */
-  .btn-pill.btn-icon {
-    padding: 8px;
-    line-height: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .btn-pill.btn-icon svg { display: block; }
-
-  /* ── Lang toggle — shares .btn-pill base, adds toggle state colors */
-  .btn-lang {
+  /* Ghost pill — transparent + 1px border, used for utility actions (099 spec) */
+  .btn-ghost-pill {
+    background: transparent;
+    color: var(--c-fg);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r);
+    padding: 8px 12px;
     font-family: inherit;
+    font-size: 14px;
     letter-spacing: 0.24px;
     cursor: pointer;
     display: inline-flex;
@@ -288,18 +289,15 @@ const examples = [
     gap: 8px;
     white-space: nowrap;
     line-height: 1;
+    text-decoration: none;
+    transition: border-color 150ms, color 150ms, background 150ms;
   }
-  .btn-lang .lang-opt {
-    color: var(--c-muted);
-    transition: color 150ms;
+  .btn-ghost-pill:hover {
+    border-color: var(--c-fg);
+    background: var(--c-surface);
   }
-  .btn-lang .lang-opt.active {
-    color: var(--c-bg);
-  }
-  .btn-lang .lang-sep {
-    color: var(--c-muted);
-    font-size: 12px;
-  }
+  .btn-ghost-pill svg { display: block; flex-shrink: 0; }
+  .btn-ghost-pill.btn-icon-only { padding: 8px 9px; }
 
   /* ── Main ────────────────────────────────────────────── */
   .main {
@@ -610,8 +608,8 @@ const examples = [
     .topbar { padding: 12px 14px; gap: 8px; }
     .brand { font-size: 14px; }
     .btn-pill { padding: 8px 12px; font-size: 14px; }
-    .btn-lang { gap: 6px; }
-    .btn-lang .lang-sep { font-size: 10px; }
+    .btn-ghost-pill { padding: 7px 10px; font-size: 13px; gap: 6px; }
+    .btn-ghost-pill.btn-icon-only { padding: 7px 8px; }
     .topbar-actions { gap: 8px; }
     .main { padding: 24px 14px; }
     .h1 { font-size: 22px; line-height: 1.25; }
@@ -635,12 +633,8 @@ const examples = [
         var text = lang === 'en' ? el.getAttribute('data-t-en') : el.getAttribute('data-t-es');
         if (text !== null) el.textContent = text;
       }
-      var opts = document.querySelectorAll('.lang-opt');
-      for (var j = 0; j < opts.length; j++) {
-        var opt = opts[j];
-        if (opt.getAttribute('data-lang') === lang) opt.classList.add('active');
-        else opt.classList.remove('active');
-      }
+      var label = document.getElementById('lang-current');
+      if (label) label.textContent = lang.toUpperCase();
     }
 
     var saved = localStorage.getItem('lang');
