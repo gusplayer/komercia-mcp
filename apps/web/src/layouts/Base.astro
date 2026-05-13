@@ -9,7 +9,7 @@ export interface Props {
 }
 
 const {
-  title = 'Komercia MCP — Los datos de tu tienda Komercia, en lenguaje natural',
+  title = 'Komercia MCP',
   description = 'Servidor MCP oficial de Komercia. Pregúntale a Claude sobre tu tienda — productos, ventas, clientes, inventario — sin escribir una línea de código. Solo lectura, open source, gratis.',
   noindex = false,
   ogImage,
@@ -78,6 +78,8 @@ Astro.response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(),
     {!noindex && <meta name="robots" content="index, follow, max-image-preview:large" />}
     <link rel="canonical" href={canonicalUrl.toString()} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
 
     <!-- Google Fonts: Inter + IBM Plex Mono + Space Mono (terminal) -->

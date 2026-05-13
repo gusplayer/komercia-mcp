@@ -2,6 +2,7 @@
 // index.astro — Landing page. 099 / terminal aesthetic, bilingual ES/EN.
 import Base from '../layouts/Base.astro';
 import RecetasModal from '../components/RecetasModal.astro';
+import LogoKomercia from '../components/LogoKomercia.astro';
 
 // Pixel-style line icons (16x16 grid, sharp corners — retro terminal feel)
 const icons: Record<string, string> = {
@@ -183,14 +184,17 @@ const examples = [
 ---
 
 <Base
-  title="komercia/mcp — los datos de tu tienda, en lenguaje natural"
+  title="Komercia MCP"
   description="Servidor MCP oficial de Komercia. Pregúntale a Claude sobre tu tienda — productos, ventas, clientes, inventario. Solo lectura, open source."
 >
   <div class="page">
 
     <!-- ── Top bar ─────────────────────────────────────── -->
     <header class="topbar">
-      <a href="/" class="brand" aria-label="komercia mcp home">[komercia/mcp]</a>
+      <a href="/" class="brand" aria-label="Komercia MCP home">
+        <LogoKomercia class="brand-mark" />
+        <span class="brand-text">/mcp</span>
+      </a>
 
       <nav class="topnav">
         <a href="#features" class="link-muted" data-t-es="herramientas" data-t-en="features">herramientas</a>
@@ -252,12 +256,12 @@ const examples = [
         </div>
 
         <h1 class="h1">
-          <span id="h1-main" data-scramble data-t-es="Los datos de tu tienda," data-t-en="Your store data,">Los datos de tu tienda,</span><br />
-          <span id="h1-muted" class="muted" data-scramble data-t-es="en lenguaje natural." data-t-en="in natural language.">en lenguaje natural.</span>
+          <span id="h1-main" data-scramble data-t-es="Tu e-commerce" data-t-en="Your e-commerce">Tu e-commerce</span><br />
+          <span id="h1-muted" class="muted" data-scramble data-t-es="conectado a un agente AI" data-t-en="connected to an AI agent">conectado a un agente AI</span>
         </h1>
 
-        <p id="hero-lede" class="lede" data-scramble data-t-es="El servidor MCP oficial para Komercia. Pregúntale a Claude lo que sea sobre tu tienda — productos, ventas, clientes, inventario — sin escribir una línea de código." data-t-en="The official MCP server for Komercia. Ask Claude anything about your store — products, orders, customers, inventory — without writing a line of code.">
-          El servidor MCP oficial para Komercia. Pregúntale a Claude lo que sea sobre tu tienda — productos, ventas, clientes, inventario — sin escribir una línea de código.
+        <p id="hero-lede" class="lede" data-scramble data-t-es="Conecta Komercia con Claude y conversa con tu tienda como si le preguntaras a tu mejor vendedor. Respuestas reales, en segundos." data-t-en="Connect Komercia with Claude and chat with your store like you would with your best salesperson. Real answers, in seconds.">
+          Conecta Komercia con Claude y conversa con tu tienda como si le preguntaras a tu mejor vendedor. Respuestas reales, en segundos.
         </p>
 
         <div class="cta-row">
@@ -300,17 +304,32 @@ const examples = [
       <section id="como-funciona" class="block">
         <div class="block-header">
           <h2 class="h2" data-t-es="&gt; cómo funciona" data-t-en="&gt; how it works">&gt; cómo funciona</h2>
-          <p class="block-hint" data-scramble data-t-es="Estos prompts funcionan hoy. Pega cualquiera en Claude." data-t-en="These prompts work today. Paste any of them into Claude.">Estos prompts funcionan hoy. Pega cualquiera en Claude.</p>
+          <p class="block-hint" data-scramble data-t-es="Así se ve en la práctica. 6 casos reales, datos reales." data-t-en="See it in action. 6 real use cases, real store data.">Así se ve en la práctica. 6 casos reales, datos reales.</p>
         </div>
 
-        <ul class="examples">
-          {examples.map((q) => (
-            <li class="example">
-              <span class="prompt-mark">&gt;</span>
-              <span data-t-es={q.es} data-t-en={q.en}>{q.es}</span>
-            </li>
-          ))}
-        </ul>
+        <div class="hiw-terminal" id="hiw-terminal">
+          <div class="hiw-bar" aria-hidden="true">
+            <span class="hiw-chrome-dots">● ● ●</span>
+            <span class="hiw-bar-label">claude · komercia/mcp</span>
+          </div>
+          <div class="hiw-body">
+            <div class="hiw-prompt-row">
+              <span class="muted">user@komercia ~$</span>
+              <span id="hiw-question" class="hiw-question"></span><span class="caret">_</span>
+            </div>
+            <div id="hiw-calling" class="hiw-calling" style="visibility:hidden">
+              <span class="muted">→ calling</span>
+              <code id="hiw-tool-name" class="hiw-tool-chip"></code>
+            </div>
+            <pre id="hiw-output" class="hiw-output" aria-live="polite"><code id="hiw-output-code"></code></pre>
+          </div>
+          <div class="hiw-footer">
+            <div id="hiw-nav-dots" class="hiw-nav-dots" role="tablist" aria-label="Navigate examples"></div>
+            <div class="hiw-progress-track" aria-hidden="true">
+              <div id="hiw-pbar" class="hiw-pbar"></div>
+            </div>
+          </div>
+        </div>
 
         <button type="button" data-open-recetas class="link-arrow-btn" data-t-es="Ver los 18 prompts curados →" data-t-en="See all 18 curated prompts →">Ver los 18 prompts curados →</button>
       </section>
@@ -477,7 +496,7 @@ const examples = [
     display: flex;
     flex-direction: column;
   }
-  :global(body:has(.page)) { background: #000000; }
+  :global(body:has(.page)) { background: #000000; overflow-x: clip; }
 
   /* ── Top bar ─────────────────────────────────────────── */
   .topbar {
@@ -494,12 +513,28 @@ const examples = [
     z-index: 10;
   }
   .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     color: var(--c-fg);
     text-decoration: none;
     font-size: 16px;
     flex-shrink: 0;
+    transition: color 150ms;
   }
   .brand:hover { color: var(--c-muted); }
+  /* :global so the rule reaches the SVG inside the LogoKomercia child
+     component (Astro CSS scoping otherwise blocks it). */
+  :global(.brand-mark) {
+    height: 22px;
+    width: 127px;
+    display: block;
+    flex-shrink: 0;
+  }
+  .brand-text {
+    color: var(--c-fg);
+    letter-spacing: 0.24px;
+  }
   .topnav {
     display: flex;
     gap: 24px;
@@ -654,6 +689,7 @@ const examples = [
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    opacity: 0.55;
   }
   .deco-frame {
     margin: 0;
@@ -665,14 +701,13 @@ const examples = [
     line-height: 1.5;
     white-space: pre;
     display: block;
-    /* True color gradient on the text: bright white near the left edge,
-       fading through muted gray, then almost merging with the bg on the
-       right — the "screen dimming out" effect requested. */
+    /* Ambient gradient: starts already-muted on the left and fades into
+       the background on the right. Reads as part of the bg, not a panel. */
     background: linear-gradient(90deg,
-      #ffffff 0%,
-      #d0d0d0 22%,
-      #888888 50%,
-      #353535 78%,
+      #5a5a5a 0%,
+      #3d3d3d 28%,
+      #232323 58%,
+      #0f0f0f 84%,
       #050505 100%);
     background-clip: text;
     -webkit-background-clip: text;
@@ -957,29 +992,124 @@ const examples = [
   .code-copy:hover { color: var(--c-fg); border-color: var(--c-fg); }
   .code-copy.copied { color: var(--c-fg); border-color: var(--c-fg); }
 
-  /* ── Examples list ───────────────────────────────────── */
-  .examples {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  /* ── How-it-works terminal demo ─────────────────────────── */
+  .hiw-terminal {
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r);
+    overflow: hidden;
+  }
+  .hiw-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 19px;
+    background: var(--c-bg);
+    border-bottom: 1px solid var(--c-border);
+  }
+  .hiw-chrome-dots {
+    color: var(--c-border);
+    font-size: 8px;
+    letter-spacing: 3px;
+    flex-shrink: 0;
+  }
+  .hiw-bar-label {
+    font-size: 13px;
+    color: var(--c-muted);
+  }
+  .hiw-body {
+    padding: 22px 22px 18px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    background: var(--c-surface);
-    border-radius: var(--r);
-    padding: 19px;
+    gap: 14px;
   }
-  .example {
+  .hiw-prompt-row {
     display: flex;
-    gap: 12px;
-    align-items: flex-start;
-    color: var(--c-fg);
+    align-items: center;
+    gap: 8px;
     font-size: 16px;
-    line-height: 1.4;
+    flex-wrap: wrap;
+    min-height: 22px;
   }
-  .prompt-mark {
+  .hiw-question {
+    color: var(--c-fg);
+  }
+  .hiw-calling {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
     color: var(--c-muted);
+  }
+  .hiw-tool-chip {
+    font-family: inherit;
+    font-size: 12px;
+    color: var(--c-fg);
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: 4px;
+    padding: 1px 7px;
+    letter-spacing: 0;
+  }
+  .hiw-output {
+    margin: 0;
+    padding: 14px 16px;
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: 8px;
+    min-height: 185px;
+  }
+  .hiw-output code {
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--c-fg);
+    display: block;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .hiw-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 19px 12px;
+    border-top: 1px solid var(--c-border);
+  }
+  .hiw-nav-dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .hiw-nav-dot {
+    width: 20px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--c-border);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: background 200ms, width 200ms;
     flex-shrink: 0;
+  }
+  .hiw-nav-dot.active {
+    background: var(--c-fg);
+    width: 28px;
+  }
+  .hiw-nav-dot:hover:not(.active) {
+    background: var(--c-muted);
+  }
+  .hiw-progress-track {
+    flex: 1;
+    height: 1px;
+    background: var(--c-border);
+    overflow: hidden;
+    max-width: 180px;
+  }
+  .hiw-pbar {
+    height: 100%;
+    background: var(--c-fg);
+    width: 0%;
   }
 
   /* ── Final CTA ───────────────────────────────────────── */
@@ -1026,6 +1156,7 @@ const examples = [
     .topbar { padding: 14px 16px; gap: 12px; }
     .topnav { display: none; }
     .topbar-actions { gap: 12px; }
+    :global(.brand-mark) { height: 19px; width: 110px; }
     .main { padding: 32px 16px; gap: 26px; }
     .hero { padding: 16px 0; gap: 19px; }
     .h1 { font-size: 26px; }
@@ -1036,13 +1167,14 @@ const examples = [
   }
 
   @media (max-width: 480px) {
-    .topbar { padding: 12px 14px; gap: 8px; }
-    .brand { font-size: 14px; }
+    .topbar { padding: 12px 12px; gap: 6px; }
+    .brand { font-size: 13px; gap: 3px; }
+    :global(.brand-mark) { height: 17px; width: 98px; }
     .btn-pill, .btn-ghost-pill { height: 32px; }
-    .btn-pill { padding: 0 12px; font-size: 14px; }
-    .btn-ghost-pill { padding: 0 10px; font-size: 13px; gap: 6px; }
+    .btn-pill { padding: 0 10px; font-size: 13px; }
+    .btn-ghost-pill { padding: 0 8px; font-size: 12px; gap: 6px; }
     .btn-ghost-pill.btn-icon-only { width: 32px; padding: 0; }
-    .topbar-actions { gap: 8px; }
+    .topbar-actions { gap: 6px; }
     .main { padding: 24px 14px; }
     .h1 { font-size: 22px; line-height: 1.25; }
     .lede { font-size: 15px; }
@@ -1686,6 +1818,215 @@ const examples = [
     }
 
     // (Prompt library modal logic now lives in RecetasModal.astro)
+
+    // ── How-it-works animated demo ────────────────────────────
+    (function () {
+      var questionEl = document.getElementById('hiw-question');
+      var callingEl  = document.getElementById('hiw-calling');
+      var toolNameEl = document.getElementById('hiw-tool-name');
+      var outputCode = document.getElementById('hiw-output-code');
+      var navDotsEl  = document.getElementById('hiw-nav-dots');
+      var pbarEl     = document.getElementById('hiw-pbar');
+      var terminal   = document.getElementById('hiw-terminal');
+
+      if (!questionEl || !outputCode || !navDotsEl) return;
+
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var CYCLE_MS = 7000;
+      var hiwIdx = 0;
+      var hiwTimer = null;
+      var typingCancelled = false;
+      var typingTimer = null;
+
+      var useCases = [
+        {
+          es: '¿cuántos productos activos tengo?',
+          en: 'how many active products do i have?',
+          tool: 'get_store_info',
+          out: 'products      86 active\ncategories    12 groups\nlow_stock      3 items ⚠\n\n→ camiseta_negra_L · 47 uds\n→ pin_edt_lim      · 31 uds\n→ bolso_lona       · 22 uds',
+        },
+        {
+          es: 'muéstrame los ingresos del último mes',
+          en: "show me last month's revenue with totals",
+          tool: 'export_orders',
+          out: 'last_month    $12.4M\nprev_month    $10.5M\ngrowth        +18% ↑\n\n→ 247 orders processed\n→ avg_ticket    $34K\n→ peak_day      saturday',
+        },
+        {
+          es: 'exporta toda mi lista de clientes en csv',
+          en: 'export my full customer list as csv',
+          tool: 'export_customers',
+          out: '✓ customers.csv  ready · 38.2 KB\n  423 contacts exported\n\n→ m.gomez@...  Bogotá\n→ l.rivera@... Medellín\n→ p.castro@... Cali\n  + 420 more rows',
+        },
+        {
+          es: '¿qué productos tienen poco stock?',
+          en: 'which products are running low on stock?',
+          tool: 'export_inventory_movements',
+          out: '⚠ stock_alert · 3 products\n\n→ bolso_lona       8u  restock soon\n→ pin_edt_lim      4u  ← critical\n→ stcks_pck       18u  low',
+        },
+        {
+          es: 'exporta mi catálogo en formato shopify',
+          en: 'export my catalog in shopify format',
+          tool: 'export_products',
+          out: '✓ catalog.shopify.csv  ready\n  86 products · 124 variants\n\n→ camiseta-negra-l  $38.900  sku_001\n→ pin-edicion-lim   $12.500  sku_022\n  + 83 more items',
+        },
+        {
+          es: '¿qué métodos de pago tengo configurados?',
+          en: 'what payment methods are configured?',
+          tool: 'list_payment_gateways',
+          out: 'configured · 3 active gateways\n\n✓ Wompi           active\n✓ PayU Colombia   active\n✓ Contra-entrega  active\n  PayPal          inactive',
+        },
+      ];
+
+      // Build nav dots
+      useCases.forEach(function (_, i) {
+        var btn = document.createElement('button');
+        btn.className = 'hiw-nav-dot';
+        btn.setAttribute('role', 'tab');
+        btn.setAttribute('aria-label', 'Example ' + (i + 1));
+        btn.setAttribute('data-hiw-i', String(i));
+        navDotsEl.appendChild(btn);
+      });
+      var navDots = navDotsEl.querySelectorAll('.hiw-nav-dot');
+
+      function setDots(idx) {
+        for (var i = 0; i < navDots.length; i++) {
+          navDots[i].classList.toggle('active', i === idx);
+          navDots[i].setAttribute('aria-selected', String(i === idx));
+        }
+      }
+
+      function startPbar() {
+        if (!pbarEl) return;
+        pbarEl.style.transition = 'none';
+        pbarEl.style.width = '0%';
+        void pbarEl.offsetWidth;
+        pbarEl.style.transition = 'width ' + CYCLE_MS + 'ms linear';
+        pbarEl.style.width = '100%';
+      }
+
+      function typeQuestion(text, done) {
+        questionEl.textContent = '';
+        typingCancelled = false;
+        var i = 0;
+        function step() {
+          if (typingCancelled) return;
+          if (i < text.length) {
+            questionEl.textContent += text.charAt(i);
+            i++;
+            typingTimer = setTimeout(step, 28 + Math.random() * 22);
+          } else {
+            done();
+          }
+        }
+        step();
+      }
+
+      function revealOutput(text) {
+        var CHARS = '!<>-_[]{}=+*?#$0123456789';
+        var passRe = /[✓⚠→←↑↓·\s]/;
+        var total = 0;
+        for (var ci = 0; ci < text.length; ci++) {
+          if (text.charAt(ci) !== '\n') total++;
+        }
+        var chars = [];
+        var pos = 0;
+        for (var i = 0; i < text.length; i++) {
+          var ch = text.charAt(i);
+          chars.push({
+            ch: ch,
+            pass: passRe.test(ch),
+            at: ch === '\n' ? 0 : pos / total,
+          });
+          if (ch !== '\n') pos++;
+        }
+        var duration = 1300;
+        var start = performance.now();
+        function tick() {
+          var p = Math.min((performance.now() - start) / duration, 1);
+          var out = '';
+          for (var k = 0; k < chars.length; k++) {
+            var c = chars[k];
+            if (c.pass || p >= c.at) {
+              out += c.ch;
+            } else {
+              out += CHARS.charAt(Math.floor(Math.random() * CHARS.length));
+            }
+          }
+          outputCode.textContent = out;
+          if (p < 1) requestAnimationFrame(tick);
+        }
+        tick();
+      }
+
+      function showCase(idx) {
+        hiwIdx = idx;
+        setDots(idx);
+        var uc = useCases[idx];
+        var q = current === 'en' ? uc.en : uc.es;
+
+        typingCancelled = true;
+        clearTimeout(typingTimer);
+        questionEl.textContent = '';
+        callingEl.style.visibility = 'hidden';
+        outputCode.textContent = '';
+        startPbar();
+
+        if (reduceMotion) {
+          questionEl.textContent = q;
+          if (toolNameEl) toolNameEl.textContent = uc.tool;
+          callingEl.style.visibility = 'visible';
+          outputCode.textContent = uc.out;
+          return;
+        }
+
+        typeQuestion(q, function () {
+          if (toolNameEl) toolNameEl.textContent = uc.tool;
+          callingEl.style.visibility = 'visible';
+          setTimeout(function () { revealOutput(uc.out); }, 380);
+        });
+      }
+
+      function scheduleNext() {
+        clearTimeout(hiwTimer);
+        hiwTimer = setTimeout(function () {
+          showCase((hiwIdx + 1) % useCases.length);
+          scheduleNext();
+        }, CYCLE_MS);
+      }
+
+      // Manual dot navigation
+      for (var di = 0; di < navDots.length; di++) {
+        (function (dot) {
+          dot.addEventListener('click', function () {
+            var idx = parseInt(dot.getAttribute('data-hiw-i'), 10);
+            typingCancelled = true;
+            clearTimeout(typingTimer);
+            clearTimeout(hiwTimer);
+            showCase(idx);
+            scheduleNext();
+          });
+        })(navDots[di]);
+      }
+
+      // Pause on hover
+      if (terminal) {
+        terminal.addEventListener('mouseenter', function () {
+          clearTimeout(hiwTimer);
+          if (pbarEl) {
+            var w = window.getComputedStyle(pbarEl).width;
+            pbarEl.style.transition = 'none';
+            pbarEl.style.width = w;
+          }
+        });
+        terminal.addEventListener('mouseleave', function () {
+          scheduleNext();
+          startPbar();
+        });
+      }
+
+      showCase(0);
+      scheduleNext();
+    })();
 
     // ── Hero deco: cycle through different data "screens" ────
     (function () {
