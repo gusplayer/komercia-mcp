@@ -257,6 +257,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
     --fs-sm:   13px;
     --fs-base: 14px;
     --fs-md:   16px;
+    --fs-lg:   20px;
     --fs-xl:   24px;
     --fs-2xl:  32px;
 
@@ -398,10 +399,12 @@ Astro.cookies.set('csrf_token', csrfToken, {
 
   /* ── Title block ─────────────────────────────────────── */
   .title {
-    font-size: var(--fs-md);
+    font-size: var(--fs-xl);
     font-weight: 400;
     color: var(--c-fg);
     margin: 0 0 8px;
+    letter-spacing: 0.24px;
+    line-height: 1.2;
   }
   .subtitle {
     font-size: var(--fs-md);
@@ -414,9 +417,11 @@ Astro.cookies.set('csrf_token', csrfToken, {
   form { display: flex; flex-direction: column; gap: 19px; }
   .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
   .field label {
-    font-size: var(--fs-md);
+    font-size: var(--fs-base);
     color: var(--c-muted);
   }
+  /* Input stays at 16px — iOS Safari zooms the page on focus for any
+     form field under 16px. Don't shrink. */
   .field input {
     background: var(--c-surface);
     border: 1px solid var(--c-surface);
@@ -441,23 +446,23 @@ Astro.cookies.set('csrf_token', csrfToken, {
     border-radius: var(--r);
     padding: 16px 19px;
     color: var(--c-fg);
-    font-size: var(--fs-md);
+    font-size: var(--fs-base);
   }
   .alert::before { content: '! '; color: var(--c-muted); }
   .warn {
-    font-size: var(--fs-md);
+    font-size: var(--fs-base);
     color: var(--c-muted);
     border-left: 1px solid var(--c-border);
     padding-left: 16px;
     margin: 0 0 16px;
   }
   .status {
-    font-size: var(--fs-md);
+    font-size: var(--fs-base);
     color: var(--c-fg);
     margin: 0 0 16px;
   }
   .status .ok { color: var(--c-fg); margin-right: 8px; }
-  .badge { color: var(--c-muted); font-size: var(--fs-md); margin-left: 8px; }
+  .badge { color: var(--c-muted); font-size: var(--fs-sm); margin-left: 8px; }
 
   /* ── Buttons ─────────────────────────────────────────── */
   .btn-primary {
@@ -482,7 +487,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
     border: 1px solid var(--c-border);
     border-radius: var(--r);
     font-family: inherit;
-    font-size: var(--fs-md);
+    font-size: var(--fs-base);
     padding: 12px 19px;
     cursor: pointer;
     white-space: nowrap;
@@ -496,7 +501,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
     border: 1px solid var(--c-border);
     border-radius: var(--r);
     font-family: inherit;
-    font-size: var(--fs-md);
+    font-size: var(--fs-sm);
     padding: 6px 12px;
     cursor: pointer;
     white-space: nowrap;
@@ -512,7 +517,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
     border: 1px solid var(--c-border);
     border-radius: var(--r);
     font-family: inherit;
-    font-size: var(--fs-md);
+    font-size: var(--fs-base);
     padding: 12px 19px;
     cursor: pointer;
     transition: color 150ms, border-color 150ms;
@@ -543,7 +548,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
 
   /* ── Snippets ────────────────────────────────────────── */
   .hint {
-    font-size: var(--fs-md);
+    font-size: var(--fs-base);
     color: var(--c-muted);
     margin: 0;
   }
@@ -715,7 +720,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
     white-space: nowrap;
     color: var(--c-fg);
     font-family: inherit;
-    font-size: var(--fs-md);
+    font-size: var(--fs-sm);
     user-select: all;
   }
   .snippet-block code {
@@ -741,11 +746,11 @@ Astro.cookies.set('csrf_token', csrfToken, {
   }
   .kv-k {
     color: var(--c-muted);
-    font-size: var(--fs-md);
+    font-size: var(--fs-base);
   }
   .kv-v {
     color: var(--c-fg);
-    font-size: var(--fs-md);
+    font-size: var(--fs-base);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -755,7 +760,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
 
   /* ── Footer line ─────────────────────────────────────── */
   .footer-line {
-    font-size: var(--fs-md);
+    font-size: var(--fs-base);
     color: var(--c-muted);
     margin: 26px 0 0;
   }
@@ -819,6 +824,11 @@ Astro.cookies.set('csrf_token', csrfToken, {
     .main { padding: 32px 16px; }
     .kv { grid-template-columns: 1fr; gap: 6px; }
     .kv .btn-mini { justify-self: flex-end; }
+    /* Mirror landing mobile hierarchy: demote secondary copy so the
+       page title leads. .field input stays 16 (iOS zoom guard). */
+    .prompt { font-size: var(--fs-base); }
+    .title { font-size: var(--fs-lg); }
+    .subtitle { font-size: var(--fs-base); }
   }
 
   @media (max-width: 480px) {

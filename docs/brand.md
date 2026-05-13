@@ -165,17 +165,22 @@ authenticity boost.
 
 Defined as CSS custom properties on `.page` in `index.astro` and
 `sign-in.astro`. The modal in `RecetasModal.astro` inherits via cascade.
-Six sizes — anything outside this scale is a bug or a decorative
+Seven sizes — anything outside this scale is a bug or a decorative
 exception (ASCII art).
 
 | Token | Px | Role |
 |---|---|---|
 | `--fs-xs`   | 12 | Micro: count badges, tool tags inside recipe cards, HIW tool chip |
-| `--fs-sm`   | 13 | Small: code blocks, modal meta, captions, footer, badges |
-| `--fs-base` | 14 | UI default: ghost buttons, form fields, modal info, mobile body |
-| `--fs-md`   | 16 | Body text: paragraphs, section headers, tool card names, primary CTA |
-| `--fs-xl`   | 24 | Hero h1 on mobile (≤768) |
+| `--fs-sm`   | 13 | Small: code blocks, modal meta, captions, footer labels, badges, mini buttons |
+| `--fs-base` | 14 | UI default: form labels, ghost buttons, modal info, mobile body, secondary copy |
+| `--fs-md`   | 16 | Body text: paragraphs, section headers, tool card names, primary CTA, form inputs |
+| `--fs-lg`   | 20 | Sub-display: sign-in page title on mobile (and headings that need a step between body and hero) |
+| `--fs-xl`   | 24 | Hero h1 on mobile (≤768), sign-in page title on desktop |
 | `--fs-2xl`  | 32 | Hero h1 on desktop |
+
+`.field input` is locked at `--fs-md` (16) regardless of viewport
+because iOS Safari zooms the whole page when a form field smaller than
+16 px gains focus.
 
 Always reference via `var(--fs-*)`, never hardcode `font-size: 14px`.
 
