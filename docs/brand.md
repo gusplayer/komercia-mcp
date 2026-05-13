@@ -179,31 +179,55 @@ exception (ASCII art).
 
 Always reference via `var(--fs-*)`, never hardcode `font-size: 14px`.
 
-### Application matrix
+### Hierarchy on mobile
 
-| Element | Token |
-|---|---|
-| Hero h1 (desktop) | `--fs-2xl` |
-| Hero h1 (mobile ≤768) | `--fs-xl` |
-| Hero lede / subtitle | `--fs-md` (mobile drops to `--fs-base` via inline override) |
-| Body paragraphs, section h2, block-hint | `--fs-md` |
-| Tool card name | `--fs-md` |
-| Tool card desc | `--fs-base` |
-| Primary CTA (`.btn-primary`) | `--fs-md` (mobile `--fs-base`) |
-| Ghost pill (`.btn-ghost-pill`, topbar buttons) | `--fs-base` (mobile `--fs-xs`) |
-| Trust line, form labels, inputs | `--fs-base` |
-| Modal title | `--fs-base` (mobile `--fs-sm`) |
-| Modal info, filter buttons, close button | `--fs-base` |
-| Filter count, modal footer, code blocks | `--fs-sm` |
-| Method name (install modal h3) | `--fs-md` |
-| Method badge, step num | `--fs-sm` |
-| Recipe prompt | `--fs-md` |
-| Recipe response, recipe meta, recipe copy | `--fs-sm` |
-| Recipe tools chip | `--fs-xs` |
-| HIW prompt row | `--fs-md` |
-| HIW calling, output, bar label | `--fs-sm` |
-| HIW tool chip | `--fs-xs` |
-| Bottom bar / page footer | `--fs-sm` |
+Desktop has the luxury of whitespace, so every body-level element can
+sit at `--fs-md` (16) without crowding. On phones, all-16 reads as a
+soup — nothing is the focus. The mobile override (`@media (max-width:
+768px)`) deliberately demotes secondary copy down one step so a clear
+three-tier rhythm emerges:
+
+| Tier | Mobile px | Examples |
+|---|---|---|
+| Display | 24 (`--fs-xl`) | Hero h1 only |
+| Body / Important | 16 (`--fs-md`) | Section h2 (`> features`), tool-card name, install step header (`[01] get_token`), page footer |
+| Secondary / Auxiliary | 14 (`--fs-base`) | Hero lede, trust line, block-hint, prompt, tool-card desc, all CTAs, step description |
+| Captions / Code | 13 (`--fs-sm`) | Modal meta, code blocks, recipe response |
+| Micro | 12 (`--fs-xs`) | Count chips, tool tag pills, HIW tool chip |
+
+Desktop preserves the editorial cadence: 32 > 16 > 14 (display > body >
+desc), since at 880-px max-width the lede + trust + hint can comfortably
+share the same body size with the H1 doing the heavy lifting.
+
+### Application matrix (desktop default)
+
+| Element | Token | Mobile override |
+|---|---|---|
+| Hero h1 | `--fs-2xl` | `--fs-xl` |
+| Hero lede / subtitle | `--fs-md` | `--fs-base` |
+| Hero prompt (`user@komercia ~$ ...`) | `--fs-md` | `--fs-base` |
+| Body paragraphs, section h2 | `--fs-md` | — (h2 stays 16) |
+| Block-hint (section subtitle) | `--fs-md` | `--fs-base` |
+| Trust line | `--fs-md` | `--fs-base` |
+| Tool card name | `--fs-md` | — (stays 16) |
+| Tool card desc | `--fs-base` | — (already 14) |
+| Install step header (`[01] …`) | `--fs-md` | — (stays 16) |
+| Install step description | `--fs-md` | `--fs-base` |
+| Primary CTA (`.btn-primary`) | `--fs-md` | `--fs-base` |
+| Ghost pill (topbar buttons) | `--fs-base` | `--fs-xs` (≤480) |
+| Form labels, inputs | `--fs-base` | — |
+| Modal title | `--fs-base` | `--fs-sm` (≤640) |
+| Modal info, filter buttons, close button | `--fs-base` | — |
+| Filter count, modal footer, code blocks | `--fs-sm` | — |
+| Method name (install modal h3) | `--fs-md` | — |
+| Method badge, step num | `--fs-sm` | — |
+| Recipe prompt | `--fs-md` | — |
+| Recipe response, recipe meta, recipe copy | `--fs-sm` | — |
+| Recipe tools chip | `--fs-xs` | — |
+| HIW prompt row | `--fs-md` | — |
+| HIW calling, output, bar label | `--fs-sm` | — |
+| HIW tool chip | `--fs-xs` | — |
+| Bottom bar / page footer | `--fs-md` | — |
 
 ### Decorative exceptions (NOT in the scale)
 

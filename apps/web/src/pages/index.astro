@@ -853,7 +853,7 @@ const installMethods: InstallMethod[] = [
   }
   .tool-desc {
     color: var(--c-fg);
-    font-size: var(--fs-md);
+    font-size: var(--fs-base);
     margin: 0;
     line-height: 1.4;
   }
@@ -1156,7 +1156,14 @@ const installMethods: InstallMethod[] = [
     .main { padding: 32px 16px; gap: 26px; }
     .hero { padding: 16px 0; gap: 19px; }
     .h1 { font-size: var(--fs-xl); }
-    .trust { gap: 16px; }
+    /* Demote secondary copy on mobile so the H1 + tool-card names + CTAs
+       have room to breathe. Hierarchy: 24 > 16 > 14 (vs the desktop
+       16 > 16 > 16 soup). */
+    .prompt { font-size: var(--fs-base); }
+    .lede { font-size: var(--fs-base); }
+    .trust { gap: 16px; font-size: var(--fs-base); }
+    .block-hint { font-size: var(--fs-base); }
+    .step-desc { font-size: var(--fs-base); }
     .bottom-bar { padding: 14px 16px; }
     .step { grid-template-columns: 40px 1fr; gap: 12px; }
     #features, #como-funciona, #install { scroll-margin-top: 80px; }
@@ -1173,7 +1180,6 @@ const installMethods: InstallMethod[] = [
     .topbar-actions { gap: 6px; }
     .main { padding: 24px 14px; }
     .h1 { line-height: 1.25; }
-    .lede { font-size: var(--fs-base); }
     .grid { grid-template-columns: 1fr; }
     .btn-primary, .btn-ghost { padding: 14px 22px; font-size: var(--fs-base); }
     .btn-primary-lg { padding: 16px 26px; }
