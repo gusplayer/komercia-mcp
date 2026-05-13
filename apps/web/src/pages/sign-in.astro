@@ -2,6 +2,7 @@
 // sign-in.astro — Auth + token issuance. 099 / terminal aesthetic, bilingual.
 import Base from '../layouts/Base.astro';
 import RecetasModal from '../components/RecetasModal.astro';
+import LogoKomercia from '../components/LogoKomercia.astro';
 import { generateCsrfToken } from '../lib/csrf.js';
 
 const csrfToken = generateCsrfToken();
@@ -21,7 +22,9 @@ Astro.cookies.set('csrf_token', csrfToken, {
 >
   <div class="page">
     <header class="topbar">
-      <a href="/" class="brand" aria-label="komercia mcp home">[komercia/mcp]</a>
+      <a href="/" class="brand" aria-label="Komercia MCP home">
+        <LogoKomercia class="brand-mark" />
+      </a>
 
       <div class="topbar-actions">
         <a href="/" class="link-muted" data-t-es="← volver" data-t-en="← back">← volver</a>
@@ -44,7 +47,6 @@ Astro.cookies.set('csrf_token', csrfToken, {
     <main class="main">
       <div class="terminal">
         <div class="prompt">
-          <span class="muted">user@komercia ~$</span>
           <span class="cmd" id="prompt-cmd">authenticate</span><span class="caret">_</span>
         </div>
 
@@ -281,12 +283,23 @@ Astro.cookies.set('csrf_token', csrfToken, {
     border-bottom: 1px solid var(--c-border);
   }
   .brand {
+    display: inline-flex;
+    align-items: center;
     color: var(--c-fg);
     text-decoration: none;
     font-size: var(--fs-md);
     flex-shrink: 0;
+    transition: color 150ms;
   }
   .brand:hover { color: var(--c-muted); }
+  /* :global so the rule reaches the SVG inside the LogoKomercia child
+     component (Astro CSS scoping otherwise blocks it). */
+  :global(.brand-mark) {
+    height: 22px;
+    width: 127px;
+    display: block;
+    flex-shrink: 0;
+  }
   .topbar-actions {
     display: flex;
     align-items: center;
@@ -800,7 +813,8 @@ Astro.cookies.set('csrf_token', csrfToken, {
   /* ── Responsive ──────────────────────────────────────── */
   @media (max-width: 640px) {
     .topbar { padding: 14px 16px; gap: 12px; }
-    .topbar-actions { gap: 14px; }
+    .topbar-actions { gap: 14px; margin-left: auto; }
+    :global(.brand-mark) { height: 19px; width: 110px; }
     .bottom-bar { padding: 14px 16px; }
     .main { padding: 32px 16px; }
     .kv { grid-template-columns: 1fr; gap: 6px; }
@@ -808,9 +822,10 @@ Astro.cookies.set('csrf_token', csrfToken, {
   }
 
   @media (max-width: 480px) {
-    .topbar { padding: 12px 14px; }
+    .topbar { padding: 12px 14px; gap: 8px; }
     .brand { font-size: var(--fs-base); }
-    .topbar-actions { gap: 10px; }
+    :global(.brand-mark) { height: 17px; width: 98px; }
+    .topbar-actions { gap: 8px; }
     .btn-ghost-pill { height: 32px; padding: 0 10px; font-size: var(--fs-sm); gap: 6px; }
     .btn-ghost-pill.btn-icon-only { width: 32px; padding: 0; }
     .link-muted { font-size: var(--fs-base); }
