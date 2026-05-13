@@ -103,7 +103,7 @@ import { recetas, categories, catCounts } from '../lib/recetas.data';
     max-height: calc(100vh - 64px);
     overflow: hidden;
     font-family: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 16px;
+    font-size: var(--fs-md);
     letter-spacing: 0.24px;
     color: #ffffff;
   }
@@ -120,7 +120,7 @@ import { recetas, categories, catCounts } from '../lib/recetas.data';
   }
   .modal-window .modal-title {
     font-family: inherit;
-    font-size: 16px;
+    font-size: var(--fs-md);
     color: #ffffff;
     min-width: 0;
     overflow: hidden;
@@ -139,7 +139,7 @@ import { recetas, categories, catCounts } from '../lib/recetas.data';
     border: none;
     color: #888888;
     font-family: inherit;
-    font-size: 16px;
+    font-size: var(--fs-md);
     cursor: pointer;
     padding: 4px 8px;
     transition: color 150ms;
@@ -152,7 +152,7 @@ import { recetas, categories, catCounts } from '../lib/recetas.data';
     padding: 12px 24px;
     border-bottom: 1px solid #383838;
     color: #888888;
-    font-size: 14px;
+    font-size: var(--fs-base);
     flex-shrink: 0;
   }
 
@@ -171,7 +171,7 @@ import { recetas, categories, catCounts } from '../lib/recetas.data';
     border: 1px solid #383838;
     border-radius: 10px;
     font-family: inherit;
-    font-size: 14px;
+    font-size: var(--fs-base);
     padding: 5px 12px;
     cursor: pointer;
     white-space: nowrap;
@@ -186,7 +186,7 @@ import { recetas, categories, catCounts } from '../lib/recetas.data';
     color: #000000;
     border-color: #ffffff;
   }
-  .modal-window .filter-btn .count { opacity: 0.7; font-size: 13px; }
+  .modal-window .filter-btn .count { opacity: 0.7; font-size: var(--fs-sm); }
 
   .modal-body {
     flex: 1;
@@ -216,7 +216,7 @@ import { recetas, categories, catCounts } from '../lib/recetas.data';
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    font-size: 13px;
+    font-size: var(--fs-sm);
     flex-wrap: wrap;
   }
   .recipe-tag {
@@ -232,7 +232,7 @@ import { recetas, categories, catCounts } from '../lib/recetas.data';
     border: 1px solid #383838;
     border-radius: 10px;
     font-family: inherit;
-    font-size: 13px;
+    font-size: var(--fs-sm);
     padding: 4px 10px;
     cursor: pointer;
     white-space: nowrap;
@@ -242,7 +242,7 @@ import { recetas, categories, catCounts } from '../lib/recetas.data';
   .recipe-copy.copied { color: #ffffff; border-color: #ffffff; }
 
   .recipe-prompt {
-    font-size: 16px;
+    font-size: var(--fs-md);
     color: #ffffff;
     margin: 0;
     line-height: 1.4;
@@ -255,7 +255,7 @@ import { recetas, categories, catCounts } from '../lib/recetas.data';
     padding: 16px 19px;
     display: flex;
     flex-direction: column;
-    font-size: 14px;
+    font-size: var(--fs-base);
     color: #ffffff;
     line-height: 1.5;
     /* Long ASCII-formatted responses scroll horizontally inside this
@@ -275,7 +275,7 @@ import { recetas, categories, catCounts } from '../lib/recetas.data';
   }
   .recipe-tools code {
     font-family: inherit;
-    font-size: 12px;
+    font-size: var(--fs-xs);
     color: #888888;
     background: #1d1d1d;
     border: 1px solid #383838;
@@ -287,7 +287,7 @@ import { recetas, categories, catCounts } from '../lib/recetas.data';
   .modal-footer {
     padding: 12px 24px;
     border-top: 1px solid #383838;
-    font-size: 13px;
+    font-size: var(--fs-sm);
     flex-shrink: 0;
   }
 
@@ -299,10 +299,10 @@ import { recetas, categories, catCounts } from '../lib/recetas.data';
     .modal-info, .modal-filters, .modal-body, .modal-footer {
       padding-left: 16px; padding-right: 16px;
     }
-    .modal-window .modal-title { font-size: 13px; }
-    .modal-close { font-size: 14px; padding: 4px 6px; }
-    .recipe-response { padding: 12px 14px; font-size: 12px; }
-    .recipe-prompt { font-size: 15px; }
+    .modal-window .modal-title { font-size: var(--fs-sm); }
+    .modal-close { font-size: var(--fs-base); padding: 4px 6px; }
+    .recipe-response { padding: 12px 14px; font-size: var(--fs-xs); }
+    .recipe-prompt { font-size: var(--fs-base); }
   }
 </style>
 

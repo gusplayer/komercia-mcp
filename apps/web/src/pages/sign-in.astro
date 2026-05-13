@@ -250,11 +250,19 @@ Astro.cookies.set('csrf_token', csrfToken, {
     --c-muted: #888888;
     --r: 10px;
 
+    /* Type scale — keep in sync with index.astro + docs/brand.md */
+    --fs-xs:   12px;
+    --fs-sm:   13px;
+    --fs-base: 14px;
+    --fs-md:   16px;
+    --fs-xl:   24px;
+    --fs-2xl:  32px;
+
     min-height: 100vh;
     background: var(--c-bg);
     color: var(--c-fg);
     font-family: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 16px;
+    font-size: var(--fs-md);
     line-height: 1.4;
     letter-spacing: 0.24px;
     font-feature-settings: 'zero';
@@ -275,7 +283,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
   .brand {
     color: var(--c-fg);
     text-decoration: none;
-    font-size: 16px;
+    font-size: var(--fs-md);
     flex-shrink: 0;
   }
   .brand:hover { color: var(--c-muted); }
@@ -288,7 +296,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
   .link-muted {
     color: var(--c-muted);
     text-decoration: none;
-    font-size: 16px;
+    font-size: var(--fs-md);
     transition: color 150ms;
   }
   .link-muted:hover { color: var(--c-fg); }
@@ -303,7 +311,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
     box-sizing: border-box;
     padding: 0 12px;
     font-family: inherit;
-    font-size: 14px;
+    font-size: var(--fs-base);
     letter-spacing: 0.24px;
     cursor: pointer;
     display: inline-flex;
@@ -342,7 +350,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
 
   /* ── Prompt line ─────────────────────────────────────── */
   .prompt {
-    font-size: 16px;
+    font-size: var(--fs-md);
     color: var(--c-fg);
   }
   .prompt .muted { color: var(--c-muted); }
@@ -377,13 +385,13 @@ Astro.cookies.set('csrf_token', csrfToken, {
 
   /* ── Title block ─────────────────────────────────────── */
   .title {
-    font-size: 16px;
+    font-size: var(--fs-md);
     font-weight: 400;
     color: var(--c-fg);
     margin: 0 0 8px;
   }
   .subtitle {
-    font-size: 16px;
+    font-size: var(--fs-md);
     color: var(--c-fg);
     margin: 0 0 26px;
     line-height: 1.5;
@@ -393,7 +401,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
   form { display: flex; flex-direction: column; gap: 19px; }
   .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
   .field label {
-    font-size: 16px;
+    font-size: var(--fs-md);
     color: var(--c-muted);
   }
   .field input {
@@ -402,7 +410,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
     border-radius: var(--r);
     color: var(--c-fg);
     font-family: inherit;
-    font-size: 16px;
+    font-size: var(--fs-md);
     letter-spacing: 0.24px;
     padding: 16px 19px;
     transition: border-color 150ms;
@@ -420,23 +428,23 @@ Astro.cookies.set('csrf_token', csrfToken, {
     border-radius: var(--r);
     padding: 16px 19px;
     color: var(--c-fg);
-    font-size: 16px;
+    font-size: var(--fs-md);
   }
   .alert::before { content: '! '; color: var(--c-muted); }
   .warn {
-    font-size: 16px;
+    font-size: var(--fs-md);
     color: var(--c-muted);
     border-left: 1px solid var(--c-border);
     padding-left: 16px;
     margin: 0 0 16px;
   }
   .status {
-    font-size: 16px;
+    font-size: var(--fs-md);
     color: var(--c-fg);
     margin: 0 0 16px;
   }
   .status .ok { color: var(--c-fg); margin-right: 8px; }
-  .badge { color: var(--c-muted); font-size: 16px; margin-left: 8px; }
+  .badge { color: var(--c-muted); font-size: var(--fs-md); margin-left: 8px; }
 
   /* ── Buttons ─────────────────────────────────────────── */
   .btn-primary {
@@ -445,7 +453,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
     border: none;
     border-radius: var(--r);
     font-family: inherit;
-    font-size: 16px;
+    font-size: var(--fs-md);
     letter-spacing: 0.24px;
     padding: 19px 26px;
     cursor: pointer;
@@ -461,7 +469,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
     border: 1px solid var(--c-border);
     border-radius: var(--r);
     font-family: inherit;
-    font-size: 16px;
+    font-size: var(--fs-md);
     padding: 12px 19px;
     cursor: pointer;
     white-space: nowrap;
@@ -475,7 +483,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
     border: 1px solid var(--c-border);
     border-radius: var(--r);
     font-family: inherit;
-    font-size: 16px;
+    font-size: var(--fs-md);
     padding: 6px 12px;
     cursor: pointer;
     white-space: nowrap;
@@ -491,7 +499,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
     border: 1px solid var(--c-border);
     border-radius: var(--r);
     font-family: inherit;
-    font-size: 16px;
+    font-size: var(--fs-md);
     padding: 12px 19px;
     cursor: pointer;
     transition: color 150ms, border-color 150ms;
@@ -511,7 +519,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
     padding: 16px 19px;
     color: var(--c-fg);
     font-family: inherit;
-    font-size: 16px;
+    font-size: var(--fs-md);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -522,14 +530,14 @@ Astro.cookies.set('csrf_token', csrfToken, {
 
   /* ── Snippets ────────────────────────────────────────── */
   .hint {
-    font-size: 16px;
+    font-size: var(--fs-md);
     color: var(--c-muted);
     margin: 0;
   }
   /* ── Connection options (A · B · C) ──────────────────── */
   .connect-intro {
     margin: 0 0 8px;
-    font-size: 14px;
+    font-size: var(--fs-base);
     color: var(--c-fg);
     line-height: 1.5;
   }
@@ -559,7 +567,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
     align-items: center;
     justify-content: center;
     font-family: inherit;
-    font-size: 14px;
+    font-size: var(--fs-base);
     flex-shrink: 0;
     line-height: 1;
   }
@@ -570,7 +578,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
   }
   .option-name {
     margin: 0;
-    font-size: 16px;
+    font-size: var(--fs-md);
     font-weight: 400;
     color: var(--c-fg);
     line-height: 1.2;
@@ -578,12 +586,12 @@ Astro.cookies.set('csrf_token', csrfToken, {
   }
   .option-tag {
     color: var(--c-muted);
-    font-size: 13px;
+    font-size: var(--fs-sm);
   }
   .option-desc {
     margin: 0;
     color: var(--c-fg);
-    font-size: 14px;
+    font-size: var(--fs-base);
     line-height: 1.5;
   }
   /* Multi-line snippet that wraps long content instead of truncating */
@@ -596,7 +604,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
   }
   .snippet-field-label {
     margin: 0 0 8px;
-    font-size: 12px;
+    font-size: var(--fs-xs);
     color: var(--c-muted);
     letter-spacing: 0.04em;
     text-transform: lowercase;
@@ -609,7 +617,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
   .snippet-pre code {
     color: var(--c-fg);
     font-family: inherit;
-    font-size: 13px;
+    font-size: var(--fs-sm);
     line-height: 1.6;
     display: block;
     white-space: pre-wrap;
@@ -634,7 +642,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
     gap: 12px;
     flex-wrap: wrap;
   }
-  .examples-row .small { font-size: 14px; margin: 0; }
+  .examples-row .small { font-size: var(--fs-base); margin: 0; }
   .btn-examples {
     background: transparent;
     color: var(--c-fg);
@@ -643,7 +651,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
     height: 36px;
     padding: 0 14px;
     font-family: inherit;
-    font-size: 14px;
+    font-size: var(--fs-base);
     letter-spacing: 0.24px;
     cursor: pointer;
     transition: border-color 150ms, background 150ms;
@@ -663,7 +671,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
   .faq-q {
     margin: 0;
     color: var(--c-fg);
-    font-size: 14px;
+    font-size: var(--fs-base);
   }
   .faq-q::before {
     content: '? ';
@@ -672,7 +680,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
   .faq-a {
     margin: 0 0 8px;
     color: var(--c-fg);
-    font-size: 13px;
+    font-size: var(--fs-sm);
     line-height: 1.5;
     opacity: 0.85;
   }
@@ -694,7 +702,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
     white-space: nowrap;
     color: var(--c-fg);
     font-family: inherit;
-    font-size: 16px;
+    font-size: var(--fs-md);
     user-select: all;
   }
   .snippet-block code {
@@ -720,11 +728,11 @@ Astro.cookies.set('csrf_token', csrfToken, {
   }
   .kv-k {
     color: var(--c-muted);
-    font-size: 16px;
+    font-size: var(--fs-md);
   }
   .kv-v {
     color: var(--c-fg);
-    font-size: 16px;
+    font-size: var(--fs-md);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -734,7 +742,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
 
   /* ── Footer line ─────────────────────────────────────── */
   .footer-line {
-    font-size: 16px;
+    font-size: var(--fs-md);
     color: var(--c-muted);
     margin: 26px 0 0;
   }
@@ -753,7 +761,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
     border: 1px solid var(--c-border);
     border-radius: var(--r);
     background: var(--c-surface);
-    font-size: 14px;
+    font-size: var(--fs-base);
     color: var(--c-fg);
     line-height: 1.5;
     display: flex;
@@ -762,7 +770,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
   }
   .login-note-label {
     color: var(--c-fg);
-    font-size: 13px;
+    font-size: var(--fs-sm);
     letter-spacing: 0.04em;
   }
 
@@ -780,7 +788,7 @@ Astro.cookies.set('csrf_token', csrfToken, {
     gap: 8px;
     padding: 19px 32px;
     border-top: 1px solid var(--c-border);
-    font-size: 16px;
+    font-size: var(--fs-md);
     flex-wrap: wrap;
   }
   .bottom-bar .dot { color: var(--c-border); }
@@ -801,11 +809,11 @@ Astro.cookies.set('csrf_token', csrfToken, {
 
   @media (max-width: 480px) {
     .topbar { padding: 12px 14px; }
-    .brand { font-size: 14px; }
+    .brand { font-size: var(--fs-base); }
     .topbar-actions { gap: 10px; }
-    .btn-ghost-pill { height: 32px; padding: 0 10px; font-size: 13px; gap: 6px; }
+    .btn-ghost-pill { height: 32px; padding: 0 10px; font-size: var(--fs-sm); gap: 6px; }
     .btn-ghost-pill.btn-icon-only { width: 32px; padding: 0; }
-    .link-muted { font-size: 14px; }
+    .link-muted { font-size: var(--fs-base); }
     .main { padding: 24px 14px; }
     .token-row { flex-direction: column; }
     .token-row .btn-copy { width: 100%; }

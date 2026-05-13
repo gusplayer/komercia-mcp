@@ -476,11 +476,21 @@ const installMethods: InstallMethod[] = [
     --c-muted: #888888;
     --r: 10px;
 
+    /* Type scale — terminal-tuned, 6 sizes.
+       xs/sm: meta, captions, code · base: UI default · md: body
+       xl/2xl: hero h1 (mobile / desktop). See docs/brand.md. */
+    --fs-xs:   12px;
+    --fs-sm:   13px;
+    --fs-base: 14px;
+    --fs-md:   16px;
+    --fs-xl:   24px;
+    --fs-2xl:  32px;
+
     min-height: 100vh;
     background: var(--c-bg);
     color: var(--c-fg);
     font-family: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 16px;
+    font-size: var(--fs-md);
     line-height: 1.4;
     letter-spacing: 0.24px;
     font-feature-settings: 'zero';
@@ -509,7 +519,7 @@ const installMethods: InstallMethod[] = [
     gap: 4px;
     color: var(--c-fg);
     text-decoration: none;
-    font-size: 16px;
+    font-size: var(--fs-md);
     flex-shrink: 0;
     transition: color 150ms;
   }
@@ -537,7 +547,7 @@ const installMethods: InstallMethod[] = [
     position: relative;
     color: var(--c-muted);
     text-decoration: none;
-    font-size: 16px;
+    font-size: var(--fs-md);
     transition: color 150ms;
   }
   .link-muted:hover { color: var(--c-fg); }
@@ -577,7 +587,7 @@ const installMethods: InstallMethod[] = [
     color: var(--c-bg);
     border: 1px solid var(--c-fg);
     padding: 0 16px;
-    font-size: 16px;
+    font-size: var(--fs-md);
     transition: background 150ms, border-color 150ms;
   }
   .btn-pill:hover { background: var(--c-muted); border-color: var(--c-muted); }
@@ -588,7 +598,7 @@ const installMethods: InstallMethod[] = [
     color: var(--c-fg);
     border: 1px solid var(--c-border);
     padding: 0 12px;
-    font-size: 14px;
+    font-size: var(--fs-base);
     gap: 8px;
     transition: border-color 150ms, color 150ms, background 150ms;
   }
@@ -617,7 +627,7 @@ const installMethods: InstallMethod[] = [
 
   /* ── Prompt + caret ──────────────────────────────────── */
   .prompt {
-    font-size: 16px;
+    font-size: var(--fs-md);
     color: var(--c-fg);
     margin: 0;
   }
@@ -706,7 +716,7 @@ const installMethods: InstallMethod[] = [
     .hero-deco { display: none; }
   }
   .h1 {
-    font-size: 32px;
+    font-size: var(--fs-2xl);
     line-height: 1.2;
     font-weight: 400;
     letter-spacing: 0.24px;
@@ -715,7 +725,7 @@ const installMethods: InstallMethod[] = [
   }
   .h1 .muted { color: var(--c-muted); }
   .lede {
-    font-size: 16px;
+    font-size: var(--fs-md);
     color: var(--c-fg);
     line-height: 1.5;
     margin: 0;
@@ -733,7 +743,7 @@ const installMethods: InstallMethod[] = [
     display: flex;
     flex-wrap: wrap;
     gap: 26px;
-    font-size: 16px;
+    font-size: var(--fs-md);
     color: var(--c-fg);
   }
   .trust li { display: flex; align-items: center; gap: 8px; }
@@ -746,7 +756,7 @@ const installMethods: InstallMethod[] = [
     border: none;
     border-radius: var(--r);
     font-family: inherit;
-    font-size: 16px;
+    font-size: var(--fs-md);
     padding: 16px 26px;
     cursor: pointer;
     text-decoration: none;
@@ -763,7 +773,7 @@ const installMethods: InstallMethod[] = [
     border: 1px solid var(--c-border);
     border-radius: var(--r);
     font-family: inherit;
-    font-size: 16px;
+    font-size: var(--fs-md);
     padding: 16px 26px;
     cursor: pointer;
     text-decoration: none;
@@ -797,14 +807,14 @@ const installMethods: InstallMethod[] = [
     gap: 6px;
   }
   .h2 {
-    font-size: 16px;
+    font-size: var(--fs-md);
     font-weight: 400;
     color: var(--c-fg);
     margin: 0;
     letter-spacing: 0.24px;
   }
   .block-hint {
-    font-size: 16px;
+    font-size: var(--fs-md);
     color: var(--c-fg);
     margin: 0;
   }
@@ -839,13 +849,13 @@ const installMethods: InstallMethod[] = [
   }
   .tool-name {
     color: var(--c-fg);
-    font-size: 16px;
+    font-size: var(--fs-md);
     font-family: inherit;
     overflow-wrap: anywhere;
   }
   .tool-desc {
     color: var(--c-fg);
-    font-size: 16px;
+    font-size: var(--fs-md);
     margin: 0;
     line-height: 1.4;
   }
@@ -862,7 +872,7 @@ const installMethods: InstallMethod[] = [
     border-radius: 0;
     color: var(--c-fg);
     font-family: inherit;
-    font-size: 16px;
+    font-size: var(--fs-md);
     letter-spacing: 0.24px;
     padding: 0 0 2px;
     cursor: pointer;
@@ -888,7 +898,7 @@ const installMethods: InstallMethod[] = [
   }
   .step-num {
     color: var(--c-muted);
-    font-size: 16px;
+    font-size: var(--fs-md);
     padding-top: 1px;
   }
   .step-body {
@@ -900,17 +910,17 @@ const installMethods: InstallMethod[] = [
   .step-body strong {
     color: var(--c-fg);
     font-weight: 400;
-    font-size: 16px;
+    font-size: var(--fs-md);
   }
   .step-desc {
     color: var(--c-fg);
-    font-size: 16px;
+    font-size: var(--fs-md);
     margin: 0;
     line-height: 1.5;
   }
   .step-desc-sm {
     color: var(--c-muted);
-    font-size: 14px;
+    font-size: var(--fs-base);
     margin: 0;
   }
   /* Example command panel — Steel Gray surface only, no border, no
@@ -927,7 +937,7 @@ const installMethods: InstallMethod[] = [
   .install-cmd-text code {
     color: var(--c-fg);
     font-family: inherit;
-    font-size: 13px;
+    font-size: var(--fs-sm);
     line-height: 1.6;
     display: block;
     white-space: pre-wrap;
@@ -951,7 +961,7 @@ const installMethods: InstallMethod[] = [
   }
   .code-block-content code {
     color: var(--c-fg);
-    font-size: 13px;
+    font-size: var(--fs-sm);
     font-family: inherit;
     line-height: 1.6;
     display: block;
@@ -970,7 +980,7 @@ const installMethods: InstallMethod[] = [
     cursor: pointer;
     padding: 4px 10px;
     font-family: inherit;
-    font-size: 13px;
+    font-size: var(--fs-sm);
     letter-spacing: 0.24px;
     line-height: 1;
     white-space: nowrap;
@@ -1001,7 +1011,7 @@ const installMethods: InstallMethod[] = [
     flex-shrink: 0;
   }
   .hiw-bar-label {
-    font-size: 13px;
+    font-size: var(--fs-sm);
     color: var(--c-muted);
   }
   .hiw-body {
@@ -1014,7 +1024,7 @@ const installMethods: InstallMethod[] = [
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 16px;
+    font-size: var(--fs-md);
     flex-wrap: wrap;
     min-height: 22px;
   }
@@ -1025,12 +1035,12 @@ const installMethods: InstallMethod[] = [
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 13px;
+    font-size: var(--fs-sm);
     color: var(--c-muted);
   }
   .hiw-tool-chip {
     font-family: inherit;
-    font-size: 12px;
+    font-size: var(--fs-xs);
     color: var(--c-fg);
     background: var(--c-bg);
     border: 1px solid var(--c-border);
@@ -1048,7 +1058,7 @@ const installMethods: InstallMethod[] = [
   }
   .hiw-output code {
     font-family: inherit;
-    font-size: 13px;
+    font-size: var(--fs-sm);
     line-height: 1.65;
     color: var(--c-fg);
     display: block;
@@ -1105,17 +1115,17 @@ const installMethods: InstallMethod[] = [
     padding: 32px 0;
   }
   .ready {
-    font-size: 16px;
+    font-size: var(--fs-md);
     color: var(--c-muted);
     margin: 0;
   }
-  .small { font-size: 16px; }
+  .small { font-size: var(--fs-md); }
 
   /* ── Link with arrow ─────────────────────────────────── */
   .link-arrow {
     color: var(--c-fg);
     text-decoration: none;
-    font-size: 16px;
+    font-size: var(--fs-md);
     border-bottom: 1px solid var(--c-border);
     padding-bottom: 2px;
     align-self: flex-start;
@@ -1133,7 +1143,7 @@ const installMethods: InstallMethod[] = [
     gap: 8px;
     padding: 19px 32px;
     border-top: 1px solid var(--c-border);
-    font-size: 16px;
+    font-size: var(--fs-md);
     flex-wrap: wrap;
   }
   .bottom-bar .dot-sep { color: var(--c-border); }
@@ -1147,7 +1157,7 @@ const installMethods: InstallMethod[] = [
     :global(.brand-mark) { height: 19px; width: 110px; }
     .main { padding: 32px 16px; gap: 26px; }
     .hero { padding: 16px 0; gap: 19px; }
-    .h1 { font-size: 26px; }
+    .h1 { font-size: var(--fs-xl); }
     .trust { gap: 16px; }
     .bottom-bar { padding: 14px 16px; }
     .step { grid-template-columns: 40px 1fr; gap: 12px; }
@@ -1156,18 +1166,18 @@ const installMethods: InstallMethod[] = [
 
   @media (max-width: 480px) {
     .topbar { padding: 12px 12px; gap: 6px; }
-    .brand { font-size: 13px; gap: 3px; }
+    .brand { font-size: var(--fs-sm); gap: 3px; }
     :global(.brand-mark) { height: 17px; width: 98px; }
     .btn-pill, .btn-ghost-pill { height: 32px; }
-    .btn-pill { padding: 0 10px; font-size: 13px; }
-    .btn-ghost-pill { padding: 0 8px; font-size: 12px; gap: 6px; }
+    .btn-pill { padding: 0 10px; font-size: var(--fs-sm); }
+    .btn-ghost-pill { padding: 0 8px; font-size: var(--fs-xs); gap: 6px; }
     .btn-ghost-pill.btn-icon-only { width: 32px; padding: 0; }
     .topbar-actions { gap: 6px; }
     .main { padding: 24px 14px; }
-    .h1 { font-size: 22px; line-height: 1.25; }
-    .lede { font-size: 15px; }
+    .h1 { line-height: 1.25; }
+    .lede { font-size: var(--fs-base); }
     .grid { grid-template-columns: 1fr; }
-    .btn-primary, .btn-ghost { padding: 14px 22px; font-size: 15px; }
+    .btn-primary, .btn-ghost { padding: 14px 22px; font-size: var(--fs-base); }
     .btn-primary-lg { padding: 16px 26px; }
     .cta-row { gap: 12px; }
     .cta-row .btn-primary, .cta-row .btn-ghost { flex: 1; text-align: center; min-width: 0; }
@@ -1183,7 +1193,7 @@ const installMethods: InstallMethod[] = [
     border-top: 1px dashed var(--c-border);
   }
   .clients-label {
-    font-size: 14px;
+    font-size: var(--fs-base);
     color: var(--c-fg);
     margin: 0;
   }
@@ -1198,7 +1208,7 @@ const installMethods: InstallMethod[] = [
     border: 1px solid var(--c-border);
     border-radius: var(--r);
     font-family: inherit;
-    font-size: 14px;
+    font-size: var(--fs-base);
     padding: 7px 12px;
     cursor: pointer;
     transition: border-color 150ms, background 150ms;
@@ -1231,19 +1241,19 @@ const installMethods: InstallMethod[] = [
   }
   .method-name {
     margin: 0;
-    font-size: 18px;
+    font-size: var(--fs-md);
     font-weight: 400;
     color: var(--c-fg);
     font-family: inherit;
     letter-spacing: 0.24px;
   }
   .method-badge {
-    font-size: 13px;
+    font-size: var(--fs-sm);
     color: var(--c-muted);
   }
   .method-desc {
     margin: 0;
-    font-size: 14px;
+    font-size: var(--fs-base);
     color: var(--c-fg);
     line-height: 1.5;
   }
@@ -1264,7 +1274,7 @@ const installMethods: InstallMethod[] = [
   }
   .method-step .step-num {
     color: var(--c-muted);
-    font-size: 14px;
+    font-size: var(--fs-base);
   }
   .method-step .step-body {
     display: flex;
@@ -1274,7 +1284,7 @@ const installMethods: InstallMethod[] = [
   }
   .step-title {
     margin: 0;
-    font-size: 14px;
+    font-size: var(--fs-base);
     color: var(--c-fg);
     line-height: 1.5;
   }
@@ -1284,7 +1294,7 @@ const installMethods: InstallMethod[] = [
     padding: 10px 14px;
     background: var(--c-surface);
     border-radius: var(--r);
-    font-size: 13px;
+    font-size: var(--fs-sm);
     color: var(--c-muted);
     line-height: 1.5;
   }
@@ -1332,7 +1342,7 @@ const installMethods: InstallMethod[] = [
   }
   .modal-title {
     font-family: inherit;
-    font-size: 16px;
+    font-size: var(--fs-md);
     color: var(--c-fg);
   }
   .modal-close {
@@ -1340,7 +1350,7 @@ const installMethods: InstallMethod[] = [
     border: none;
     color: var(--c-muted);
     font-family: inherit;
-    font-size: 16px;
+    font-size: var(--fs-md);
     cursor: pointer;
     padding: 4px 8px;
     transition: color 150ms;
@@ -1351,7 +1361,7 @@ const installMethods: InstallMethod[] = [
     padding: 12px 24px;
     border-bottom: 1px solid var(--c-border);
     color: var(--c-muted);
-    font-size: 14px;
+    font-size: var(--fs-base);
     flex-shrink: 0;
   }
 
@@ -1370,7 +1380,7 @@ const installMethods: InstallMethod[] = [
     border: 1px solid var(--c-border);
     border-radius: var(--r);
     font-family: inherit;
-    font-size: 14px;
+    font-size: var(--fs-base);
     padding: 5px 12px;
     cursor: pointer;
     white-space: nowrap;
@@ -1385,7 +1395,7 @@ const installMethods: InstallMethod[] = [
     color: var(--c-bg);
     border-color: var(--c-fg);
   }
-  .filter-btn .count { opacity: 0.7; font-size: 13px; }
+  .filter-btn .count { opacity: 0.7; font-size: var(--fs-sm); }
 
   .modal-body {
     flex: 1;
@@ -1415,7 +1425,7 @@ const installMethods: InstallMethod[] = [
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    font-size: 13px;
+    font-size: var(--fs-sm);
   }
   .recipe-tag {
     color: var(--c-muted);
@@ -1428,7 +1438,7 @@ const installMethods: InstallMethod[] = [
     border: 1px solid var(--c-border);
     border-radius: var(--r);
     font-family: inherit;
-    font-size: 13px;
+    font-size: var(--fs-sm);
     padding: 4px 10px;
     cursor: pointer;
     white-space: nowrap;
@@ -1438,7 +1448,7 @@ const installMethods: InstallMethod[] = [
   .recipe-copy.copied { color: var(--c-fg); border-color: var(--c-fg); }
 
   .recipe-prompt {
-    font-size: 16px;
+    font-size: var(--fs-md);
     color: var(--c-fg);
     margin: 0;
     line-height: 1.4;
@@ -1450,7 +1460,7 @@ const installMethods: InstallMethod[] = [
     padding: 16px 19px;
     display: flex;
     flex-direction: column;
-    font-size: 14px;
+    font-size: var(--fs-base);
     color: var(--c-fg);
     line-height: 1.5;
   }
@@ -1466,7 +1476,7 @@ const installMethods: InstallMethod[] = [
   }
   .recipe-tools code {
     font-family: inherit;
-    font-size: 12px;
+    font-size: var(--fs-xs);
     color: var(--c-muted);
     background: var(--c-surface);
     border: 1px solid var(--c-border);
@@ -1478,7 +1488,7 @@ const installMethods: InstallMethod[] = [
   .modal-footer {
     padding: 12px 24px;
     border-top: 1px solid var(--c-border);
-    font-size: 13px;
+    font-size: var(--fs-sm);
     flex-shrink: 0;
   }
 
@@ -1491,9 +1501,9 @@ const installMethods: InstallMethod[] = [
     .modal-overlay { padding: 16px 12px; }
     .modal-header { padding: 12px 16px; }
     .modal-info, .modal-filters, .modal-body, .modal-footer { padding-left: 16px; padding-right: 16px; }
-    .modal-title { font-size: 14px; }
-    .recipe-response { padding: 12px 14px; font-size: 13px; }
-    .recipe-prompt { font-size: 15px; }
+    .modal-title { font-size: var(--fs-base); }
+    .recipe-response { padding: 12px 14px; font-size: var(--fs-sm); }
+    .recipe-prompt { font-size: var(--fs-base); }
   }
 </style>
 

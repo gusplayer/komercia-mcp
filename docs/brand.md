@@ -153,7 +153,6 @@ currently used on the landing).
 ```css
 font-family: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, Monaco,
              Consolas, monospace;
-font-size: 16px;
 line-height: 1.4;
 letter-spacing: 0.24px;
 font-feature-settings: 'zero';
@@ -161,6 +160,70 @@ font-feature-settings: 'zero';
 
 The `'zero'` feature gives slashed zeros — small detail, big terminal
 authenticity boost.
+
+### Type scale (canonical)
+
+Defined as CSS custom properties on `.page` in `index.astro` and
+`sign-in.astro`. The modal in `RecetasModal.astro` inherits via cascade.
+Six sizes — anything outside this scale is a bug or a decorative
+exception (ASCII art).
+
+| Token | Px | Role |
+|---|---|---|
+| `--fs-xs`   | 12 | Micro: count badges, tool tags inside recipe cards, HIW tool chip |
+| `--fs-sm`   | 13 | Small: code blocks, modal meta, captions, footer, badges |
+| `--fs-base` | 14 | UI default: ghost buttons, form fields, modal info, mobile body |
+| `--fs-md`   | 16 | Body text: paragraphs, section headers, tool card names, primary CTA |
+| `--fs-xl`   | 24 | Hero h1 on mobile (≤768) |
+| `--fs-2xl`  | 32 | Hero h1 on desktop |
+
+Always reference via `var(--fs-*)`, never hardcode `font-size: 14px`.
+
+### Application matrix
+
+| Element | Token |
+|---|---|
+| Hero h1 (desktop) | `--fs-2xl` |
+| Hero h1 (mobile ≤768) | `--fs-xl` |
+| Hero lede / subtitle | `--fs-md` (mobile drops to `--fs-base` via inline override) |
+| Body paragraphs, section h2, block-hint | `--fs-md` |
+| Tool card name | `--fs-md` |
+| Tool card desc | `--fs-base` |
+| Primary CTA (`.btn-primary`) | `--fs-md` (mobile `--fs-base`) |
+| Ghost pill (`.btn-ghost-pill`, topbar buttons) | `--fs-base` (mobile `--fs-xs`) |
+| Trust line, form labels, inputs | `--fs-base` |
+| Modal title | `--fs-base` (mobile `--fs-sm`) |
+| Modal info, filter buttons, close button | `--fs-base` |
+| Filter count, modal footer, code blocks | `--fs-sm` |
+| Method name (install modal h3) | `--fs-md` |
+| Method badge, step num | `--fs-sm` |
+| Recipe prompt | `--fs-md` |
+| Recipe response, recipe meta, recipe copy | `--fs-sm` |
+| Recipe tools chip | `--fs-xs` |
+| HIW prompt row | `--fs-md` |
+| HIW calling, output, bar label | `--fs-sm` |
+| HIW tool chip | `--fs-xs` |
+| Bottom bar / page footer | `--fs-sm` |
+
+### Decorative exceptions (NOT in the scale)
+
+- `.hiw-chrome-dots` — `8px`. The "● ● ●" decorative window dots.
+- `.deco-frame code` — `11px`. The right-side ASCII data deco on the hero.
+
+These are intentionally outside the scale because they are non-textual
+ornaments. Don't try to fit them in.
+
+### How to add a new size
+
+If you genuinely need a size between two tokens, **stop first** and check:
+
+1. Could you use a heavier/lighter weight + an existing token instead?
+2. Could you use `color: var(--c-muted)` to demote a token visually?
+3. Is the layout problem actually a spacing or padding issue?
+
+If none of the above and a new token is truly needed, add it on `.page`
+in both `index.astro` and `sign-in.astro`, update this table, and run a
+grep to confirm no orphan hardcoded `font-size: Npx` slipped in.
 
 ---
 
