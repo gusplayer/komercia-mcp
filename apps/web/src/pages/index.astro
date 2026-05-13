@@ -173,14 +173,6 @@ const installMethods: InstallMethod[] = [
   },
 ];
 
-const examples = [
-  { es: '¿cuántos productos activos tengo?',                       en: 'how many active products do i have?' },
-  { es: 'muéstrame los ingresos del último mes con totales',       en: 'show me last month\'s revenue with totals' },
-  { es: 'exporta toda mi lista de clientes en csv',                en: 'export my full customer list as csv' },
-  { es: '¿qué productos tienen poco stock?',                       en: 'which products are running low on stock?' },
-  { es: 'exporta mi catálogo en formato shopify',                  en: 'export my catalog in shopify format' },
-  { es: '¿qué métodos de pago tengo configurados?',                en: 'what payment methods are configured?' },
-];
 ---
 
 <Base
@@ -321,10 +313,10 @@ const examples = [
               <span class="muted">→ calling</span>
               <code id="hiw-tool-name" class="hiw-tool-chip"></code>
             </div>
-            <pre id="hiw-output" class="hiw-output" aria-live="polite"><code id="hiw-output-code"></code></pre>
+            <pre id="hiw-output" class="hiw-output"><code id="hiw-output-code"></code></pre>
           </div>
           <div class="hiw-footer">
-            <div id="hiw-nav-dots" class="hiw-nav-dots" role="tablist" aria-label="Navigate examples"></div>
+            <div id="hiw-nav-dots" class="hiw-nav-dots" aria-label="Navigate examples"></div>
             <div class="hiw-progress-track" aria-hidden="true">
               <div id="hiw-pbar" class="hiw-pbar"></div>
             </div>
@@ -1835,8 +1827,11 @@ const examples = [
       var CYCLE_MS = 7000;
       var hiwIdx = 0;
       var hiwTimer = null;
-      var typingCancelled = false;
       var typingTimer = null;
+      // Generation token: incremented on every showCase() call. In-flight
+      // typewriter/reveal ticks check this against their captured value
+      // and bail when it no longer matches (i.e. a newer case took over).
+      var hiwGen = 0;
 
       var useCases = [
         {
@@ -1877,12 +1872,13 @@ const examples = [
         },
       ];
 
-      // Build nav dots
+      // Build nav dots. Plain buttons with aria-current — using role="tab"
+      // without a paired tabpanel would mislead assistive tech.
       useCases.forEach(function (_, i) {
         var btn = document.createElement('button');
         btn.className = 'hiw-nav-dot';
-        btn.setAttribute('role', 'tab');
-        btn.setAttribute('aria-label', 'Example ' + (i + 1));
+        btn.type = 'button';
+        btn.setAttribute('aria-label', 'Show example ' + (i + 1) + ' of ' + useCases.length);
         btn.setAttribute('data-hiw-i', String(i));
         navDotsEl.appendChild(btn);
       });
@@ -1891,7 +1887,8 @@ const examples = [
       function setDots(idx) {
         for (var i = 0; i < navDots.length; i++) {
           navDots[i].classList.toggle('active', i === idx);
-          navDots[i].setAttribute('aria-selected', String(i === idx));
+          if (i === idx) navDots[i].setAttribute('aria-current', 'true');
+          else navDots[i].removeAttribute('aria-current');
         }
       }
 
@@ -1904,12 +1901,11 @@ const examples = [
         pbarEl.style.width = '100%';
       }
 
-      function typeQuestion(text, done) {
+      function typeQuestion(text, gen, done) {
         questionEl.textContent = '';
-        typingCancelled = false;
         var i = 0;
         function step() {
-          if (typingCancelled) return;
+          if (gen !== hiwGen) return; // a newer case took over
           if (i < text.length) {
             questionEl.textContent += text.charAt(i);
             i++;
@@ -1921,7 +1917,7 @@ const examples = [
         step();
       }
 
-      function revealOutput(text) {
+      function revealOutput(text, gen) {
         var CHARS = '!<>-_[]{}=+*?#$0123456789';
         var passRe = /[✓⚠→←↑↓·\s]/;
         var total = 0;
@@ -1942,6 +1938,7 @@ const examples = [
         var duration = 1300;
         var start = performance.now();
         function tick() {
+          if (gen !== hiwGen) return; // a newer case took over
           var p = Math.min((performance.now() - start) / duration, 1);
           var out = '';
           for (var k = 0; k < chars.length; k++) {
@@ -1960,11 +1957,11 @@ const examples = [
 
       function showCase(idx) {
         hiwIdx = idx;
+        var gen = ++hiwGen;
         setDots(idx);
         var uc = useCases[idx];
         var q = current === 'en' ? uc.en : uc.es;
 
-        typingCancelled = true;
         clearTimeout(typingTimer);
         questionEl.textContent = '';
         callingEl.style.visibility = 'hidden';
@@ -1979,10 +1976,14 @@ const examples = [
           return;
         }
 
-        typeQuestion(q, function () {
+        typeQuestion(q, gen, function () {
+          if (gen !== hiwGen) return;
           if (toolNameEl) toolNameEl.textContent = uc.tool;
           callingEl.style.visibility = 'visible';
-          setTimeout(function () { revealOutput(uc.out); }, 380);
+          setTimeout(function () {
+            if (gen !== hiwGen) return;
+            revealOutput(uc.out, gen);
+          }, 380);
         });
       }
 
@@ -1999,7 +2000,6 @@ const examples = [
         (function (dot) {
           dot.addEventListener('click', function () {
             var idx = parseInt(dot.getAttribute('data-hiw-i'), 10);
-            typingCancelled = true;
             clearTimeout(typingTimer);
             clearTimeout(hiwTimer);
             showCase(idx);
@@ -2021,6 +2021,23 @@ const examples = [
         terminal.addEventListener('mouseleave', function () {
           scheduleNext();
           startPbar();
+        });
+      }
+
+      // Re-render the active case when the user toggles language so the
+      // typed question matches the new locale instead of waiting for the
+      // next cycle to swap it in.
+      var langBtn = document.getElementById('lang-toggle');
+      if (langBtn) {
+        langBtn.addEventListener('click', function () {
+          // applyLang runs synchronously on click — re-show on the next
+          // microtask so `current` is already updated.
+          setTimeout(function () {
+            clearTimeout(typingTimer);
+            clearTimeout(hiwTimer);
+            showCase(hiwIdx);
+            scheduleNext();
+          }, 0);
         });
       }
 

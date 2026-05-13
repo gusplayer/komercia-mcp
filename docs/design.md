@@ -1,4 +1,16 @@
-# Komercia MCP — Design System Reference
+# Komercia MCP — Design System Reference (legacy / archived)
+
+> **⚠️ This document describes the original light-theme design system
+> (Ghost White + Action Orange + Inter / IBM Plex Mono). It is no longer
+> in use.** The landing was reskinned to a terminal aesthetic — black
+> background, white monospace, Space Mono only. See
+> [`brand.md`](./brand.md) for the current visual identity, logo
+> component, favicon stack and color tokens.
+>
+> Kept here for historical reference and in case the light theme is ever
+> revived for a separate surface.
+
+---
 
 > "Architectural blueprint on white marble." A pristine ghost-white surface
 > punctuated by precise Action Orange CTAs and Deep Plum brand accents,

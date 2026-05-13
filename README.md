@@ -201,7 +201,9 @@ Builds the mcp-server image, runs migrations, and brings up the full stack. Use 
 apps/
   mcp-server/   NestJS — MCP protocol server (HTTP/SSE), AuthGuard,
                 NodeTokenRefresher for the 2h Komercia Node JWT
-  web/          Astro SSR — login UI, token issuance, session revocation
+  web/          Astro SSR — landing, login, token issuance, session
+                revocation. Bilingual (ES/EN). Brand assets and the
+                terminal-style design live here.
   discovery/    CLI — maps the Komercia API surface for local development
 
 packages/
@@ -275,6 +277,10 @@ See [docs/security.md](docs/security.md) for the full threat model.
 ## Contributing
 
 See [docs/contributing.md](docs/contributing.md). Conventional Commits required, CI must be green.
+
+For the visual identity of the landing (logo, favicon stack, color
+tokens, typography), see [docs/brand.md](docs/brand.md). Release notes
+and history live in [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
