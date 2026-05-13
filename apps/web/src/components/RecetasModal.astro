@@ -96,6 +96,7 @@ import { recetas, categories, catCounts } from '../lib/recetas.data';
     border-radius: 10px;
     width: 100%;
     max-width: 880px;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     margin: auto;
@@ -115,11 +116,16 @@ import { recetas, categories, catCounts } from '../lib/recetas.data';
     padding: 14px 24px;
     border-bottom: 1px solid #383838;
     flex-shrink: 0;
+    min-width: 0;
   }
   .modal-window .modal-title {
     font-family: inherit;
     font-size: 16px;
     color: #ffffff;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .modal-window .muted { color: #888888; }
   .modal-window .caret {
@@ -137,6 +143,8 @@ import { recetas, categories, catCounts } from '../lib/recetas.data';
     cursor: pointer;
     padding: 4px 8px;
     transition: color 150ms;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   .modal-close:hover { color: #ffffff; }
 
@@ -183,11 +191,13 @@ import { recetas, categories, catCounts } from '../lib/recetas.data';
   .modal-body {
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 24px;
     display: flex;
     flex-direction: column;
     gap: 28px;
     -webkit-overflow-scrolling: touch;
+    min-width: 0;
   }
 
   .recipe {
@@ -196,6 +206,7 @@ import { recetas, categories, catCounts } from '../lib/recetas.data';
     gap: 10px;
     padding-bottom: 24px;
     border-bottom: 1px dashed #383838;
+    min-width: 0;
   }
   .recipe:last-child { border-bottom: none; padding-bottom: 0; }
   .recipe.hidden { display: none; }
@@ -204,13 +215,16 @@ import { recetas, categories, catCounts } from '../lib/recetas.data';
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
+    gap: 12px;
     font-size: 13px;
+    flex-wrap: wrap;
   }
   .recipe-tag {
     color: #888888;
     text-transform: lowercase;
     letter-spacing: 0.04em;
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
   .recipe-copy {
     background: transparent;
@@ -232,6 +246,7 @@ import { recetas, categories, catCounts } from '../lib/recetas.data';
     color: #ffffff;
     margin: 0;
     line-height: 1.4;
+    overflow-wrap: anywhere;
   }
 
   .recipe-response {
@@ -243,6 +258,12 @@ import { recetas, categories, catCounts } from '../lib/recetas.data';
     font-size: 14px;
     color: #ffffff;
     line-height: 1.5;
+    /* Long ASCII-formatted responses scroll horizontally inside this
+       container instead of forcing the whole modal wider on mobile. */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    min-width: 0;
+    max-width: 100%;
   }
   .recipe-response-label { margin-bottom: 8px; }
   .recipe-response > div { white-space: pre; min-height: 1em; }
@@ -274,12 +295,13 @@ import { recetas, categories, catCounts } from '../lib/recetas.data';
 
   @media (max-width: 640px) {
     .modal-overlay { padding: 16px 12px; }
-    .modal-header { padding: 12px 16px; }
+    .modal-header { padding: 12px 16px; gap: 8px; }
     .modal-info, .modal-filters, .modal-body, .modal-footer {
       padding-left: 16px; padding-right: 16px;
     }
-    .modal-title { font-size: 14px; }
-    .recipe-response { padding: 12px 14px; font-size: 13px; }
+    .modal-window .modal-title { font-size: 13px; }
+    .modal-close { font-size: 14px; padding: 4px 6px; }
+    .recipe-response { padding: 12px 14px; font-size: 12px; }
     .recipe-prompt { font-size: 15px; }
   }
 </style>
