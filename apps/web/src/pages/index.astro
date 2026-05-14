@@ -4,6 +4,24 @@ import Base from '../layouts/Base.astro';
 import RecetasModal from '../components/RecetasModal.astro';
 import LogoKomercia from '../components/LogoKomercia.astro';
 
+// Deploy fingerprint shown in the footer — lets us confirm at a glance
+// which build is live. SHA comes from Vercel's automatic env at deploy
+// time; on a local dev server both fall back to "dev". The date is
+// snapshotted in astro.config.mjs at build time (NOT per-request).
+const commitSha = (process.env.VERCEL_GIT_COMMIT_SHA ?? '').slice(0, 7) || 'dev';
+const repoSlug =
+  process.env.VERCEL_GIT_REPO_OWNER && process.env.VERCEL_GIT_REPO_SLUG
+    ? `${process.env.VERCEL_GIT_REPO_OWNER}/${process.env.VERCEL_GIT_REPO_SLUG}`
+    : 'gusplayer/komercia-mcp';
+const commitUrl = commitSha === 'dev' ? null : `https://github.com/${repoSlug}/commit/${commitSha}`;
+const buildIso = process.env.PUBLIC_BUILD_TIME ?? new Date().toISOString();
+// Compact UTC date for the footer: "2026-05-14 12:36 UTC"
+const buildLabel = (() => {
+  const d = new Date(buildIso);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())} UTC`;
+})();
+
 // Pixel-style line icons (16x16 grid, sharp corners — retro terminal feel)
 const icons: Record<string, string> = {
   get_store_info:                '<path d="M2 6h12v8H2z"/><path d="M2 6l2-3h8l2 3"/><path d="M6 9h4v5H6z"/>',
@@ -459,6 +477,13 @@ const installMethods: InstallMethod[] = [
       <span class="muted">komercia/mcp v0.1</span>
       <span class="dot-sep">·</span>
       <a href="https://github.com/gusplayer/komercia-mcp" target="_blank" rel="noopener noreferrer" class="link-muted">source</a>
+      <span class="dot-sep">·</span>
+      <span class="build-info" title={`Last update · ${buildLabel}`}>
+        {commitUrl
+          ? <a href={commitUrl} target="_blank" rel="noopener noreferrer" class="link-muted">{commitSha}</a>
+          : <span class="muted">{commitSha}</span>}
+        <span class="build-date muted"> · {buildLabel}</span>
+      </span>
     </footer>
   </div>
 </Base>
@@ -1146,6 +1171,15 @@ const installMethods: InstallMethod[] = [
     flex-wrap: wrap;
   }
   .bottom-bar .dot-sep { color: var(--c-border); }
+  /* Build fingerprint: deliberately quiet — short SHA + UTC date in the
+     same muted gray as the rest of the footer. Useful to confirm at a
+     glance which deploy is live without competing for attention. */
+  .build-info {
+    font-size: var(--fs-sm);
+    color: var(--c-muted);
+    letter-spacing: 0.04em;
+  }
+  .build-info .link-muted { font-size: inherit; }
 
   /* ── Responsive ──────────────────────────────────────── */
   @media (max-width: 768px) {
@@ -1187,6 +1221,9 @@ const installMethods: InstallMethod[] = [
     .cta-row { gap: 12px; }
     .cta-row .btn-primary, .cta-row .btn-ghost { flex: 1; text-align: center; min-width: 0; }
     .bottom-bar { padding: 14px; row-gap: 8px; }
+    /* On the smallest viewports, drop the full date and let the SHA carry
+       the deploy fingerprint alone — title attribute still has the date. */
+    .build-info .build-date { display: none; }
   }
 
   /* ── Install clients row (below 3 steps) ────────────── */
