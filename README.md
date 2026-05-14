@@ -3,6 +3,9 @@
 [![CI](https://github.com/gusplayer/komercia-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/gusplayer/komercia-mcp/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Node 20](https://img.shields.io/badge/node-20_LTS-green)](https://nodejs.org)
+[![pnpm 9](https://img.shields.io/badge/pnpm-9-orange)](https://pnpm.io)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Live · mcp.komercia.co](https://img.shields.io/badge/live-mcp.komercia.co-white?logo=vercel)](https://mcp.komercia.co)
 
 **Connect your Komercia store to Claude.ai and query all your store data through natural language.**
 
@@ -40,7 +43,8 @@ Visit [mcp.komercia.co](https://mcp.komercia.co), log in with your Komercia cred
 |---|---|---|
 | [A · Claude.ai](#option-a--claudeai-web--mobile) | Browser or mobile app | No |
 | [B · Claude Desktop](#option-b--claude-desktop-app) | Mac / Windows desktop app | Node 18+ |
-| [C · Claude Code or Cursor](#option-c--claude-code--cursor-terminal--ide) | Terminal or IDE | Claude Code CLI |
+| [C · Claude Code](#option-c--claude-code-terminal) | Terminal | Claude Code CLI |
+| [D · Cursor / Windsurf / other IDEs](#option-d--cursor--windsurf--other-ides) | IDE | None (built-in MCP support) |
 
 ---
 

@@ -2,6 +2,15 @@
   "name": "@komercia-mcp/eslint-config",
   "version": "0.1.0",
   "description": "Shared ESLint flat config for the komercia-mcp monorepo",
+  "license": "MIT",
+  "author": "Gustavo Moreno (https://github.com/gusplayer)",
+  "homepage": "https://github.com/gusplayer/komercia-mcp/tree/main/packages/eslint-config#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gusplayer/komercia-mcp.git",
+    "directory": "packages/eslint-config"
+  },
+  "bugs": "https://github.com/gusplayer/komercia-mcp/issues",
   "type": "module",
   "exports": {
     ".": "./index.js",

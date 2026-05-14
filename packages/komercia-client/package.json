@@ -2,6 +2,15 @@
   "name": "@komercia-mcp/komercia-client",
   "version": "0.1.0",
   "description": "Unified HTTP client for Komercia's backend APIs with retry and timeout support",
+  "license": "MIT",
+  "author": "Gustavo Moreno (https://github.com/gusplayer)",
+  "homepage": "https://github.com/gusplayer/komercia-mcp/tree/main/packages/komercia-client#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gusplayer/komercia-mcp.git",
+    "directory": "packages/komercia-client"
+  },
+  "bugs": "https://github.com/gusplayer/komercia-mcp/issues",
   "type": "module",
   "exports": {
     ".": {

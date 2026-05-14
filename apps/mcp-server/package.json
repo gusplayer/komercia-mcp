@@ -1,7 +1,16 @@
 {
   "name": "@komercia-mcp/mcp-server",
   "version": "0.1.0",
-  "description": "NestJS MCP server — exposes Komercia data as Claude.ai tools",
+  "description": "NestJS MCP server — exposes Komercia store data as Model Context Protocol tools for Claude",
+  "license": "MIT",
+  "author": "Gustavo Moreno (https://github.com/gusplayer)",
+  "homepage": "https://github.com/gusplayer/komercia-mcp/tree/main/apps/mcp-server#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gusplayer/komercia-mcp.git",
+    "directory": "apps/mcp-server"
+  },
+  "bugs": "https://github.com/gusplayer/komercia-mcp/issues",
   "private": true,
   "type": "module",
   "scripts": {

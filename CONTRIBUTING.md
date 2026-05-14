@@ -2,14 +2,10 @@
 
 Thanks for your interest. This project is a community migration tool for Komercia merchants ahead of the platform's wind-down. Contributions are welcome — bug reports, fixes, new export tools, docs improvements.
 
-## Code of Conduct
-
-By participating, you agree to follow our [Code of Conduct](./CODE_OF_CONDUCT.md).
-
 ## Development setup
 
 ```bash
-git clone https://github.com/gustavomoreno/komercia-mcp.git
+git clone https://github.com/gusplayer/komercia-mcp.git
 cd komercia-mcp
 pnpm install
 

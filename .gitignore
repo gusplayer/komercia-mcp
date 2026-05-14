@@ -62,3 +62,12 @@ docs/api-discovery-report.md
 !.changeset/config.json
 !.changeset/README.md
 .vercel
+
+# Local brand-asset originals (favicon source JPEGs, logo SVG sources, etc).
+# The processed/optimized copies that actually ship live in apps/web/public/.
+images/
+
+# One-off local scripts not part of the build (debug probes, manual
+# validators, etc). Run from the repo root via `node scripts/...`.
+scripts/debug-*.mjs
+scripts/validate-*.mjs

@@ -2,6 +2,15 @@
   "name": "@komercia-mcp/shared",
   "version": "0.1.0",
   "description": "Shared types, JWT utilities, and Zod schemas for komercia-mcp",
+  "license": "MIT",
+  "author": "Gustavo Moreno (https://github.com/gusplayer)",
+  "homepage": "https://github.com/gusplayer/komercia-mcp/tree/main/packages/shared#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gusplayer/komercia-mcp.git",
+    "directory": "packages/shared"
+  },
+  "bugs": "https://github.com/gusplayer/komercia-mcp/issues",
   "type": "module",
   "exports": {
     ".": {

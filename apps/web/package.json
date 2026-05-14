@@ -1,7 +1,16 @@
 {
   "name": "@komercia-mcp/web",
   "version": "0.1.0",
-  "description": "Astro web app — magic link issuer and merchant-facing UI",
+  "description": "Astro web app — landing page, sign-in flow and token issuer for Komercia MCP",
+  "license": "MIT",
+  "author": "Gustavo Moreno (https://github.com/gusplayer)",
+  "homepage": "https://mcp.komercia.co",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gusplayer/komercia-mcp.git",
+    "directory": "apps/web"
+  },
+  "bugs": "https://github.com/gusplayer/komercia-mcp/issues",
   "private": true,
   "type": "module",
   "scripts": {

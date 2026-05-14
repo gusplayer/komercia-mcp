@@ -2,7 +2,29 @@
   "name": "komercia-mcp",
   "version": "0.1.0",
   "private": true,
-  "description": "Public MCP server that lets Komercia merchants export and migrate their store data using Claude.ai",
+  "description": "Official Model Context Protocol server for Komercia. Lets merchants query and export their store data through Claude in natural language.",
+  "homepage": "https://mcp.komercia.co",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gusplayer/komercia-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gusplayer/komercia-mcp/issues"
+  },
+  "author": "Gustavo Moreno (https://github.com/gusplayer)",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "komercia",
+    "ecommerce",
+    "claude",
+    "anthropic",
+    "claude.ai",
+    "store-data",
+    "migration",
+    "open-source"
+  ],
   "packageManager": "pnpm@9.15.0",
   "engines": {
     "node": ">=20.0.0",

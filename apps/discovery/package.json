@@ -2,6 +2,15 @@
   "name": "@komercia-mcp/discovery",
   "version": "0.1.0",
   "description": "CLI tool that maps Komercia's API surface and generates typed client stubs",
+  "license": "MIT",
+  "author": "Gustavo Moreno (https://github.com/gusplayer)",
+  "homepage": "https://github.com/gusplayer/komercia-mcp/tree/main/apps/discovery#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gusplayer/komercia-mcp.git",
+    "directory": "apps/discovery"
+  },
+  "bugs": "https://github.com/gusplayer/komercia-mcp/issues",
   "private": true,
   "type": "module",
   "bin": {
