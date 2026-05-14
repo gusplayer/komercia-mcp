@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
-  <!-- Pure black background (099 / terminal aesthetic) -->
+  <!-- Pure black background (terminal aesthetic, matches the landing) -->
   <rect width="1200" height="630" fill="#000000"/>
 
   <!-- Subtle dotted grid -->
@@ -10,37 +10,41 @@
   </defs>
   <rect width="1200" height="630" fill="url(#dots)"/>
 
-  <!-- Top bar -->
-  <text x="64" y="80" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="22" font-weight="400" fill="#ffffff" letter-spacing="0.5">[komercia/mcp]</text>
+  <!-- Top bar: Komercia isotype + wordmark + /mcp suffix -->
+  <svg x="64" y="58" width="40" height="46" viewBox="155 60 350 410" preserveAspectRatio="xMinYMin meet">
+    <path fill="#ffffff" d="M375 116.2a49.47 49.47 0 0 0-47.7-37.78H327a49.47 49.47 0 0 0-47.71 37.78 5.23 5.23 0 0 0 5.11 6.41 5.09 5.09 0 0 0 5-3.82 38.75 38.75 0 0 1 75.49 0 5.11 5.11 0 0 0 5 3.82h0A5.23 5.23 0 0 0 375 116.2Z"/>
+    <path fill="#ffffff" d="M369.94 128.61a11 11 0 0 1-10.84-8.43 32.76 32.76 0 0 0-63.82 0 11 11 0 0 1-10.84 8.43 11.23 11.23 0 0 1-10.94-13.82 55.28 55.28 0 0 1 43.9-41.48 49.64 49.64 0 0 1 6.07-.67l.44 0a55.89 55.89 0 0 1 6.6 0l.41 0a48.94 48.94 0 0 1 6 .67 55.28 55.28 0 0 1 43.92 41.48 11.23 11.23 0 0 1-10.94 13.82Z"/>
+    <path fill="#ffffff" d="M364 405.48V448a10.46 10.46 0 0 0 10.46 10.46h83.35a10.36 10.36 0 0 0 10.44-11.28c-.75-7.46-1.39-14.94-2-22.42a10.37 10.37 0 0 0-1.59-4.7l-43.28-68.35a10.47 10.47 0 0 0-17.05-.89l-38 48.15A10.52 10.52 0 0 0 364 405.48Z"/>
+    <path fill="#ffffff" d="M279.2 144s-40.21.15-53 .18c-8.05 0-10.35 2.1-11.08 10.16Q209.07 221.94 203 289.5 196 368.24 188.88 447a10.42 10.42 0 0 0 10.45 11.51h79.94A10.46 10.46 0 0 0 289.69 448V154.51A10.49 10.49 0 0 0 279.2 144Z"/>
+    <path fill="#ffffff" d="M443.25 199.87a10.53 10.53 0 0 0 2.13-7.32q-1.74-19.25-3.48-38.5c-.74-8.13-2.84-9.85-11.22-9.86-14.42 0-56.24-.17-56.24-.17A10.46 10.46 0 0 0 364 154.48v117.7a10.46 10.46 0 0 0 18.75 6.38Z"/>
+  </svg>
+  <text x="120" y="95" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="32" font-weight="700" fill="#ffffff" letter-spacing="0.5">Komercia</text>
+  <text x="305" y="95" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="28" fill="#888888" letter-spacing="0.5">/mcp</text>
 
   <!-- Divider line under top bar -->
-  <line x1="64" y1="110" x2="1136" y2="110" stroke="#383838" stroke-width="1"/>
+  <line x1="64" y1="130" x2="1136" y2="130" stroke="#383838" stroke-width="1"/>
 
   <!-- Shell prompt -->
-  <text x="64" y="200" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="24" fill="#888888">user@komercia ~$</text>
-  <text x="320" y="200" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="24" fill="#ffffff">./mcp.connect</text>
-  <text x="497" y="200" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="24" fill="#ffffff">_</text>
+  <text x="64" y="210" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="24" fill="#888888">user@komercia ~$</text>
+  <text x="320" y="210" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="24" fill="#ffffff">./mcp.connect</text>
+  <text x="500" y="210" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="24" fill="#ffffff">_</text>
 
-  <!-- Main headline (bicolor: white + muted) -->
-  <text x="64" y="320" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="60" font-weight="400" fill="#ffffff" letter-spacing="0.5">los datos de tu tienda,</text>
-  <text x="64" y="400" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="60" font-weight="400" fill="#888888" letter-spacing="0.5">en lenguaje natural.</text>
+  <!-- Main headline (bicolor: white + muted) — matches the landing H1 -->
+  <text x="64" y="335" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="64" font-weight="400" fill="#ffffff" letter-spacing="0.5">Your e-commerce,</text>
+  <text x="64" y="420" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="64" font-weight="400" fill="#888888" letter-spacing="0.5">connected to an AI agent.</text>
 
   <!-- Subtitle -->
-  <text x="64" y="475" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="22" fill="#888888">el servidor mcp oficial para komercia.</text>
-  <text x="64" y="510" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="22" fill="#888888">pregúntale a claude sobre tu tienda — sin código.</text>
+  <text x="64" y="490" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="22" fill="#888888">The official MCP server for Komercia. Real answers, in seconds.</text>
 
   <!-- Bottom badge row -->
-  <g transform="translate(64, 575)">
-    <circle cx="6" cy="-5" r="4" fill="#ffffff"/>
-    <text x="22" y="0" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="19" fill="#ffffff">11 herramientas</text>
+  <g transform="translate(64, 580)">
+    <circle cx="6" cy="-6" r="4" fill="#ffffff"/>
+    <text x="22" y="0" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="19" fill="#ffffff">11 tools</text>
 
-    <circle cx="240" cy="-5" r="4" fill="#ffffff"/>
-    <text x="256" y="0" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="19" fill="#ffffff">solo lectura</text>
+    <circle cx="180" cy="-6" r="4" fill="#ffffff"/>
+    <text x="196" y="0" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="19" fill="#ffffff">read-only</text>
 
-    <circle cx="445" cy="-5" r="4" fill="#ffffff"/>
-    <text x="461" y="0" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="19" fill="#ffffff">open source</text>
-
-    <circle cx="645" cy="-5" r="4" fill="#ffffff"/>
-    <text x="661" y="0" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="19" fill="#ffffff">gratis</text>
+    <circle cx="365" cy="-6" r="4" fill="#ffffff"/>
+    <text x="381" y="0" font-family="ui-monospace, 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace" font-size="19" fill="#ffffff">open source</text>
   </g>
 </svg>

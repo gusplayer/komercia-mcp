@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import pkg from '../../package.json';
 
 export interface Props {
   title?: string;
@@ -19,7 +20,9 @@ const siteOrigin = Astro.site ?? new URL('https://mcp.komercia.co');
 const canonicalUrl = new URL(Astro.url.pathname, siteOrigin);
 const ogImageUrl = new URL(ogImage ?? '/og-image.png', siteOrigin).toString();
 
-// JSON-LD structured data (SoftwareApplication + Organization)
+// JSON-LD structured data (SoftwareApplication + Organization). The
+// softwareVersion is sourced from package.json so the schema and the
+// shipped artifact never drift.
 const softwareSchema = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
@@ -30,7 +33,7 @@ const softwareSchema = {
   description,
   url: siteOrigin.toString(),
   downloadUrl: 'https://github.com/gusplayer/komercia-mcp',
-  softwareVersion: '0.1.0',
+  softwareVersion: pkg.version,
   license: 'https://github.com/gusplayer/komercia-mcp/blob/main/LICENSE',
   offers: {
     '@type': 'Offer',
@@ -48,7 +51,6 @@ const softwareSchema = {
     name: 'Komercia',
     url: 'https://komercia.co',
   },
-  aggregateRating: undefined,
   inLanguage: ['es', 'en'],
   keywords: 'komercia, mcp, claude, claude.ai, model context protocol, ecommerce, store data, api, integration, open source',
 };
@@ -56,7 +58,20 @@ const softwareSchema = {
 // Security headers
 Astro.response.headers.set(
   'Content-Security-Policy',
-  "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'",
+  [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline'",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com",
+    "img-src 'self' data:",
+    "connect-src 'self'",
+    // Hardening: clickjacking defense in depth (X-Frame-Options is the
+    // legacy header; frame-ancestors is the CSP-native replacement),
+    // pin <base href> and form actions to same-origin.
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+  ].join('; '),
 );
 Astro.response.headers.set('X-Content-Type-Options', 'nosniff');
 Astro.response.headers.set('X-Frame-Options', 'DENY');
