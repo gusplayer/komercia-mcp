@@ -95,6 +95,8 @@ Astro.cookies.set('csrf_token', csrfToken, {
 
           <p class="footer-line">
             <span data-t-es="¿Sin cuenta?" data-t-en="No account?">¿Sin cuenta?</span>
+            <button type="button" class="footer-link" data-open-recetas data-t-es="Ver ejemplos →" data-t-en="See sample prompts →">Ver ejemplos →</button>
+            <span class="footer-sep" aria-hidden="true">·</span>
             <a href="https://komercia.co" target="_blank" rel="noopener noreferrer" data-t-es="Regístrate en komercia.co →" data-t-en="Register at komercia.co →">Regístrate en komercia.co →</a>
           </p>
 
@@ -763,14 +765,24 @@ Astro.cookies.set('csrf_token', csrfToken, {
     font-size: var(--fs-base);
     color: var(--c-muted);
     margin: 26px 0 0;
+    line-height: 1.6;
   }
-  .footer-line a {
+  .footer-line a,
+  .footer-line .footer-link {
     color: var(--c-fg);
     text-decoration: underline;
     text-underline-offset: 3px;
     margin-left: 6px;
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    letter-spacing: inherit;
+    cursor: pointer;
   }
-  .footer-line a:hover { color: var(--c-muted); }
+  .footer-line a:hover,
+  .footer-line .footer-link:hover { color: var(--c-muted); }
+  .footer-line .footer-sep { color: var(--c-border); margin-left: 6px; }
 
   /* Important note at the bottom of the login section */
   .login-note {
