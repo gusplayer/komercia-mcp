@@ -1,7 +1,7 @@
 // Recetas (prompts library) shared between the landing modal and the
-// sign-in page modal. Each receta has a bilingual user prompt and a
-// short simulated Claude response (Spanish-only — realistic store data
-// stays Spanish/Colombian for cultural fit).
+// sign-in page modal. Each receta has bilingual user prompt and bilingual
+// simulated Claude response. Local touches (COP, PSE, Nequi, Tiendanube)
+// stay in both languages — they're the brand-of-store signal.
 
 export type RecetaCat = 'analitica' | 'reportes' | 'operacion' | 'migracion';
 
@@ -11,7 +11,8 @@ export interface Receta {
   catEn: string;
   promptEs: string;
   promptEn: string;
-  response: string[];
+  responseEs: string[];
+  responseEn: string[];
   tools: string[];
 }
 
@@ -22,7 +23,7 @@ export const recetas: Receta[] = [
     cat: 'analitica', catEs: 'analítica', catEn: 'analytics',
     promptEs: '¿Cuál fue mi producto más vendido el mes pasado? Top 5 con totales.',
     promptEn: 'What was my best-selling product last month? Top 5 with totals.',
-    response: [
+    responseEs: [
       'consultando export_orders + export_products...',
       '',
       'top 5 del último mes:',
@@ -34,13 +35,25 @@ export const recetas: Receta[] = [
       '',
       'total top 5: $4.88M COP (62% del mes).',
     ],
+    responseEn: [
+      'querying export_orders + export_products...',
+      '',
+      'top 5 last month:',
+      '  1. black t-shirt L      · 47 units · $1.84M COP',
+      '  2. limited edition pins · 31 units · $1.24M COP',
+      '  3. canvas bag           · 22 units · $880K COP',
+      '  4. stickers pack        · 18 units · $360K COP',
+      '  5. snapback cap         · 14 units · $560K COP',
+      '',
+      'top 5 total: $4.88M COP (62% of month).',
+    ],
     tools: ['export_orders', 'export_products'],
   },
   {
     cat: 'analitica', catEs: 'analítica', catEn: 'analytics',
     promptEs: 'Compara mis ventas de este mes vs el anterior. ¿Qué productos crecieron y cuáles cayeron?',
     promptEn: "Compare this month's sales vs last month. Which products grew and which fell?",
-    response: [
+    responseEs: [
       'septiembre: $12.4M COP (↑18% vs agosto)',
       '',
       'crecieron:',
@@ -52,13 +65,25 @@ export const recetas: Receta[] = [
       '  gorras       -8%',
       '  stickers     -12%',
     ],
+    responseEn: [
+      'september: $12.4M COP (↑18% vs august)',
+      '',
+      'grew:',
+      '  t-shirts     +34%',
+      '  bags         +22%',
+      '  accessories  +11%',
+      '',
+      'fell:',
+      '  caps         -8%',
+      '  stickers     -12%',
+    ],
     tools: ['export_orders', 'export_products'],
   },
   {
     cat: 'analitica', catEs: 'analítica', catEn: 'analytics',
     promptEs: '¿Quiénes son mis 10 mejores clientes por monto comprado en los últimos 6 meses?',
     promptEn: 'Who are my top 10 customers by purchase amount in the last 6 months?',
-    response: [
+    responseEs: [
       'top 10 clientes (últimos 6 meses):',
       '  1. m.gomez@...      · $890K · 8 órdenes',
       '  2. l.rivera@...     · $670K · 5 órdenes',
@@ -67,18 +92,34 @@ export const recetas: Receta[] = [
       '  5. j.salazar@...    · $470K · 7 órdenes',
       '  +5 más con email completo',
     ],
+    responseEn: [
+      'top 10 customers (last 6 months):',
+      '  1. m.gomez@...      · $890K · 8 orders',
+      '  2. l.rivera@...     · $670K · 5 orders',
+      '  3. p.castro@...     · $540K · 6 orders',
+      '  4. a.martin@...     · $510K · 4 orders',
+      '  5. j.salazar@...    · $470K · 7 orders',
+      '  +5 more with full email',
+    ],
     tools: ['export_customers', 'export_orders'],
   },
   {
     cat: 'analitica', catEs: 'analítica', catEn: 'analytics',
     promptEs: '¿Qué método de pago usan más mis clientes? Dame el porcentaje por cada uno.',
     promptEn: 'Which payment method do my customers use most? Give me the percentage for each.',
-    response: [
+    responseEs: [
       'distribución últimos 30 días:',
       '  PSE              47%',
       '  tarjeta crédito  31%',
       '  Nequi            14%',
       '  efectivo          8%',
+    ],
+    responseEn: [
+      'distribution last 30 days:',
+      '  PSE              47%',
+      '  credit card      31%',
+      '  Nequi            14%',
+      '  cash              8%',
     ],
     tools: ['export_orders', 'list_payment_gateways'],
   },
@@ -86,11 +127,17 @@ export const recetas: Receta[] = [
     cat: 'analitica', catEs: 'analítica', catEn: 'analytics',
     promptEs: 'Identifica productos que venden bien pero tienen poco stock. Lista los que se van a quedar sin inventario en menos de 30 días.',
     promptEn: 'Identify products that sell well but have low stock. List those that will run out in less than 30 days.',
-    response: [
+    responseEs: [
       '⚠ alerta de stock bajo:',
       '  camiseta negra L     12 uds · vende ~14/sem → ~6 días',
       '  bolso lona            8 uds · vende ~6/sem  → ~9 días',
       '  pines edición lim.    4 uds                  → restock ya',
+    ],
+    responseEn: [
+      '⚠ low stock alert:',
+      '  black t-shirt L     12 units · sells ~14/wk → ~6 days',
+      '  canvas bag           8 units · sells ~6/wk  → ~9 days',
+      '  ltd. edition pins    4 units                 → restock now',
     ],
     tools: ['export_products', 'export_inventory_movements'],
   },
@@ -98,11 +145,17 @@ export const recetas: Receta[] = [
     cat: 'reportes', catEs: 'reportes', catEn: 'reports',
     promptEs: 'Exporta todas las órdenes pagadas del último trimestre como CSV. Incluye nombre del cliente, ciudad, total y método de pago.',
     promptEn: 'Export all paid orders from the last quarter as CSV. Include customer name, city, total, and payment method.',
-    response: [
+    responseEs: [
       '✓ 247 órdenes pagadas (Q4 2025)',
       '✓ orders_q4.csv generado (45KB)',
       '',
       'columnas: order_id, customer, city, total_cop, payment, paid_at',
+    ],
+    responseEn: [
+      '✓ 247 paid orders (Q4 2025)',
+      '✓ orders_q4.csv generated (45KB)',
+      '',
+      'columns: order_id, customer, city, total_cop, payment, paid_at',
     ],
     tools: ['export_orders'],
   },
@@ -110,11 +163,17 @@ export const recetas: Receta[] = [
     cat: 'reportes', catEs: 'reportes', catEn: 'reports',
     promptEs: 'Dame mi catálogo completo en formato Shopify, listo para importar.',
     promptEn: 'Give me my full catalog in Shopify format, ready to import.',
-    response: [
+    responseEs: [
       '✓ 86 productos exportados a formato shopify',
       '✓ products_shopify.csv (32KB)',
       '',
       'incluye: title, variants, tags, weight, vendor, type',
+    ],
+    responseEn: [
+      '✓ 86 products exported to shopify format',
+      '✓ products_shopify.csv (32KB)',
+      '',
+      'includes: title, variants, tags, weight, vendor, type',
     ],
     tools: ['export_products'],
   },
@@ -122,8 +181,14 @@ export const recetas: Receta[] = [
     cat: 'reportes', catEs: 'reportes', catEn: 'reports',
     promptEs: 'Genera un JSON con todos mis clientes, sus direcciones y total comprado.',
     promptEn: 'Generate a JSON with all my customers, their addresses, and total purchased.',
-    response: [
+    responseEs: [
       '✓ 423 clientes activos serializados',
+      '✓ customers.json (89KB)',
+      '',
+      '{ id, name, email, address, city, total_purchased }',
+    ],
+    responseEn: [
+      '✓ 423 active customers serialized',
       '✓ customers.json (89KB)',
       '',
       '{ id, name, email, address, city, total_purchased }',
@@ -134,7 +199,7 @@ export const recetas: Receta[] = [
     cat: 'reportes', catEs: 'reportes', catEn: 'reports',
     promptEs: 'Resume mi inventario por categoría. Cuántos productos hay y cuál es el stock total de cada categoría.',
     promptEn: 'Summarize my inventory by category. How many products and what is the total stock of each category.',
-    response: [
+    responseEs: [
       'inventario por categoría:',
       '  ropa         34 productos · 1,247 uds',
       '  accesorios   18 productos ·   432 uds',
@@ -142,13 +207,21 @@ export const recetas: Receta[] = [
       '',
       'total: 64 productos · 1,768 uds en stock',
     ],
+    responseEn: [
+      'inventory by category:',
+      '  clothing     34 products · 1,247 units',
+      '  accessories  18 products ·   432 units',
+      '  misc         12 products ·    89 units',
+      '',
+      'total: 64 products · 1,768 units in stock',
+    ],
     tools: ['export_categories', 'export_products'],
   },
   {
     cat: 'reportes', catEs: 'reportes', catEn: 'reports',
     promptEs: 'Backup completo de mi tienda en JSON: productos, órdenes, clientes, categorías, imágenes.',
     promptEn: 'Full backup of my store in JSON: products, orders, customers, categories, images.',
-    response: [
+    responseEs: [
       'generando backup completo...',
       '  ✓ 86 productos',
       '  ✓ 247 órdenes',
@@ -158,13 +231,23 @@ export const recetas: Receta[] = [
       '',
       '→ backup_2026-05-11.zip',
     ],
+    responseEn: [
+      'generating full backup...',
+      '  ✓ 86 products',
+      '  ✓ 247 orders',
+      '  ✓ 423 customers',
+      '  ✓ 12 categories',
+      '  ✓ 156 images (32MB)',
+      '',
+      '→ backup_2026-05-11.zip',
+    ],
     tools: ['export_products', 'export_orders', 'export_customers', 'export_categories', 'download_media_archive'],
   },
   {
     cat: 'operacion', catEs: 'operación', catEn: 'operations',
     promptEs: 'Detecta productos sin imagen, sin descripción, o sin precio. Lista los que necesitan atención.',
     promptEn: 'Detect products without image, description, or price. List those needing attention.',
-    response: [
+    responseEs: [
       'detectados 7 productos incompletos:',
       '  · bolso azul          (sin precio)',
       '  · pines v2            (sin imagen)',
@@ -172,18 +255,33 @@ export const recetas: Receta[] = [
       '  · gorra retro         (sin imagen + sin descripción)',
       '  +3 más',
     ],
+    responseEn: [
+      'detected 7 incomplete products:',
+      '  · blue bag            (no price)',
+      '  · pins v2             (no image)',
+      '  · mini stickers       (no description)',
+      '  · retro cap           (no image + no description)',
+      '  +3 more',
+    ],
     tools: ['export_products'],
   },
   {
     cat: 'operacion', catEs: 'operación', catEn: 'operations',
     promptEs: '¿Qué clientes me compraron más de una vez en los últimos 3 meses? Dame nombres y emails.',
     promptEn: 'Which customers bought more than once in the last 3 months? Names and emails.',
-    response: [
+    responseEs: [
       '23 clientes recurrentes (3 meses):',
       '  m.gomez@...      4 órdenes',
       '  l.rivera@...     3 órdenes',
       '  p.castro@...     3 órdenes',
       '  +20 más · csv listo para email marketing',
+    ],
+    responseEn: [
+      '23 recurring customers (3 months):',
+      '  m.gomez@...      4 orders',
+      '  l.rivera@...     3 orders',
+      '  p.castro@...     3 orders',
+      '  +20 more · csv ready for email marketing',
     ],
     tools: ['export_customers', 'export_orders'],
   },
@@ -191,12 +289,19 @@ export const recetas: Receta[] = [
     cat: 'operacion', catEs: 'operación', catEn: 'operations',
     promptEs: 'Productos creados o modificados este mes — ¿cuáles son?',
     promptEn: 'Products created or modified this month — which ones?',
-    response: [
+    responseEs: [
       '12 productos modificados en mayo:',
       '  · camiseta verde       (creado 03/05)',
       '  · bolso XL             (precio +15%, 08/05)',
       '  · pines edición v3     (variante nueva, 10/05)',
       '  +9 más',
+    ],
+    responseEn: [
+      '12 products modified in may:',
+      '  · green t-shirt       (created 05/03)',
+      '  · XL bag              (price +15%, 05/08)',
+      '  · edition v3 pins     (new variant, 05/10)',
+      '  +9 more',
     ],
     tools: ['export_products'],
   },
@@ -204,7 +309,7 @@ export const recetas: Receta[] = [
     cat: 'operacion', catEs: 'operación', catEn: 'operations',
     promptEs: '¿Cuántas órdenes hubo entre $100.000 y $500.000 COP el mes pasado? ¿Y promedio por método de pago?',
     promptEn: 'How many orders between $100K and $500K COP last month? And average per payment method?',
-    response: [
+    responseEs: [
       '81 órdenes en ese rango.',
       '',
       'promedio por método:',
@@ -213,18 +318,34 @@ export const recetas: Receta[] = [
       '  Nequi            $189K',
       '  efectivo         $156K',
     ],
+    responseEn: [
+      '81 orders in that range.',
+      '',
+      'average per method:',
+      '  PSE              $245K',
+      '  card             $278K',
+      '  Nequi            $189K',
+      '  cash             $156K',
+    ],
     tools: ['export_orders'],
   },
   {
     cat: 'migracion', catEs: 'migración', catEn: 'migration',
     promptEs: 'Prepara un export completo en formato Tiendanube, con productos, variantes, categorías y precios.',
     promptEn: 'Prepare a full export in Tiendanube format with products, variants, categories, and prices.',
-    response: [
+    responseEs: [
       '✓ 86 productos con variantes',
       '✓ 12 categorías mapeadas a tiendanube',
       '✓ tiendanube_export.csv (38KB)',
       '',
       'listo para importar en tiendanube admin.',
+    ],
+    responseEn: [
+      '✓ 86 products with variants',
+      '✓ 12 categories mapped to tiendanube',
+      '✓ tiendanube_export.csv (38KB)',
+      '',
+      'ready to import in tiendanube admin.',
     ],
     tools: ['export_products', 'export_categories'],
   },
@@ -232,7 +353,7 @@ export const recetas: Receta[] = [
     cat: 'migracion', catEs: 'migración', catEn: 'migration',
     promptEs: '¿A qué plataforma me conviene migrar mi tienda según mi catálogo y tipo de productos?',
     promptEn: 'Which platform should I migrate my store to based on my catalog and product type?',
-    response: [
+    responseEs: [
       'análisis: 86 productos · multi-variante · precio medio $35K COP',
       '',
       'recomendación:',
@@ -240,13 +361,21 @@ export const recetas: Receta[] = [
       '  2. tiendanube    (LATAM · setup ~3h)',
       '  3. woocommerce   (control total · técnico)',
     ],
+    responseEn: [
+      'analysis: 86 products · multi-variant · avg. price $35K COP',
+      '',
+      'recommendation:',
+      '  1. shopify       (best fit · setup ~2h)',
+      '  2. tiendanube    (LATAM · setup ~3h)',
+      '  3. woocommerce   (full control · technical)',
+    ],
     tools: ['suggest_alternative_platforms', 'get_store_info', 'export_products'],
   },
   {
     cat: 'migracion', catEs: 'migración', catEn: 'migration',
     promptEs: '¿Mis APIs de Komercia están funcionando? Hazme un health check.',
     promptEn: 'Are my Komercia APIs working? Run a health check.',
-    response: [
+    responseEs: [
       '✓ Laravel API     · 142ms',
       '✓ Node API        · 89ms',
       '✓ Auth            · token válido (5h 47m restantes)',
@@ -254,19 +383,35 @@ export const recetas: Receta[] = [
       '',
       'todo en línea.',
     ],
+    responseEn: [
+      '✓ Laravel API     · 142ms',
+      '✓ Node API        · 89ms',
+      '✓ Auth            · token valid (5h 47m remaining)',
+      '✓ Discovery       · operational',
+      '',
+      'all online.',
+    ],
     tools: ['validate_komercia_apis'],
   },
   {
     cat: 'migracion', catEs: 'migración', catEn: 'migration',
     promptEs: 'Datos generales de mi tienda: nombre, plan, dominio, estado. Resúmemelo.',
     promptEn: 'General data about my store: name, plan, domain, status. Summarize it.',
-    response: [
+    responseEs: [
       'tu tienda:',
       '  nombre:   Foster Studios',
       '  plan:     Premium',
       '  dominio:  fosterstudios.com',
       '  estado:   activa',
       '  miembro:  desde 2022',
+    ],
+    responseEn: [
+      'your store:',
+      '  name:     Foster Studios',
+      '  plan:     Premium',
+      '  domain:   fosterstudios.com',
+      '  status:   active',
+      '  member:   since 2022',
     ],
     tools: ['get_store_info'],
   },

@@ -52,7 +52,10 @@ import { recetas, categories, catCounts } from '../lib/recetas.data';
           </p>
           <div class="recipe-response">
             <div class="recipe-response-label muted">claude:</div>
-            {r.response.map((line) => <div>{line || ' '}</div>)}
+            {r.responseEs.map((lineEs, i) => {
+              const lineEn = r.responseEn[i] ?? lineEs;
+              return <div data-t-es={lineEs || ' '} data-t-en={lineEn || ' '}>{lineEs || ' '}</div>;
+            })}
           </div>
           <div class="recipe-tools">
             {r.tools.map((t) => <code>{t}</code>)}
