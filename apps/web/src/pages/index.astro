@@ -8,13 +8,15 @@ import LogoKomercia from '../components/LogoKomercia.astro';
 // which build is live. SHA comes from Vercel's automatic env at deploy
 // time; on a local dev server both fall back to "dev". The date is
 // snapshotted in astro.config.mjs at build time (NOT per-request).
-const commitSha = (process.env.VERCEL_GIT_COMMIT_SHA ?? '').slice(0, 7) || 'dev';
-const repoSlug =
-  process.env.VERCEL_GIT_REPO_OWNER && process.env.VERCEL_GIT_REPO_SLUG
-    ? `${process.env.VERCEL_GIT_REPO_OWNER}/${process.env.VERCEL_GIT_REPO_SLUG}`
-    : 'gusplayer/komercia-mcp';
+// Bracket access required by `noPropertyAccessFromIndexSignature` —
+// process.env is typed as `{ [key: string]: string | undefined }`.
+const env = process.env;
+const commitSha = (env['VERCEL_GIT_COMMIT_SHA'] ?? '').slice(0, 7) || 'dev';
+const repoOwner = env['VERCEL_GIT_REPO_OWNER'];
+const repoName = env['VERCEL_GIT_REPO_SLUG'];
+const repoSlug = repoOwner && repoName ? `${repoOwner}/${repoName}` : 'gusplayer/komercia-mcp';
 const commitUrl = commitSha === 'dev' ? null : `https://github.com/${repoSlug}/commit/${commitSha}`;
-const buildIso = process.env.PUBLIC_BUILD_TIME ?? new Date().toISOString();
+const buildIso = env['PUBLIC_BUILD_TIME'] ?? new Date().toISOString();
 // Compact UTC date for the footer: "2026-05-14 12:36 UTC"
 const buildLabel = (() => {
   const d = new Date(buildIso);
