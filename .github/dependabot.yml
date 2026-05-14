@@ -1,5 +1,11 @@
 version: 2
 updates:
+  # npm — group minor/patch bumps so the PR queue stays manageable, but
+  # let major bumps land as individual PRs (they almost always carry
+  # breaking changes and deserve a dedicated review). Without the
+  # `update-types` filter, dependabot folds majors into the group too —
+  # which is how PR #11 ended up bundling TypeScript 5→6 with five
+  # other bumps and tanked the build.
   - package-ecosystem: npm
     directory: "/"
     schedule:
@@ -7,6 +13,7 @@ updates:
       day: monday
       time: "09:00"
       timezone: America/Bogota
+    open-pull-requests-limit: 10
     groups:
       dev-tooling:
         patterns:
@@ -19,16 +26,32 @@ updates:
           - "@vitest*"
           - "playwright"
           - "@playwright*"
+        update-types:
+          - "minor"
+          - "patch"
       nestjs:
         patterns:
           - "@nestjs/*"
           - "nest*"
+        update-types:
+          - "minor"
+          - "patch"
       astro:
         patterns:
           - "astro"
           - "@astrojs/*"
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
       interval: monthly
+    groups:
+      gh-actions:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
