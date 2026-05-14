@@ -47,7 +47,7 @@ jobs:
 
       - name: Commit updated report
         if: github.event.inputs.dry_run != 'true'
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "chore: update API discovery report [skip ci]"
           file_pattern: "docs/api-discovery-report.md packages/komercia-client/src/generated/api-map.json"
