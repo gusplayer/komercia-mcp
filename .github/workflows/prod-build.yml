@@ -1,0 +1,54 @@
+# Production build validation. The actual deploys happen out-of-band:
+#   - apps/web      → Vercel (GitHub integration, auto-deploys on push to main)
+#   - apps/mcp-server → Railway (currently triggered manually via `railway up`
+#                       from a developer machine; project secrets live there)
+#
+# This workflow exists to catch production-env-only build regressions
+# (Astro PUBLIC_* inlining, tree-shaking, etc.) before the real deploys
+# pick up the commit. It does NOT deploy anything itself.
+name: Production build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+concurrency:
+  group: prod-build
+  cancel-in-progress: false
+
+jobs:
+  build-mcp-server:
+    name: Build MCP server (prod)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build
+        run: pnpm build --filter @komercia-mcp/mcp-server
+        env:
+          NODE_ENV: production
+
+  build-web:
+    name: Build web (prod)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build
+        run: pnpm build --filter @komercia-mcp/web
+        env:
+          NODE_ENV: production
+          PUBLIC_MCP_SERVER_URL: https://mcp.komercia.co/mcp
