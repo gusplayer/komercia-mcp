@@ -15,7 +15,7 @@ jobs:
     name: Lint & Typecheck
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: pnpm/action-setup@v4
 
@@ -45,7 +45,7 @@ jobs:
       JWT_SECRET: ${{ secrets.JWT_SECRET_TEST || 'ci-test-secret-at-least-32-characters-long-for-hs256' }}
       DATABASE_URL: ${{ secrets.DATABASE_URL_TEST || '' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: pnpm/action-setup@v4
 
@@ -77,7 +77,7 @@ jobs:
     needs: lint-typecheck
     if: github.event_name == 'pull_request'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: pnpm/action-setup@v4
 
@@ -113,7 +113,7 @@ jobs:
     name: Security Audit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: pnpm/action-setup@v4
 

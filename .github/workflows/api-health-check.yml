@@ -21,7 +21,7 @@ jobs:
       vars.KOMERCIA_DISCOVERY_ENABLED == 'true' ||
       github.event_name == 'workflow_dispatch'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: pnpm/action-setup@v4
 
