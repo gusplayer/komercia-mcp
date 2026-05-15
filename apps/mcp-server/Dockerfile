@@ -38,7 +38,8 @@ COPY packages/komercia-client/package.json packages/komercia-client/
 COPY packages/eslint-config/package.json packages/eslint-config/
 
 # Install everything (incl. devDeps). Frozen lockfile guarantees reproducibility.
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+# Cache id uses full path prefix — required by Railway Metal builder.
+RUN --mount=type=cache,id=s/komercia-mcp/pnpm-store,target=/pnpm/store \
     pnpm install --frozen-lockfile
 
 
