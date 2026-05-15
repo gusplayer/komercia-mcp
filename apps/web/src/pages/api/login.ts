@@ -238,7 +238,8 @@ export const POST: APIRoute = async ({ request }) => {
         })
           .setProtectedHeader({ alg: 'HS256' })
           .setAudience('urn:komercia-mcp:oauth-completion')
-          .setJti(jti)
+          .setSubject(jti)
+          .setJti(crypto.randomUUID())
           .setIssuedAt()
           .setExpirationTime('120s')
           .sign(secretKey);
