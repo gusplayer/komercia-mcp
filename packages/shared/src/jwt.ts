@@ -29,7 +29,7 @@ function encodeSecret(secret: string): Uint8Array {
   return new TextEncoder().encode(secret);
 }
 
-export type SignMerchantTokenOptions = {
+export interface SignMerchantTokenOptions {
   secret: string;
   sub: string;
   store_id: string;
@@ -39,13 +39,13 @@ export type SignMerchantTokenOptions = {
   expirySeconds?: number;
   iss?: string;
   aud?: string;
-};
+}
 
-export type VerifyMerchantTokenOptions = {
+export interface VerifyMerchantTokenOptions {
   token: string;
   secret: string;
   expectedAudience?: string;
-};
+}
 
 /**
  * Sign a merchant JWT. Supports two call styles:
@@ -70,9 +70,10 @@ export async function signMerchantToken(
 ): Promise<string> {
   const isOptions = typeof secret === 'undefined';
 
-  const effectiveSecret = isOptions
-    ? (payloadOrOptions as SignMerchantTokenOptions).secret
-    : (secret as string);
+  const effectiveSecret =
+    typeof secret === 'undefined'
+      ? (payloadOrOptions as SignMerchantTokenOptions).secret
+      : secret;
 
   const sub = (payloadOrOptions as { sub: string }).sub;
   const storeId = (payloadOrOptions as { store_id: string }).store_id;
@@ -135,7 +136,10 @@ export async function verifyMerchantToken(
 ): Promise<MerchantJWTPayload> {
   const isOptions = typeof tokenOrOptions !== 'string';
   const token = isOptions ? tokenOrOptions.token : tokenOrOptions;
-  const effectiveSecret = isOptions ? tokenOrOptions.secret : (secret as string);
+  const effectiveSecret =
+    typeof secret === 'undefined'
+      ? (tokenOrOptions as VerifyMerchantTokenOptions).secret
+      : secret;
   const expectedAudience = isOptions ? tokenOrOptions.expectedAudience : undefined;
 
   const secretKey = encodeSecret(effectiveSecret);
