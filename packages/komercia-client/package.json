@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@komercia-mcp/eslint-config": "workspace:*",
-    "@types/node": "^20.0.0",
+    "@types/node": "^25.7.0",
     "@vitest/coverage-v8": "^2.1.0",
     "eslint": "^9.14.0",
     "msw": "^2.6.0",
