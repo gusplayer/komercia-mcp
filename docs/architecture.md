@@ -46,7 +46,12 @@ Merchant browser
 
 ### 2. Merchant connects Claude.ai
 
-The merchant adds `https://api-mcp.komercia.co/sse` to Claude.ai Integrations and pastes their JWT as the bearer token. Claude.ai opens a persistent SSE connection.
+Two paths are supported:
+
+- **OAuth (Claude.ai web, recommended)** — the merchant adds `https://api-mcp.komercia.co/sse` to Claude.ai Integrations and clicks **Connect**. Claude.ai discovers the authorization server, performs Dynamic Client Registration, and redirects the merchant to `mcp.komercia.co/sign-in` to authenticate. After login, Claude.ai exchanges the auth code (with PKCE) for an access token — same JWT shape and TTL as the manual flow. No token paste required. See [Authorization: OAuth 2.1 + PKCE + DCR](#authorization-oauth-21--pkce--dcr) below.
+- **Manual bearer (Claude Desktop, Claude Code, IDEs)** — the merchant logs in at `mcp.komercia.co`, copies the issued JWT, and pastes it as the bearer token in the client config.
+
+Either way Claude opens a persistent SSE connection with `Authorization: Bearer <jwt>`.
 
 ### 3. Claude calls a tool (mcp-server)
 
@@ -176,3 +181,38 @@ Vercel dev / pnpm dev
 ```
 
 The web app is not containerized for local dev — it runs via `pnpm dev` to keep hot-reload fast.
+
+---
+
+## Authorization: OAuth 2.1 + PKCE + DCR
+
+Claude.ai web users connect without ever pasting a token. The MCP server acts as both the resource server (`/sse`, `/messages`) and the authorization server (`/oauth/*`), while the Astro web app owns the login UI.
+
+```
+Client (Claude.ai) → GET /.well-known/oauth-authorization-server → metadata
+Client → POST /oauth/register → client_id (DCR per RFC 7591)
+Client → GET /oauth/authorize?... → 302 to mcp.komercia.co/sign-in?oauth_request=...
+User logs in → POST /api/login (with oauth_request_id) → completion_ticket → 302
+Browser → GET /oauth/authorize/complete?ticket=... → mints code → 302 to claude.ai callback
+Client → POST /oauth/token (with code + PKCE verifier) → access_token
+Client → uses access_token as Bearer for /sse and /messages
+```
+
+### Components and storage
+
+| Item | Lifetime | TTL env var | Notes |
+|------|----------|-------------|-------|
+| Authorization request | Pending login | `OAUTH_AUTH_REQUEST_TTL_SECONDS` (600s) | Holds `code_challenge`, `redirect_uri`, `resource`, `scope` |
+| Completion ticket | Login → redirect | `OAUTH_COMPLETION_TICKET_TTL_SECONDS` (120s) | Single-use; bridges Astro `/api/login` back to `mcp-server` |
+| Authorization code | Token exchange | `OAUTH_AUTH_CODE_TTL_SECONDS` (90s) | Single-use; bound to `client_id`, `redirect_uri`, `code_challenge` |
+| Access token (JWT) | 6 months | `OAUTH_ACCESS_TOKEN_TTL_SECONDS` (15552000s) | Same HS256 JWT as the manual flow — `jti` keys a `komercia_sessions` row |
+
+DCR is rate-limited per IP via `OAUTH_DCR_RATE_LIMIT_PER_IP` (10/min default).
+
+### Issuer and audience
+
+Both `iss` and `aud` are set to `OAUTH_ISSUER_URL` (canonical `https://api-mcp.komercia.co`). The `resource` parameter from RFC 8707 is required on `/oauth/authorize` and `/oauth/token` and must match the issuer — this prevents token confusion across MCP servers.
+
+### Why no refresh tokens (v1)
+
+The issued JWT already lives for 6 months and revocation is one click in the web UI. Adding refresh tokens would double the surface area (refresh storage, rotation, replay detection) for negligible UX gain. We may revisit once Claude.ai's clients enforce shorter access-token TTLs.

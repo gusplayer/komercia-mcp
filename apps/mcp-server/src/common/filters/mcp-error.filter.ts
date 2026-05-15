@@ -42,12 +42,16 @@ export class McpErrorFilter implements ExceptionFilter {
 
     if (err instanceof HttpException) {
       const httpResponse = err.getResponse();
-      response.writeHead(statusCode, { 'Content-Type': 'application/json' });
+      // Preserve headers that were set BEFORE the throw (e.g. WWW-Authenticate
+      // from AuthGuard). `writeHead` would replace the whole header set.
+      response.setHeader('Content-Type', 'application/json');
+      response.statusCode = statusCode;
       response.end(JSON.stringify(httpResponse));
       return;
     }
 
-    response.writeHead(500, { 'Content-Type': 'application/json' });
+    response.setHeader('Content-Type', 'application/json');
+    response.statusCode = 500;
     response.end(
       JSON.stringify({
         content: [

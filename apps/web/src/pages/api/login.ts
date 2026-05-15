@@ -7,6 +7,7 @@ import { z } from 'zod';
 
 
 import { validateCsrfToken } from '../../lib/csrf.js';
+import { getSql } from '../../lib/db.js';
 import { getConfig } from '../../lib/env.js';
 import { checkRateLimit, RateLimitExceededError } from '../../lib/rate-limit.js';
 import { createSession } from '../../lib/session.js';
@@ -16,7 +17,14 @@ import type { APIRoute } from 'astro';
 const bodySchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
+  oauth_request_id: z.string().uuid().optional(),
 });
+
+interface OauthAuthRequestRow {
+  request_id: string;
+  consumed_at: Date | null;
+  expires_at: Date;
+}
 
 function jsonResponse(body: unknown, status: number): Response {
   return new Response(JSON.stringify(body), {
@@ -69,7 +77,7 @@ export const POST: APIRoute = async ({ request }) => {
   if (!parsed.success) {
     return jsonResponse({ error: 'email and password are required' }, 400);
   }
-  const { email, password } = parsed.data;
+  const { email, password, oauth_request_id: oauthRequestId } = parsed.data;
 
   // 2) Rate limit by IP and email — Postgres-backed so it survives across
   // Vercel serverless invocations.
@@ -200,6 +208,53 @@ export const POST: APIRoute = async ({ request }) => {
     .setIssuedAt()
     .setExpirationTime(`${String(JWT_EXPIRY_SECONDS)}s`)
     .sign(secretKey);
+
+  // 9) If this login was initiated by an OAuth authorization request from a
+  // remote MCP client (e.g. Claude.ai), mint a short-lived completion ticket
+  // and tell the browser where to bounce next. The ticket is consumed by
+  // the MCP server's /oauth/authorize/complete endpoint, which finishes
+  // the OAuth dance and redirects back to the client's redirect_uri.
+  if (oauthRequestId) {
+    try {
+      const sql = getSql();
+      const rows = await sql<OauthAuthRequestRow[]>`
+        SELECT request_id, consumed_at, expires_at
+        FROM oauth_auth_requests
+        WHERE request_id = ${oauthRequestId}
+        LIMIT 1
+      `;
+      const row = rows[0];
+      const now = new Date();
+      if (!row) {
+        logSafe('login.oauth_request_invalid', new Error('not_found'));
+      } else if (row.consumed_at !== null) {
+        logSafe('login.oauth_request_invalid', new Error('already_consumed'));
+      } else if (row.expires_at.getTime() < now.getTime()) {
+        logSafe('login.oauth_request_invalid', new Error('expired'));
+      } else {
+        const ticket = await new SignJWT({
+          scope: 'oauth.complete',
+          oauth_request_id: oauthRequestId,
+        })
+          .setProtectedHeader({ alg: 'HS256' })
+          .setAudience('urn:komercia-mcp:oauth-completion')
+          .setJti(jti)
+          .setIssuedAt()
+          .setExpirationTime('120s')
+          .sign(secretKey);
+        const redirectTo = `${config.mcpServerUrl}/oauth/authorize/complete?ticket=${encodeURIComponent(ticket)}`;
+        return jsonResponse(
+          { token, store_id: storeId, store_name: storeName, redirect_to: redirectTo },
+          200,
+        );
+      }
+    } catch (err) {
+      // Don't fail the login — the user logged in successfully; we just
+      // cannot complete the OAuth handoff. Fall through to the normal
+      // manual-token response.
+      logSafe('login.oauth_request_lookup_failed', err as Error);
+    }
+  }
 
   return jsonResponse({ token, store_id: storeId, store_name: storeName }, 200);
 };

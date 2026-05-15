@@ -80,6 +80,24 @@ export class KomerciaSessionService {
     return rows[0] ?? null;
   }
 
+  /**
+   * Lightweight lookup used by the OAuth token endpoint. Returns the merchant
+   * identity claims for an active session WITHOUT decrypting Komercia tokens
+   * — issuing our own bearer JWT needs nothing more.
+   */
+  async getMetadataByJti(
+    jti: string,
+  ): Promise<{ jti: string; sub: string; store_id: string; email: string } | null> {
+    const row = await this.getRow(jti);
+    if (!row) return null;
+    return {
+      jti: row.jti,
+      sub: row.merchant_id,
+      store_id: row.store_id,
+      email: row.email,
+    };
+  }
+
   async getSession(jti: string): Promise<KomerciaSession | null> {
     try {
       const row = await this.getRow(jti);

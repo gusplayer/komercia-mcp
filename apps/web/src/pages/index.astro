@@ -103,29 +103,21 @@ const installMethods: InstallMethod[] = [
     name: 'Claude.ai',
     badgeEs: 'web · sin instalación',
     badgeEn: 'web · no install',
-    descEs: 'Funciona directamente en claude.ai. Sin instalar nada — solo pega la URL y tu token en la interfaz.',
-    descEn: 'Works directly in claude.ai. No install — just paste URL and token in the interface.',
+    descEs: 'Funciona directamente en claude.ai. Sin pegar token — OAuth maneja la autorización automáticamente.',
+    descEn: 'Works directly in claude.ai. No token paste needed — OAuth handles auth automatically.',
     steps: [
       {
         titleEs: 'Abre Claude.ai → Settings → Connectors',
         titleEn: 'Open Claude.ai → Settings → Connectors',
       },
       {
-        titleEs: 'Click en "Add Integration" → "MCP Server"',
-        titleEn: 'Click "Add Integration" → "MCP Server"',
-      },
-      {
-        titleEs: 'Pega la URL del servidor',
-        titleEn: 'Paste the server URL',
+        titleEs: 'Click "Add Integration" → "MCP Server" y pega esta URL',
+        titleEn: 'Click "Add Integration" → "MCP Server" and paste this URL',
         code: 'https://api-mcp.komercia.co/sse',
       },
       {
-        titleEs: 'En Authorization pega: Bearer TU_TOKEN',
-        titleEn: 'In Authorization paste: Bearer YOUR_TOKEN',
-      },
-      {
-        titleEs: 'Guarda y abre un chat nuevo',
-        titleEn: 'Save and open a new chat',
+        titleEs: 'Click Connect → te llevará al login → autoriza acceso',
+        titleEn: 'Click Connect → login redirect → authorize access',
       },
     ],
   },

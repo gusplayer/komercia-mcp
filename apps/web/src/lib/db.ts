@@ -50,6 +50,10 @@ export function getSql(): ReturnType<typeof postgres> {
  *
  * Schema version 3 adds:
  *   - rate_limits table (login throttling; works across serverless invocations)
+ *
+ * Schema version 4 adds:
+ *   - oauth_clients, oauth_auth_requests, oauth_auth_codes, oauth_refresh_tokens
+ *     (OAuth 2.1 + PKCE + Dynamic Client Registration)
  */
 export async function runMigrations(): Promise<void> {
   const sql = getSql();
@@ -95,5 +99,74 @@ export async function runMigrations(): Promise<void> {
       )
     `;
     await tx`CREATE INDEX IF NOT EXISTS idx_rate_limits_expires ON rate_limits(expires_at)`;
+
+    // v4: OAuth 2.1 + PKCE + Dynamic Client Registration tables.
+    await tx`
+      CREATE TABLE IF NOT EXISTS oauth_clients (
+        client_id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        client_name            TEXT NOT NULL,
+        client_secret_hash     TEXT,
+        redirect_uris          TEXT[] NOT NULL,
+        grant_types            TEXT[] NOT NULL DEFAULT ARRAY['authorization_code','refresh_token'],
+        response_types         TEXT[] NOT NULL DEFAULT ARRAY['code'],
+        token_endpoint_auth_method TEXT NOT NULL DEFAULT 'none',
+        scope                  TEXT NOT NULL DEFAULT 'read',
+        software_id            TEXT,
+        software_version       TEXT,
+        created_at             TIMESTAMPTZ NOT NULL DEFAULT now(),
+        last_used_at           TIMESTAMPTZ
+      )
+    `;
+    await tx`CREATE INDEX IF NOT EXISTS idx_oauth_clients_last_used ON oauth_clients(last_used_at)`;
+
+    await tx`
+      CREATE TABLE IF NOT EXISTS oauth_auth_requests (
+        request_id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        client_id              UUID NOT NULL REFERENCES oauth_clients(client_id) ON DELETE CASCADE,
+        redirect_uri           TEXT NOT NULL,
+        code_challenge         TEXT NOT NULL,
+        code_challenge_method  TEXT NOT NULL CHECK (code_challenge_method = 'S256'),
+        scope                  TEXT NOT NULL,
+        state                  TEXT NOT NULL,
+        resource               TEXT NOT NULL,
+        created_at             TIMESTAMPTZ NOT NULL DEFAULT now(),
+        expires_at             TIMESTAMPTZ NOT NULL,
+        consumed_at            TIMESTAMPTZ
+      )
+    `;
+    await tx`CREATE INDEX IF NOT EXISTS idx_oauth_auth_requests_expires ON oauth_auth_requests(expires_at)`;
+
+    await tx`
+      CREATE TABLE IF NOT EXISTS oauth_auth_codes (
+        code                   TEXT PRIMARY KEY,
+        client_id              UUID NOT NULL REFERENCES oauth_clients(client_id) ON DELETE CASCADE,
+        jti                    UUID NOT NULL REFERENCES komercia_sessions(jti) ON DELETE CASCADE,
+        redirect_uri           TEXT NOT NULL,
+        code_challenge         TEXT NOT NULL,
+        code_challenge_method  TEXT NOT NULL,
+        scope                  TEXT NOT NULL,
+        resource               TEXT NOT NULL,
+        created_at             TIMESTAMPTZ NOT NULL DEFAULT now(),
+        expires_at             TIMESTAMPTZ NOT NULL,
+        consumed_at            TIMESTAMPTZ
+      )
+    `;
+    await tx`CREATE INDEX IF NOT EXISTS idx_oauth_auth_codes_expires ON oauth_auth_codes(expires_at)`;
+    await tx`CREATE INDEX IF NOT EXISTS idx_oauth_auth_codes_jti ON oauth_auth_codes(jti)`;
+
+    await tx`
+      CREATE TABLE IF NOT EXISTS oauth_refresh_tokens (
+        token_hash             TEXT PRIMARY KEY,
+        client_id              UUID NOT NULL REFERENCES oauth_clients(client_id) ON DELETE CASCADE,
+        jti                    UUID NOT NULL REFERENCES komercia_sessions(jti) ON DELETE CASCADE,
+        scope                  TEXT NOT NULL,
+        resource               TEXT NOT NULL,
+        created_at             TIMESTAMPTZ NOT NULL DEFAULT now(),
+        expires_at             TIMESTAMPTZ NOT NULL,
+        rotated_at             TIMESTAMPTZ,
+        revoked_at             TIMESTAMPTZ
+      )
+    `;
+    await tx`CREATE INDEX IF NOT EXISTS idx_oauth_refresh_tokens_jti ON oauth_refresh_tokens(jti)`;
   });
 }

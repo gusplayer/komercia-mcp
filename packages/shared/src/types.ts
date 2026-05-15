@@ -10,6 +10,8 @@ export interface MerchantJWTPayload {
   jti: string;
   iat: number;
   exp: number;
+  iss?: string;
+  aud?: string;
 }
 
 export interface Store {

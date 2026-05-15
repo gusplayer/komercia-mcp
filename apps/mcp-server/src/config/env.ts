@@ -45,7 +45,18 @@ const envSchema = z.object({
   KOMERCIA_NODE_PUBLIC_KEY: z.string().default('komercia-public-key'),
   KOMERCIA_LARAVEL_CLIENT_ID: z.string().default('2'),
   KOMERCIA_LARAVEL_CLIENT_SECRET: z.string().default(''),
+  OAUTH_ISSUER_URL: z.string().url().default('https://api-mcp.komercia.co'),
+  WEB_BASE_URL: z.string().url().default('https://mcp.komercia.co'),
+  OAUTH_AUTH_REQUEST_TTL_SECONDS: z.coerce.number().int().positive().default(600),
+  OAUTH_AUTH_CODE_TTL_SECONDS: z.coerce.number().int().positive().default(90),
+  OAUTH_COMPLETION_TICKET_TTL_SECONDS: z.coerce.number().int().positive().default(120),
+  OAUTH_ACCESS_TOKEN_TTL_SECONDS: z.coerce.number().int().positive().default(15552000),
+  OAUTH_DCR_RATE_LIMIT_PER_IP: z.coerce.number().int().positive().default(10),
 });
+
+function stripTrailingSlash(url: string): string {
+  return url.endsWith('/') ? url.slice(0, -1) : url;
+}
 
 // Railway injects PORT; MCP_PORT overrides it when set explicitly.
 const parsed = envSchema.parse({
@@ -69,6 +80,13 @@ export const config = {
   nodePublicKey: parsed.KOMERCIA_NODE_PUBLIC_KEY,
   laravelClientId: parsed.KOMERCIA_LARAVEL_CLIENT_ID,
   laravelClientSecret: parsed.KOMERCIA_LARAVEL_CLIENT_SECRET,
+  oauthIssuerUrl: stripTrailingSlash(parsed.OAUTH_ISSUER_URL),
+  webBaseUrl: stripTrailingSlash(parsed.WEB_BASE_URL),
+  oauthAuthRequestTtlSeconds: parsed.OAUTH_AUTH_REQUEST_TTL_SECONDS,
+  oauthAuthCodeTtlSeconds: parsed.OAUTH_AUTH_CODE_TTL_SECONDS,
+  oauthCompletionTicketTtlSeconds: parsed.OAUTH_COMPLETION_TICKET_TTL_SECONDS,
+  oauthAccessTokenTtlSeconds: parsed.OAUTH_ACCESS_TOKEN_TTL_SECONDS,
+  oauthDcrRateLimitPerIp: parsed.OAUTH_DCR_RATE_LIMIT_PER_IP,
 } as const;
 
 export type Config = typeof config;

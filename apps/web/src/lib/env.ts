@@ -13,6 +13,12 @@ const envSchema = z.object({
   KOMERCIA_SESSION_ENCRYPTION_KEY: z
     .string()
     .regex(/^[0-9a-fA-F]{64}$/, 'KOMERCIA_SESSION_ENCRYPTION_KEY must be 64 hex chars (32 bytes)'),
+  // Canonical OAuth issuer / resource server. Used to redirect Claude.ai back
+  // to the MCP server's /oauth/authorize/complete endpoint after login.
+  MCP_SERVER_URL: z
+    .string()
+    .url('MCP_SERVER_URL must be a valid URL')
+    .default('https://api-mcp.komercia.co'),
 });
 
 function loadEnv() {
@@ -48,6 +54,7 @@ export function getConfig() {
     komerciaLaravelClientId: raw.KOMERCIA_LARAVEL_CLIENT_ID,
     komerciaLaravelClientSecret: raw.KOMERCIA_LARAVEL_CLIENT_SECRET,
     komerciaSessionEncryptionKey: raw.KOMERCIA_SESSION_ENCRYPTION_KEY,
+    mcpServerUrl: raw.MCP_SERVER_URL,
   };
 }
 

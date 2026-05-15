@@ -7,6 +7,7 @@ import { RequestIdInterceptor } from './common/interceptors/request-id.intercept
 import { config } from './config/env.js';
 import { HealthController } from './health/health.controller.js';
 import { McpModule } from './mcp/mcp.module.js';
+import { OAuthModule } from './oauth/oauth.module.js';
 
 import type { Options } from 'pino-http';
 
@@ -47,6 +48,7 @@ const pinoHttpOptions: Options = {
       pinoHttp: pinoHttpOptions,
     }),
     McpModule,
+    OAuthModule,
   ],
   controllers: [HealthController],
   providers: [

@@ -50,12 +50,13 @@ Visit [mcp.komercia.co](https://mcp.komercia.co), log in with your Komercia cred
 
 #### Option A · Claude.ai (web & mobile)
 
-No installation required. Works on any browser or the Claude mobile app.
+No installation required, **no token paste needed** — Claude.ai uses OAuth 2.1 + PKCE, so you can skip Step 1 above and authorize directly from the connector dialog.
 
 1. In [Claude.ai](https://claude.ai), go to **Settings → Integrations**
-2. Click **Add custom integration → MCP Server**
-3. Set the URL to `https://api-mcp.komercia.co/sse`
-4. Paste your token in the **Authorization** field and save
+2. Click **Add custom integration → MCP Server** and paste `https://api-mcp.komercia.co/sse`
+3. Click **Connect** — you'll be redirected to [mcp.komercia.co](https://mcp.komercia.co) to log in with your Komercia credentials and authorize access. Claude.ai gets a token automatically.
+
+> The other options (Desktop, Code, IDEs) still use the manual token from Step 1.
 
 ---
 

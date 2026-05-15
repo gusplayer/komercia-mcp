@@ -94,6 +94,32 @@ Both limits use Postgres (`rate_limits` table) so they survive Vercel cold start
 
 ---
 
+## OAuth 2.1 hardening (Claude.ai web)
+
+The OAuth 2.1 authorization flow (see [architecture.md](architecture.md#authorization-oauth-21--pkce--dcr)) introduces its own attack surface. The controls below are mandatory — they are enforced server-side in `apps/mcp-server`, not just by spec convention.
+
+### PKCE S256 enforcement
+
+Every authorization request **must** include `code_challenge` and `code_challenge_method=S256`. Requests with `plain` or no challenge are rejected with `invalid_request`. On `/oauth/token`, the SHA-256 of the submitted `code_verifier` must match the stored `code_challenge` byte-for-byte. This makes the flow safe even if the redirect to `claude.ai` is intercepted.
+
+### Audience binding (RFC 8707)
+
+Authorization and token requests must carry `resource=https://api-mcp.komercia.co`. The server rejects any request whose `resource` does not match the configured `OAUTH_ISSUER_URL`. Issued JWTs carry `aud = OAUTH_ISSUER_URL`, and `AuthGuard` rejects tokens whose audience doesn't match — preventing a token minted for another MCP server (or replayed against us) from working.
+
+### Exact-match `redirect_uri`
+
+`redirect_uri` is validated against the value registered via DCR (RFC 7591) using byte-exact comparison — no prefix matching, no subdomain wildcards, no path-suffix tolerance. The same `redirect_uri` must appear on `/oauth/authorize` and `/oauth/token`; mismatch returns `invalid_grant`.
+
+### Single-use auth codes, 90-second TTL
+
+Authorization codes live for `OAUTH_AUTH_CODE_TTL_SECONDS` (90s default) and are deleted on first redemption. A replay returns `invalid_grant` and triggers session revocation for the associated `jti` — the only reason to see the same code twice is theft.
+
+### No refresh tokens in v1
+
+We do not issue refresh tokens. Compromise of an access token is bounded by revocation (instant, via the web UI) and the 6-month TTL — the same as the manual flow. Adding refresh tokens would require rotation, replay detection, and refresh-storage encryption with no offsetting UX win for a long-lived bearer.
+
+---
+
 ## Reporting vulnerabilities
 
 See [SECURITY.md](../SECURITY.md) for the responsible disclosure process and contact details.
