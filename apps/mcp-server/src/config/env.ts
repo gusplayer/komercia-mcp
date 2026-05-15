@@ -47,7 +47,11 @@ const envSchema = z.object({
   KOMERCIA_LARAVEL_CLIENT_SECRET: z.string().default(''),
 });
 
-const parsed = envSchema.parse(process.env);
+// Railway injects PORT; MCP_PORT overrides it when set explicitly.
+const parsed = envSchema.parse({
+  ...process.env,
+  MCP_PORT: process.env['MCP_PORT'] ?? process.env['PORT'],
+});
 
 export const config = {
   jwtSecret: parsed.JWT_SECRET,

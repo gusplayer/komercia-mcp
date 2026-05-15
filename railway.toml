@@ -1,0 +1,11 @@
+[build]
+dockerfilePath = "apps/mcp-server/Dockerfile"
+dockerBuildTarget = "runtime"
+
+[deploy]
+startCommand = "node dist/main.js"
+healthcheckPath = "/health"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+preDeployCommand = "node scripts/migrate.mjs"
